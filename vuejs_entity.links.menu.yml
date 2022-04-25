@@ -1,0 +1,6 @@
+vuejs_entity.settings_form:
+  title: vuejs entity
+  description: Configure vuejs entity.
+  parent: system.admin_config_system
+  route_name: vuejs_entity.settings_form
+  weight: 10

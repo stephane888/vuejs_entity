@@ -1,0 +1,4 @@
+administer vuejs_entity configuration:
+  title: 'Administer vuejs_entity configuration'
+  description: 'Optional description.'
+  restrict access: true

@@ -1,0 +1,25 @@
+vuejs_entity.image:
+  path: '/vuejs-entity/image/{fid}/{style}'
+  defaults:
+    _title: 'Example'
+    _controller: '\Drupal\vuejs_entity\Controller\VuejsEntityController::getImage'
+  requirements:
+    _permission: 'access content'
+
+vuejs_entity.settings_form:
+  path: '/admin/config/system/vuejs-entity'
+  defaults:
+    _title: 'vuejs entity settings'
+    _form: 'Drupal\vuejs_entity\Form\SettingsForm'
+  requirements:
+    _permission: 'administer vuejs_entity configuration'
+    
+vuejs_entity.form_entity:
+  path: '/vuejs-entity/form/{entity_type_id}/{view_mode}/{bundle}'
+  defaults:
+    _title: 'vuejs entity settings'
+    _controller: '\Drupal\vuejs_entity\Controller\FormEntityController::getForm'
+    bundle: null,
+    view_mode: 'default'
+  requirements:
+    _permission: 'access content'
