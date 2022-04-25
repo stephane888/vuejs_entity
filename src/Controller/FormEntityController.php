@@ -18,6 +18,26 @@ use Drupal\lesroidelareno\Entity\DonneeSiteInternetEntity;
 class FormEntityController extends ControllerBase {
   
   /**
+   *
+   * @return string[]|\Drupal\Core\StringTranslation\TranslatableMarkup[]
+   */
+  public function getDatas($id_entity) {
+    $build['content'] = [
+      '#type' => 'html_tag',
+      '#tag' => 'section',
+      "#attributes" => [
+        'id' => 'app',
+        'class' => [
+          'm-5',
+          'p-5'
+        ]
+      ]
+    ];
+    $build['content']['#attached']['library'][] = 'vuejs_entity/vuejs_entity';
+    return $build;
+  }
+  
+  /**
    * Builds the response.
    */
   public function getForm($entity_type_id, $view_mode, $bundle = null) {
@@ -64,12 +84,20 @@ class FormEntityController extends ControllerBase {
         //
         if (!empty($fieldsEntityForm['content'][$k]['settings'])) {
           $form[$k]['entity_form_settings'] = $fieldsEntityForm['content'][$k]['settings'];
+          $form[$k]['entity_form_type'] = $fieldsEntityForm['content'][$k]['type'];
         }
       }
       else {
         unset($fields[$k]);
       }
     }
+    // on recupere les champs annexe:
+    $form['html_1'] = [
+      'type' => 'render_html',
+      'content' => '<div class="step-donneesite--header with-tablet mx-auto text-center" data-drupal-selector="edit-ctm-description"><h2 class="step-donneesite--title" data-drupal-selector="edit-0">Donnons vie à vos idées</h2>
+<p class="step-donneesite--label" data-drupal-selector="edit-1"> Repondez à quelques questions et obtenez les meilleurs outils pour vos créations </p>
+</div>'
+    ];
     return $this->reponse([
       'form' => $form,
       'model' => $fields
