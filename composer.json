@@ -1,0 +1,13 @@
+{
+    "name": "stephane/vuejs_entity",
+    "description": "none",
+    "type": "drupal-module-custom",
+    "license": "MIt",
+    "authors": [
+        {
+            "name": "stephane888",
+            "email": "kksasteph888@gmail.com"
+        }
+    ],
+    "require": {}
+}
