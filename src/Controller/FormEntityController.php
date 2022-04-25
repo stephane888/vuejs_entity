@@ -75,7 +75,8 @@ class FormEntityController extends ControllerBase {
           'label' => $field->getLabel(),
           'description' => $field->getDescription(),
           'settings' => $field->getSettings(),
-          'cardinality' => 1
+          'cardinality' => 1,
+          'name' => $field->getName()
         ];
         if (method_exists($field, 'getFieldStorageDefinition')) {
           $form[$k]['cardinality'] = $field->getFieldStorageDefinition()->getCardinality();
@@ -85,6 +86,7 @@ class FormEntityController extends ControllerBase {
         if (!empty($fieldsEntityForm['content'][$k]['settings'])) {
           $form[$k]['entity_form_settings'] = $fieldsEntityForm['content'][$k]['settings'];
           $form[$k]['entity_form_type'] = $fieldsEntityForm['content'][$k]['type'];
+          $form[$k]['entity_form'] = $fieldsEntityForm['content'][$k];
         }
       }
       else {
