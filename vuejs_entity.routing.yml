@@ -23,13 +23,21 @@ vuejs_entity.form_entity:
     view_mode: 'default'
   requirements:
     _permission: 'access content'
-
     
     
 vuejs_entity.model_choisie_form:
   path: '/entity/form/model-choisie/{id_entity}'
   defaults:
     _controller: '\Drupal\vuejs_entity\Controller\FormEntityController::getDatas'
+    _title: 'ModelChoisieForm'
+  requirements:
+    _access: 'TRUE'
+    
+    
+vuejs_entity.layout.configure:
+  path: '/layout/configure/{section_storage_type}/{section_storage}/{delta}/{plugin_id}'
+  defaults:
+    _controller: '\Drupal\vuejs_entity\Controller\LayoutPluginController::configureLayout'
     _title: 'ModelChoisieForm'
   requirements:
     _access: 'TRUE'
