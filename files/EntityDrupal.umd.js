@@ -28277,7 +28277,7 @@ function _typeof(obj) {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.miniCssF = function(chunkId) {
 /******/ 			// return url for filenames based on template
-/******/ 			return "css/" + chunkId + "." + {"666":"6af0395e","705":"224c42e8"}[chunkId] + ".css";
+/******/ 			return "css/" + chunkId + "." + {"233":"224c42e8","985":"c3c4efbc"}[chunkId] + ".css";
 /******/ 		};
 /******/ 	}();
 /******/ 	
@@ -28426,7 +28426,7 @@ function _typeof(obj) {
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.f.miniCss = function(chunkId, promises) {
-/******/ 			var cssChunks = {"666":1,"705":1};
+/******/ 			var cssChunks = {"233":1,"985":1};
 /******/ 			if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);
 /******/ 			else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {
 /******/ 				promises.push(installedCssChunks[chunkId] = loadStylesheet(chunkId).then(function() {
@@ -73650,11 +73650,11 @@ if (inBrowser && window.Vue) {
  //import HomeView from "../views/HomeView.vue";
 
 var TheContainer = function TheContainer() {
-  return __webpack_require__.e(/* import() */ 666).then(__webpack_require__.bind(__webpack_require__, 22666));
+  return __webpack_require__.e(/* import() */ 985).then(__webpack_require__.bind(__webpack_require__, 50985));
 };
 
 var formRender = function formRender() {
-  return Promise.all(/* import() */[__webpack_require__.e(597), __webpack_require__.e(705)]).then(__webpack_require__.bind(__webpack_require__, 67705));
+  return Promise.all(/* import() */[__webpack_require__.e(597), __webpack_require__.e(233)]).then(__webpack_require__.bind(__webpack_require__, 233));
 };
 
 external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vue_router_esm);
@@ -73696,6 +73696,54 @@ var vuex_esm = __webpack_require__(46372);
 var objectSpread2 = __webpack_require__(56473);
 // EXTERNAL MODULE: ./src/rootConfig.js
 var rootConfig = __webpack_require__(56722);
+;// CONCATENATED MODULE: ./src/store/saveEntity.js
+
+
+/* harmony default export */ var saveEntity = ((0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({}, rootConfig/* default */.Z), {}, {
+  currentBuildStep: 0,
+  currentDomaine: {},
+  runStep: function runStep(steps, state) {
+    var _this = this;
+
+    // on recupere
+    var getDataStep = function getDataStep() {
+      if (steps[_this.currentBuildStep]) {
+        return steps[_this.currentBuildStep];
+      }
+
+      return null;
+    };
+
+    var step = getDataStep();
+    if (step) switch (step.step) {
+      case "create_domaine":
+        step.status = "run";
+        this.CreateDomaine(state.renderByStep.model).then(function (resp) {
+          setTimeout(function () {
+            step.status = "ok";
+            _this.currentBuildStep++;
+
+            _this.runStep(steps, state);
+          }, 500);
+          console.log(" CreateDomaine : ", resp);
+        });
+        break;
+
+      case "register_domaine":
+        step.status = "run"; // this.
+        //
+
+        break;
+
+      default:
+        break;
+    }
+  },
+  // dans cette etape, on cree l'entité "donnee_internet_entity", celui declenche la creation du domaine sur OVH.
+  CreateDomaine: function CreateDomaine(entity) {
+    return this.bPost("/vuejs-entity/entity/save/donnee_internet_entity", entity);
+  }
+}));
 ;// CONCATENATED MODULE: ./src/components/formRender/config.js
 
 
@@ -73877,14 +73925,54 @@ var rootConfig = __webpack_require__(56722);
 
 
 
+
 external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vuex_esm/* default */.ZP);
 /* harmony default export */ var store = (new vuex_esm/* default.Store */.ZP.Store({
-  state: {},
+  state: {
+    // permet de suivre l'etatt de creation du site.
+    creation_running: false,
+    // les differences etapes du processus.
+    build_steps: [{
+      titre: "Creation de votre domaine",
+      step: "create_domaine",
+      status: false
+    }, {
+      titre: "Enregistrement de votre domaine",
+      step: "register_domaine",
+      status: false
+    }, {
+      titre: "Creation de vos contenus",
+      step: "create_content",
+      status: false
+    }, {
+      titre: "Creation de votre theme",
+      status: false
+    }, {
+      titre: "Mise à jour de l'entete",
+      status: false
+    }, {
+      titre: "Mise à jour du pied de page",
+      status: false
+    }]
+  },
   getters: {},
-  mutations: {},
+  mutations: {
+    ACTIVE_CREATION: function ACTIVE_CREATION(state) {
+      state.creation_running = true;
+    },
+    DISABLE_CREATION: function DISABLE_CREATION(state) {
+      state.creation_running = false;
+    }
+  },
   actions: {
-    create_site: function create_site() {
-      console.log("create website");
+    create_site: function create_site(_ref) {
+      var commit = _ref.commit,
+          state = _ref.state;
+      commit("ACTIVE_CREATION");
+      console.log("Données site utulisateur", state.renderByStep.model);
+      console.log("Layout entete", state.storeLayout.configuration);
+      console.log("Layout footer", state.storeLayoutFooter.configuration);
+      saveEntity.runStep(state.build_steps, state);
     }
   },
   modules: {

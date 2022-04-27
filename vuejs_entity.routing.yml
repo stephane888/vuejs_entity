@@ -33,6 +33,14 @@ vuejs_entity.model_choisie_form:
   requirements:
     _access: 'TRUE'
     
+vuejs_entity.create_entity:
+  path: '/vuejs-entity/entity/save/{entity_type_id}'
+  defaults:
+    _controller: '\Drupal\vuejs_entity\Controller\FormEntityController::saveDatas'
+    _title: 'ModelChoisieForm'
+  requirements:
+    _access: 'TRUE'
+    
     
 vuejs_entity.layout.configure:
   path: '/layout/configure/{section_storage_type}/{section_storage}/{delta}/{plugin_id}'

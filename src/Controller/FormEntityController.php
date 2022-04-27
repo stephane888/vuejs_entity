@@ -10,6 +10,7 @@ use Drupal\Core\Entity\EntityFormInterface;
 use Symfony\Component\Serializer\Serializer;
 use Drupal\Core\Entity\EntityFieldManager;
 use Stephane888\Debug\debugLog;
+use Symfony\Component\HttpFoundation\Request;
 use Drupal\lesroidelareno\Entity\DonneeSiteInternetEntity;
 
 /**
@@ -35,6 +36,21 @@ class FormEntityController extends ControllerBase {
     ];
     $build['content']['#attached']['library'][] = 'vuejs_entity/vuejs_entity';
     return $build;
+  }
+  
+  public function saveDatas(Request $Request, $entity_type_id) {
+    $entity_type = $this->entityTypeManager()->getStorage($entity_type_id);
+    $values = Json::decode($Request->getContent(), true);
+    if ($entity_type && !empty($values)) {
+      try {
+        $entity = $entity_type->create($values);
+        $entity->save();
+        return $this->reponse($entity->toArray());
+      }
+      catch (\Exception $e) {
+        return $this->reponse($values, 400, $e->getMessage());
+      }
+    }
   }
   
   /**
