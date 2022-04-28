@@ -70,6 +70,7 @@ class FormEntityController extends ControllerBase {
       $domain = $this->entityTypeManager()->getStorage('domain')->create();
       $textConvert = new Convert($sub_domain);
       $domain_id = $textConvert->toSnake();
+      $domain_id = str_replace('.', '_', $domain_id);
       $domain->set('name', $sub_domain);
       $domain->set('hostname', $sub_domain);
       $domain->set('id', $domain_id);
