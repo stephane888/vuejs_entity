@@ -28277,7 +28277,7 @@ function _typeof(obj) {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.miniCssF = function(chunkId) {
 /******/ 			// return url for filenames based on template
-/******/ 			return "css/" + chunkId + "." + {"233":"224c42e8","985":"c3c4efbc"}[chunkId] + ".css";
+/******/ 			return "css/" + chunkId + "." + {"140":"224c42e8","985":"c3c4efbc"}[chunkId] + ".css";
 /******/ 		};
 /******/ 	}();
 /******/ 	
@@ -28426,7 +28426,7 @@ function _typeof(obj) {
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.f.miniCss = function(chunkId, promises) {
-/******/ 			var cssChunks = {"233":1,"985":1};
+/******/ 			var cssChunks = {"140":1,"985":1};
 /******/ 			if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);
 /******/ 			else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {
 /******/ 				promises.push(installedCssChunks[chunkId] = loadStylesheet(chunkId).then(function() {
@@ -73654,7 +73654,7 @@ var TheContainer = function TheContainer() {
 };
 
 var formRender = function formRender() {
-  return Promise.all(/* import() */[__webpack_require__.e(597), __webpack_require__.e(233)]).then(__webpack_require__.bind(__webpack_require__, 233));
+  return Promise.all(/* import() */[__webpack_require__.e(597), __webpack_require__.e(140)]).then(__webpack_require__.bind(__webpack_require__, 69140));
 };
 
 external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vue_router_esm);
@@ -73699,13 +73699,19 @@ var rootConfig = __webpack_require__(56722);
 ;// CONCATENATED MODULE: ./src/store/saveEntity.js
 
 
+ //
+
 /* harmony default export */ var saveEntity = ((0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({}, rootConfig/* default */.Z), {}, {
   currentBuildStep: 0,
-  currentDomaine: {},
+  donneeInternetEntity: {},
+  homePageContent: {},
+  domainRegister: {},
+  autresPages: [],
   runStep: function runStep(steps, state) {
     var _this = this;
 
-    // on recupere
+    console.log("currentBuildStep : ", this.currentBuildStep); // On recupere
+
     var getDataStep = function getDataStep() {
       if (steps[_this.currentBuildStep]) {
         return steps[_this.currentBuildStep];
@@ -73719,6 +73725,7 @@ var rootConfig = __webpack_require__(56722);
       case "create_domaine":
         step.status = "run";
         this.CreateDomaine(state.renderByStep.model).then(function (resp) {
+          _this.donneeInternetEntity = resp.data;
           setTimeout(function () {
             step.status = "ok";
             _this.currentBuildStep++;
@@ -73726,22 +73733,157 @@ var rootConfig = __webpack_require__(56722);
             _this.runStep(steps, state);
           }, 500);
           console.log(" CreateDomaine : ", resp);
+        }).catch(function (resp) {
+          step.status = "error";
+          console.log(" error : ", resp);
         });
         break;
 
       case "register_domaine":
-        step.status = "run"; // this.
-        //
+        step.status = "run";
+        this.RegisterDomaine().then(function (resp) {
+          setTimeout(function () {
+            step.status = "ok";
+            _this.currentBuildStep++;
+            _this.domainRegister = resp.data;
 
+            if (_this.domainRegister.hostname) {
+              store.commit("SET_HOSTNAME", {
+                domain: _this.domainRegister.hostname,
+                scheme: _this.domainRegister.scheme
+              });
+            }
+
+            _this.runStep(steps, state);
+          }, 500);
+        }).catch(function (resp) {
+          step.status = "error";
+          console.log("error : ", resp);
+        });
+        break;
+
+      case "create_content":
+        step.status = "run";
+        this.CreateContent().then(function (resp) {
+          setTimeout(function () {
+            _this.homePageContent = resp.data;
+            step.status = "ok";
+            _this.currentBuildStep++;
+
+            _this.runStep(steps, state);
+          }, 500);
+        }).catch(function (resp) {
+          step.status = "error";
+          console.log("error : ", resp);
+        });
+        break;
+
+      case "create_theme":
+        step.status = "run";
+        this.CreateTheme().then(function () {
+          setTimeout(function () {
+            step.status = "ok";
+            _this.currentBuildStep++;
+
+            _this.runStep(steps, state);
+          }, 500);
+        }).catch(function (resp) {
+          step.status = "error";
+          console.log("error : ", resp);
+        });
+        break;
+
+      case "layout_header":
+        step.status = "run";
+        if (this.domainRegister.id) this.addEnteteLayout(state).then(function () {
+          setTimeout(function () {
+            step.status = "ok";
+            _this.currentBuildStep++;
+
+            _this.runStep(steps, state);
+          }, 500);
+        });else {
+          step.status = "error";
+          this.currentBuildStep++;
+          this.runStep(steps, state);
+        }
+        break;
+
+      case "layout_footer":
+        step.status = "run";
+        if (this.domainRegister.id) this.addfooterLayout(state).then(function () {
+          setTimeout(function () {
+            step.status = "ok";
+            _this.currentBuildStep++;
+
+            _this.runStep(steps, state);
+          }, 500);
+        });else {
+          step.status = "error";
+          this.currentBuildStep++;
+          this.runStep(steps, state);
+        }
         break;
 
       default:
+        console.log("pre active finish");
+        store.commit("ACTIVE_FINISH");
         break;
+    } else {
+      console.log("pre active finish");
+      store.commit("ACTIVE_FINISH");
     }
   },
-  // dans cette etape, on cree l'entité "donnee_internet_entity", celui declenche la creation du domaine sur OVH.
+  // Dans cette etape, on cree l'entité "donnee_internet_entity", l'entite pour OVH.
   CreateDomaine: function CreateDomaine(entity) {
     return this.bPost("/vuejs-entity/entity/save/donnee_internet_entity", entity);
+  },
+  // On enregistre le domaine sur OVH et on l'enregistre egalement comme multidomaine sur drupal.
+  RegisterDomaine: function RegisterDomaine() {
+    if (this.donneeInternetEntity.domain_ovh_entity && this.donneeInternetEntity.domain_ovh_entity[0].target_id) {
+      // Save domaine on OVH.
+      this.bPost("/ovh-api-rest/create-domaine/" + this.donneeInternetEntity.domain_ovh_entity[0].target_id).then(function (resp) {
+        console.log(" Domaine enregistrer sur OVH : ", resp);
+      }).catch(function (resp) {
+        console.log(" ECHEC Domaine save sur OVH : ", resp);
+      }); // Save domaine on drupal
+
+      return this.bPost("/vuejs-entity/domaine/add/" + this.donneeInternetEntity.domain_ovh_entity[0].target_id);
+    }
+  },
+  // On va cree un contenu static,
+  CreateContent: function CreateContent() {
+    var values = {
+      type: "model_d_affichage_theme_partenai",
+      title: [{
+        value: "theme-genere"
+      }]
+    };
+    return this.bPost("/vuejs-entity/entity/save/node", values);
+  },
+  // On cree le theme de maniere statique, mais il faudra le rendre dynamique.
+  // il faudra aussi definir la page daccueil.
+  CreateTheme: function CreateTheme() {
+    var values = {
+      lirairy: "lesroisdelareno/prestataires_m5"
+    }; //
+
+    if (this.domainRegister.id) {
+      values["hostname"] = [{
+        value: this.domainRegister.id
+      }];
+    } // site_config
+
+
+    return this.bPost("/vuejs-entity/entity/save/config_theme_entity", values);
+  },
+  // On ajoute la config pour l'entete du layout.
+  addEnteteLayout: function addEnteteLayout(state) {
+    return this.bPost("/layout/add-subconfigure/defaults/block_content.layout_entete_m1.default/0/formatage_models_header1/" + this.domainRegister.id, state.storeLayout.configuration);
+  },
+  // On ajoute la config pour le footer du layout.
+  addfooterLayout: function addfooterLayout(state) {
+    return this.bPost("/layout/add-subconfigure/defaults/block_content.block_footers_themes.default/0/formatage_models_footer1/" + this.domainRegister.id, state.storeLayoutFooter.configuration);
   }
 }));
 ;// CONCATENATED MODULE: ./src/components/formRender/config.js
@@ -73873,7 +74015,7 @@ var rootConfig = __webpack_require__(56722);
     },
     // On charge les données de configuration du layout.
     loadLayout: function loadLayout(state) {
-      fieldsLayout_config.post("/layout/configure/defaults/block_content.layout_entete_m1.default/0/formatage_models_header1").then(function (resp) {
+      fieldsLayout_config.post("/layout/defaultconfigure/defaults/block_content.layout_entete_m1.default/0/formatage_models_header1").then(function (resp) {
         if (resp.data) {
           state.configuration = resp.data;
         }
@@ -73906,7 +74048,7 @@ var rootConfig = __webpack_require__(56722);
     },
     // On charge les données de configuration du layout.
     loadLayout: function loadLayout(state) {
-      fieldsLayout_config.post("/layout/configure/defaults/block_content.block_footers_themes.default/0/formatage_models_footer1").then(function (resp) {
+      fieldsLayout_config.post("/layout/defaultconfigure/defaults/block_content.block_footers_themes.default/0/formatage_models_footer1").then(function (resp) {
         if (resp.data) {
           state.configuration = resp.data;
         }
@@ -73914,7 +74056,13 @@ var rootConfig = __webpack_require__(56722);
     } // ...
 
   },
-  actions: {//
+  actions: {
+    saveLayout: function saveLayout(_ref) {
+      var state = _ref.state;
+      fieldsLayout_config.bPost("/layout/add-subconfigure/defaults/block_content.block_footers_themes.default/0/formatage_models_footer1", state.configuration).then(function (resp) {
+        console.log(resp.data);
+      });
+    }
   },
   getters: {//
   }
@@ -73929,9 +74077,13 @@ var rootConfig = __webpack_require__(56722);
 external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vuex_esm/* default */.ZP);
 /* harmony default export */ var store = (new vuex_esm/* default.Store */.ZP.Store({
   state: {
-    // permet de suivre l'etatt de creation du site.
+    // Permet de suivre l'etat de creation du site.
     creation_running: false,
-    // les differences etapes du processus.
+    // permet de determiner si la creation est terminé.
+    finish_status: false,
+    // Nouveau nom de domaine.
+    new_hostname: null,
+    // Les differences etapes du processus.
     build_steps: [{
       titre: "Creation de votre domaine",
       step: "create_domaine",
@@ -73946,13 +74098,16 @@ external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vuex_esm/* default */
       status: false
     }, {
       titre: "Creation de votre theme",
-      status: false
+      status: false,
+      step: "create_theme"
     }, {
       titre: "Mise à jour de l'entete",
-      status: false
+      status: false,
+      step: "layout_header"
     }, {
       titre: "Mise à jour du pied de page",
-      status: false
+      status: false,
+      step: "layout_footer"
     }]
   },
   getters: {},
@@ -73962,9 +74117,18 @@ external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vuex_esm/* default */
     },
     DISABLE_CREATION: function DISABLE_CREATION(state) {
       state.creation_running = false;
+    },
+    ACTIVE_FINISH: function ACTIVE_FINISH(state) {
+      state.finish_status = true;
+    },
+    SET_HOSTNAME: function SET_HOSTNAME(state, payload) {
+      if (payload.domain && payload.scheme) {
+        state.new_hostname = payload.scheme + "://" + payload.domain;
+      }
     }
   },
   actions: {
+    //
     create_site: function create_site(_ref) {
       var commit = _ref.commit,
           state = _ref.state;
@@ -73973,6 +74137,12 @@ external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vuex_esm/* default */
       console.log("Layout entete", state.storeLayout.configuration);
       console.log("Layout footer", state.storeLayoutFooter.configuration);
       saveEntity.runStep(state.build_steps, state);
+    },
+    //
+    reset_creation: function reset_creation(_ref2) {
+      var commit = _ref2.commit;
+      commit("DISABLE_CREATION");
+      saveEntity.currentBuildStep = 0;
     }
   },
   modules: {

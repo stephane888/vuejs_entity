@@ -16,6 +16,7 @@ use Drupal\layout_builder\SectionStorage\SectionStorageManager;
 use Drupal\Core\Layout\LayoutInterface;
 use Drupal\Core\Plugin\PluginWithFormsInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Returns responses for vuejs entity routes.
@@ -57,6 +58,7 @@ class LayoutPluginController extends ControllerBase {
   
   /**
    * Return un tableau de configuration.
+   * (permet de recuperer la configuration d'un element existant).
    *
    * @param string $section_storage_type
    *        => 'defaults'
@@ -69,9 +71,9 @@ class LayoutPluginController extends ControllerBase {
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    */
   public function configureLayout($section_storage_type, $section_storage, $delta, $plugin_id) {
-    $entity = \Drupal::entityTypeManager()->getStorage('entity_view_display')->load($section_storage);
+    $entityView = \Drupal::entityTypeManager()->getStorage('entity_view_display')->load($section_storage);
     $contexts = [];
-    $contexts['display'] = EntityContext::fromEntity($entity);
+    $contexts['display'] = EntityContext::fromEntity($entityView);
     $this->sectionStorage = $this->sectionStorageManager->load($section_storage_type, $contexts);
     
     /**
@@ -87,6 +89,71 @@ class LayoutPluginController extends ControllerBase {
      */
     $plugin = $this->getPluginForm($this->layout);
     
+    return $this->reponse($plugin->getConfiguration());
+  }
+  
+  /**
+   * il faudra recuperer la configuration de facon plus propre.
+   *
+   * @param string $section_storage_type
+   *        => 'defaults'
+   * @param string $section_storage
+   *        => 'block_content.layout_entete_m1.default'
+   * @param number $delta
+   *        => 0
+   * @param string $plugin_id=>
+   *        'formatage_models_header1'
+   * @param $domain_id =>
+   *        l'id du domaine.
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   */
+  public function getDefaultConfigureLayout($section_storage_type, $section_storage, $delta, $plugin_id) {
+    $entityView = \Drupal::entityTypeManager()->getStorage('entity_view_display')->load($section_storage);
+    $contexts = [];
+    $contexts['display'] = EntityContext::fromEntity($entityView);
+    $this->sectionStorage = $this->sectionStorageManager->load($section_storage_type, $contexts);
+    
+    /**
+     *
+     * @var \Drupal\layout_builder\Section $section
+     */
+    $section = $this->sectionStorage->getSection($delta);
+    $this->layout = $section->getLayout();
+    
+    /**
+     *
+     * @var \Drupal\formatage_models\Plugin\Layout\Sections\Headers\FormatageModelsheader1 $plugin
+     */
+    $plugin = $this->getPluginForm($this->layout);
+    return $this->reponse($plugin->defaultConfiguration());
+  }
+  
+  public function saveLayoutConfigure(Request $Request, $section_storage_type, $section_storage, $delta, $plugin_id, $domaine_id) {
+    $entityView = \Drupal::entityTypeManager()->getStorage('entity_view_display')->load($section_storage);
+    $contexts = [];
+    $contexts['display'] = EntityContext::fromEntity($entityView);
+    $this->sectionStorage = $this->sectionStorageManager->load($section_storage_type, $contexts);
+    
+    /**
+     *
+     * @var \Drupal\layout_builder\Section $section
+     */
+    $section = $this->sectionStorage->getSection($delta);
+    $this->layout = $section->getLayout();
+    
+    /**
+     *
+     * @var \Drupal\formatage_models\Plugin\Layout\Sections\Headers\FormatageModelsheader1 $plugin
+     */
+    $plugin = $this->getPluginForm($this->layout);
+    // On recupere les données envoyées.
+    $newLayout = Json::decode($Request->getContent());
+    if (!empty($newLayout) && !empty($domaine_id)) {
+      $config = $plugin->getConfiguration();
+      $config[$domaine_id] = $newLayout;
+      $this->sectionStorage->getSection($delta)->setLayoutSettings($config);
+      $this->sectionStorage->save();
+    }
     return $this->reponse($plugin->getConfiguration());
   }
   

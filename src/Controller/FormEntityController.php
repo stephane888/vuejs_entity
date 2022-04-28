@@ -12,6 +12,8 @@ use Drupal\Core\Entity\EntityFieldManager;
 use Stephane888\Debug\debugLog;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\lesroidelareno\Entity\DonneeSiteInternetEntity;
+use Jawira\CaseConverter\Convert;
+use Stephane888\Debug\Utility as UtilityError;
 
 /**
  * Returns responses for vuejs entity routes.
@@ -48,9 +50,34 @@ class FormEntityController extends ControllerBase {
         return $this->reponse($entity->toArray());
       }
       catch (\Exception $e) {
-        return $this->reponse($values, 400, $e->getMessage());
+        return $this->reponse(UtilityError::errorAll($e), 400, $e->getMessage());
       }
     }
+  }
+  
+  /**
+   *
+   * @param integer $domain_ovh_entity_id
+   */
+  public function saveDomainByOvhEntity($domain_ovh_entity_id) {
+    $domain_ovh_entity = $this->entityTypeManager()->getStorage('domain_ovh_entity')->load($domain_ovh_entity_id);
+    if ($domain_ovh_entity) {
+      $sub_domain = $domain_ovh_entity->getsubDomain() . '.' . $domain_ovh_entity->getZoneName();
+      /**
+       *
+       * @var \Drupal\domain\Entity\Domain $domain
+       */
+      $domain = $this->entityTypeManager()->getStorage('domain')->create();
+      $textConvert = new Convert($sub_domain);
+      $domain_id = $textConvert->toSnake();
+      $domain->set('name', $sub_domain);
+      $domain->set('hostname', $sub_domain);
+      $domain->set('id', $domain_id);
+      $domain->set('scheme', 'http');
+      $domain->save();
+      return $this->reponse($domain->toArray());
+    }
+    return $this->reponse([], 400, " Le domaine n'est pas encore enregistrer en tant qu'entité drupal ");
   }
   
   /**

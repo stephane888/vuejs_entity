@@ -41,6 +41,14 @@ vuejs_entity.create_entity:
   requirements:
     _access: 'TRUE'
     
+vuejs_entity.create_domain:
+  path: '/vuejs-entity/domaine/add/{domain_ovh_entity_id}'
+  defaults:
+    _controller: '\Drupal\vuejs_entity\Controller\FormEntityController::saveDomainByOvhEntity'
+    _title: 'ModelChoisieForm'
+  requirements:
+    _access: 'TRUE'
+    
     
 vuejs_entity.layout.configure:
   path: '/layout/configure/{section_storage_type}/{section_storage}/{delta}/{plugin_id}'
@@ -49,3 +57,23 @@ vuejs_entity.layout.configure:
     _title: 'ModelChoisieForm'
   requirements:
     _access: 'TRUE'
+    
+vuejs_entity.layout.defaultconfigure:
+  path: '/layout/defaultconfigure/{section_storage_type}/{section_storage}/{delta}/{plugin_id}'
+  defaults:
+    _controller: '\Drupal\vuejs_entity\Controller\LayoutPluginController::getDefaultConfigureLayout'
+    _title: 'ModelChoisieForm'
+  requirements:
+    _access: 'TRUE'   
+    
+vuejs_entity.layout.add.subconfig:
+  path: '/layout/add-subconfigure/{section_storage_type}/{section_storage}/{delta}/{plugin_id}/{domaine_id}'
+  defaults:
+    _controller: '\Drupal\vuejs_entity\Controller\LayoutPluginController::saveLayoutConfigure'
+    _title: 'ModelChoisieForm'
+  requirements:
+    _access: 'TRUE' 
+    
+    
+    
+    
