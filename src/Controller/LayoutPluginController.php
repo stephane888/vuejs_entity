@@ -17,6 +17,7 @@ use Drupal\Core\Layout\LayoutInterface;
 use Drupal\Core\Plugin\PluginWithFormsInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Drupal\Component\Utility\NestedArray;
 
 /**
  * Returns responses for vuejs entity routes.
@@ -125,6 +126,8 @@ class LayoutPluginController extends ControllerBase {
      * @var \Drupal\formatage_models\Plugin\Layout\Sections\Headers\FormatageModelsheader1 $plugin
      */
     $plugin = $this->getPluginForm($this->layout);
+    // Cette etape, est necessaire, car elle permet de corriger les bugs et tient compte de la logique evolutive.
+    $plugin->setConfiguration(NestedArray::mergeDeep($plugin->defaultConfiguration(), $plugin->getConfiguration()));
     return $this->reponse($plugin->defaultConfiguration());
   }
   

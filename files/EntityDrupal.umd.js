@@ -73874,7 +73874,11 @@ var rootConfig = __webpack_require__(56722);
   // il faudra aussi definir la page daccueil.
   CreateTheme: function CreateTheme() {
     var values = {
-      lirairy: "lesroisdelareno/prestataires_m5"
+      lirairy: "lesroisdelareno/prestataires_m5",
+      site_config: [{
+        "edit-config": "domain.config." + this.domainRegister.id + ".system.site",
+        "page.front": this.homePageContent.nid && this.homePageContent.nid[0] ? this.homePageContent.nid[0].value : ""
+      }]
     }; //
 
     if (this.domainRegister.id) {
@@ -73894,7 +73898,15 @@ var rootConfig = __webpack_require__(56722);
   addfooterLayout: function addfooterLayout(state) {
     return this.bPost("/layout/add-subconfigure/defaults/block_content.block_footers_themes.default/0/formatage_models_footer1/" + this.domainRegister.id, state.storeLayoutFooter.configuration);
   }
-}));
+})); // ^ array:7 [▼
+//   "edit-config" => "domain.config.v2lesroisdelareno_kksa.system.site"
+//   "name" => "Les rois de la réno ........."
+//   "slogan" => "Un devis travaux en ligne dès que vous en avez besoin..."
+//   "mail" => "contact@lesroisdelareno.fr"
+//   "page.front" => "/node/1682"
+//   "page.403" => ""
+//   "page.404" => ""
+// ]
 ;// CONCATENATED MODULE: ./src/components/formRender/config.js
 
 
@@ -74120,7 +74132,8 @@ external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vuex_esm/* default */
       titre: "Mise à jour du pied de page",
       status: false,
       step: "layout_footer"
-    }],
+    } // Selectionnner les menus, les pages, le logo.
+    ],
     // utilisateur connecter.
     user: {}
   },
