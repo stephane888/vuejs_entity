@@ -28267,7 +28267,7 @@ function _typeof(obj) {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.miniCssF = function(chunkId) {
 /******/ 			// return url for filenames based on template
-/******/ 			return "css/" + chunkId + "." + {"65":"224c42e8","166":"c3c4efbc"}[chunkId] + ".css";
+/******/ 			return "css/" + chunkId + "." + {"563":"a576b81d","826":"eb8326b7","909":"43e16dd8"}[chunkId] + ".css";
 /******/ 		};
 /******/ 	}();
 /******/ 	
@@ -28416,7 +28416,7 @@ function _typeof(obj) {
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.f.miniCss = function(chunkId, promises) {
-/******/ 			var cssChunks = {"65":1,"166":1};
+/******/ 			var cssChunks = {"563":1,"826":1,"909":1};
 /******/ 			if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);
 /******/ 			else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {
 /******/ 				promises.push(installedCssChunks[chunkId] = loadStylesheet(chunkId).then(function() {
@@ -73640,11 +73640,11 @@ if (inBrowser && window.Vue) {
  //import HomeView from "../views/HomeView.vue";
 
 var TheContainer = function TheContainer() {
-  return __webpack_require__.e(/* import() */ 166).then(__webpack_require__.bind(__webpack_require__, 16166));
+  return Promise.all(/* import() */[__webpack_require__.e(69), __webpack_require__.e(843), __webpack_require__.e(826)]).then(__webpack_require__.bind(__webpack_require__, 80174));
 };
 
 var formRender = function formRender() {
-  return Promise.all(/* import() */[__webpack_require__.e(725), __webpack_require__.e(65)]).then(__webpack_require__.bind(__webpack_require__, 85065));
+  return Promise.all(/* import() */[__webpack_require__.e(69), __webpack_require__.e(677), __webpack_require__.e(843), __webpack_require__.e(909)]).then(__webpack_require__.bind(__webpack_require__, 50325));
 };
 
 external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vue_router_esm);
@@ -73687,6 +73687,7 @@ var objectSpread2 = __webpack_require__(93019);
 // EXTERNAL MODULE: ./src/rootConfig.js
 var rootConfig = __webpack_require__(76924);
 ;// CONCATENATED MODULE: ./src/store/saveEntity.js
+
 
 
  //
@@ -73843,10 +73844,18 @@ var rootConfig = __webpack_require__(76924);
   },
   // On va cree un contenu static,
   CreateContent: function CreateContent() {
+    //home page
+    var title = this.donneeInternetEntity.name[0] && this.donneeInternetEntity.name[0].value ? "Bienvenue chez " + this.donneeInternetEntity.name[0].value : "Theme generer";
     var values = {
       type: "model_d_affichage_theme_partenai",
       title: [{
-        value: "theme-genere"
+        value: title
+      }],
+      field_domain_access: [{
+        target_id: this.domainRegister.id
+      }],
+      field_domain_source: [{
+        target_id: this.domainRegister.id
       }]
     };
     return this.bPost("/vuejs-entity/entity/save/node", values);
@@ -73914,7 +73923,10 @@ var rootConfig = __webpack_require__(76924);
         templates: ["layout_footer"]
       }, {
         keys: [],
-        templates: ["page_register"]
+        templates: ["page_register"],
+        states: [{
+          custom: "check_user_login"
+        }]
       }, {
         keys: [],
         templates: ["page_save"]
@@ -74069,7 +74081,7 @@ external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vuex_esm/* default */
   state: {
     // Permet de suivre l'etat de creation du site.
     creation_running: false,
-    // permet de determiner si la creation est terminé.
+    // Permet de determiner si la creation est terminé.
     finish_status: false,
     // Nouveau nom de domaine.
     new_hostname: null,
@@ -74098,7 +74110,9 @@ external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vuex_esm/* default */
       titre: "Mise à jour du pied de page",
       status: false,
       step: "layout_footer"
-    }]
+    }],
+    // utilisateur connecter.
+    user: {}
   },
   getters: {},
   mutations: {
@@ -74115,6 +74129,9 @@ external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vuex_esm/* default */
       if (payload.domain && payload.scheme) {
         state.new_hostname = payload.scheme + "://" + payload.domain;
       }
+    },
+    SET_USER: function SET_USER(state, user) {
+      state.user = user;
     }
   },
   actions: {
