@@ -73867,7 +73867,7 @@ var rootConfig = __webpack_require__(76924);
       lirairy: "lesroisdelareno/prestataires_m5",
       site_config: [{
         "edit-config": "domain.config." + this.domainRegister.id + ".system.site",
-        "page.front": this.homePageContent.nid && this.homePageContent.nid[0] ? this.homePageContent.nid[0].value : ""
+        "page.front": this.homePageContent.nid && this.homePageContent.nid[0] ? "/node/" + this.homePageContent.nid[0].value : ""
       }]
     }; //
 
