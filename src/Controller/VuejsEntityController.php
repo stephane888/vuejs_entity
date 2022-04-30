@@ -32,6 +32,17 @@ class VuejsEntityController extends ControllerBase {
     return $this->reponse($img_url);
   }
   
+  public function getMenuItems($menu_name) {
+    $menuLinks = $this->entityTypeManager()->getStorage('menu_link_content')->loadByProperties([
+      'bundle' => $menu_name
+    ]);
+    $options = [];
+    foreach ($menuLinks as $value) {
+      $options[$value->id()] = 0;
+    }
+    return $this->reponse($options);
+  }
+  
   /**
    *
    * @param array|string $configs

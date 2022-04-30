@@ -28267,7 +28267,7 @@ function _typeof(obj) {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.miniCssF = function(chunkId) {
 /******/ 			// return url for filenames based on template
-/******/ 			return "css/" + chunkId + "." + {"563":"a576b81d","826":"eb8326b7","909":"43e16dd8"}[chunkId] + ".css";
+/******/ 			return "css/" + chunkId + "." + {"452":"43e16dd8","563":"a576b81d","826":"eb8326b7"}[chunkId] + ".css";
 /******/ 		};
 /******/ 	}();
 /******/ 	
@@ -28416,7 +28416,7 @@ function _typeof(obj) {
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.f.miniCss = function(chunkId, promises) {
-/******/ 			var cssChunks = {"563":1,"826":1,"909":1};
+/******/ 			var cssChunks = {"452":1,"563":1,"826":1};
 /******/ 			if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);
 /******/ 			else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {
 /******/ 				promises.push(installedCssChunks[chunkId] = loadStylesheet(chunkId).then(function() {
@@ -73644,7 +73644,7 @@ var TheContainer = function TheContainer() {
 };
 
 var formRender = function formRender() {
-  return Promise.all(/* import() */[__webpack_require__.e(69), __webpack_require__.e(677), __webpack_require__.e(843), __webpack_require__.e(909)]).then(__webpack_require__.bind(__webpack_require__, 50325));
+  return Promise.all(/* import() */[__webpack_require__.e(69), __webpack_require__.e(677), __webpack_require__.e(843), __webpack_require__.e(452)]).then(__webpack_require__.bind(__webpack_require__, 72258));
 };
 
 external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vue_router_esm);
@@ -73687,6 +73687,13 @@ var objectSpread2 = __webpack_require__(93019);
 // EXTERNAL MODULE: ./src/rootConfig.js
 var rootConfig = __webpack_require__(76924);
 ;// CONCATENATED MODULE: ./src/store/saveEntity.js
+
+
+
+
+
+
+
 
 
 
@@ -73755,17 +73762,19 @@ var rootConfig = __webpack_require__(76924);
 
       case "create_content":
         step.status = "run";
-        this.CreateContent().then(function (resp) {
-          setTimeout(function () {
-            _this.homePageContent = resp.data;
-            step.status = "ok";
-            _this.currentBuildStep++;
+        this.CreateOrtherPages().then(function () {
+          _this.CreateContent().then(function (resp) {
+            setTimeout(function () {
+              _this.homePageContent = resp.data;
+              step.status = "ok";
+              _this.currentBuildStep++;
 
-            _this.runStep(steps, state);
-          }, 500);
-        }).catch(function (resp) {
-          step.status = "error";
-          console.log("error : ", resp);
+              _this.runStep(steps, state);
+            }, 500);
+          }).catch(function (resp) {
+            step.status = "error";
+            console.log("error : ", resp);
+          });
         });
         break;
 
@@ -73860,8 +73869,82 @@ var rootConfig = __webpack_require__(76924);
     };
     return this.bPost("/vuejs-entity/entity/save/node", values);
   },
+  // On cree les autres pages :
+  CreateOrtherPages: function CreateOrtherPages() {
+    var _this2 = this;
+
+    return new Promise(function (resolv) {
+      if (_this2.donneeInternetEntity.pages && _this2.donneeInternetEntity.pages.length) {
+        var promises = [];
+        promises.push(_this2.CreateMenus());
+
+        _this2.donneeInternetEntity.pages.forEach(function (item) {
+          // Pour l'instant les pages sont tous les nodes.
+          var values = {
+            type: item.value,
+            title: [{
+              value: item.value
+            }],
+            field_domain_access: [{
+              target_id: _this2.domainRegister.id
+            }],
+            field_domain_source: [{
+              target_id: _this2.domainRegister.id
+            }]
+          };
+          promises.push(_this2.bPost("/vuejs-entity/entity/save/node", values));
+        });
+
+        Promise.all(promises).then(function () {
+          return resolv(true);
+        }).catch(function (err) {
+          resolv(err);
+        });
+      }
+    });
+  },
+  // Creation de menu.
+  CreateMenus: function CreateMenus() {
+    var _this3 = this;
+
+    return new Promise(function (resolv) {
+      var getMenus = function getMenus() {
+        return new Promise(function (resolv) {
+          _this3.get("/vuejs-entity/menu-links/main").then(function (resp) {
+            var menuItems = resp.data;
+
+            var PageMenus = _this3.convertPagesToItemsMainMenu();
+
+            for (var i in PageMenus) {
+              menuItems[PageMenus[i]] = PageMenus[i];
+            }
+
+            resolv(menuItems);
+          });
+        });
+      }; //
+
+
+      getMenus().then(function (menuItems) {
+        var values = {
+          hostname: [{
+            value: _this3.domainRegister.id
+          }],
+          field_element_de_menu_valides: [{
+            value: JSON.stringify(menuItems)
+          }]
+        };
+
+        _this3.bPost("/vuejs-entity/entity/save/wbumenudomain", values).then(function (resp) {
+          resolv(resp);
+        }).catch(function () {
+          resolv();
+        });
+      });
+    });
+  },
   // On cree le theme de maniere statique, mais il faudra le rendre dynamique.
-  // il faudra aussi definir la page daccueil.
+  // Il faudra aussi definir la page daccueil.
   CreateTheme: function CreateTheme() {
     var values = {
       lirairy: "lesroisdelareno/prestataires_m5",
@@ -73887,6 +73970,17 @@ var rootConfig = __webpack_require__(76924);
   // On ajoute la config pour le footer du layout.
   addfooterLayout: function addfooterLayout(state) {
     return this.bPost("/layout/add-subconfigure/defaults/block_content.block_footers_themes.default/0/formatage_models_footer1/" + this.domainRegister.id, state.storeLayoutFooter.configuration);
+  },
+  //
+  convertPagesToItemsMainMenu: function convertPagesToItemsMainMenu() {
+    return {
+      nos_services: 58,
+      qui_sommes_nous: 38,
+      page_realisation: 14,
+      page_tarif_rc_web: 56,
+      comment_sa_marche: 1,
+      retructement: 16
+    };
   }
 })); // ^ array:7 [▼
 //   "edit-config" => "domain.config.v2lesroisdelareno_kksa.system.site"
