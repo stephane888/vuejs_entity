@@ -73915,10 +73915,9 @@ var rootConfig = __webpack_require__(76924);
 
             var PageMenus = _this3.convertPagesToItemsMainMenu();
 
-            for (var i in PageMenus) {
-              menuItems[PageMenus[i]] = PageMenus[i];
-            }
-
+            PageMenus.forEach(function (idmenu) {
+              menuItems[idmenu] = idmenu;
+            });
             resolv(menuItems);
           });
         });
@@ -73949,10 +73948,13 @@ var rootConfig = __webpack_require__(76924);
     var values = {
       lirairy: "lesroisdelareno/prestataires_m5",
       site_config: [{
-        value: JSON.stringify([{
+        value: JSON.stringify({
           "edit-config": "domain.config." + this.domainRegister.id + ".system.site",
-          "page.front": this.homePageContent.nid && this.homePageContent.nid[0] ? "/node/" + this.homePageContent.nid[0].value : ""
-        }])
+          "page.front": this.homePageContent.nid && this.homePageContent.nid[0] ? "/node/" + this.homePageContent.nid[0].value : "",
+          name: this.donneeInternetEntity.name[0] && this.donneeInternetEntity.name[0].value ? this.donneeInternetEntity.name[0].value : "",
+          "page.404": "",
+          "page.403": ""
+        })
       }]
     }; //
 
@@ -73975,14 +73977,25 @@ var rootConfig = __webpack_require__(76924);
   },
   //
   convertPagesToItemsMainMenu: function convertPagesToItemsMainMenu() {
-    return {
-      nos_services: 58,
-      qui_sommes_nous: 38,
-      page_realisation: 14,
-      page_tarif_rc_web: 56,
-      comment_sa_marche: 1,
-      retructement: 16
-    };
+    var items = [];
+
+    if (this.donneeInternetEntity.pages && this.donneeInternetEntity.pages.length) {
+      var menusR = {
+        nos_services: 58,
+        qui_sommes_nous: 38,
+        page_realisation: 14,
+        page_tarif_rc_web: 56,
+        comment_sa_marche: 1,
+        retructement: 16
+      };
+      this.donneeInternetEntity.pages.forEach(function (type_content) {
+        if (menusR[type_content]) {
+          items.push(menusR[type_content]);
+        }
+      });
+    }
+
+    return items;
   }
 })); // ^ array:7 [▼
 //   "edit-config" => "domain.config.v2lesroisdelareno_kksa.system.site"
