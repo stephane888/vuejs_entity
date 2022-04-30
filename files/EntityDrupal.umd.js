@@ -73925,6 +73925,7 @@ var rootConfig = __webpack_require__(56722);
 
             var PageMenus = _this3.convertPagesToItemsMainMenu();
 
+            console.log(" Active menu from page : ", PageMenus);
             PageMenus.forEach(function (idmenu) {
               menuItems[idmenu] = idmenu;
             });
@@ -73935,6 +73936,7 @@ var rootConfig = __webpack_require__(56722);
 
 
       getMenus().then(function (menuItems) {
+        console.log(" Menu to create : ", menuItems);
         var values = {
           hostname: [{
             value: _this3.domainRegister.id
