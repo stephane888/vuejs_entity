@@ -28277,7 +28277,7 @@ function _typeof(obj) {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.miniCssF = function(chunkId) {
 /******/ 			// return url for filenames based on template
-/******/ 			return "css/" + chunkId + "." + {"673":"43e16dd8","817":"a576b81d","835":"eb8326b7"}[chunkId] + ".css";
+/******/ 			return "css/" + chunkId + "." + {"52":"db851e0c","817":"a576b81d","835":"eb8326b7"}[chunkId] + ".css";
 /******/ 		};
 /******/ 	}();
 /******/ 	
@@ -28426,7 +28426,7 @@ function _typeof(obj) {
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.f.miniCss = function(chunkId, promises) {
-/******/ 			var cssChunks = {"673":1,"817":1,"835":1};
+/******/ 			var cssChunks = {"52":1,"817":1,"835":1};
 /******/ 			if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);
 /******/ 			else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {
 /******/ 				promises.push(installedCssChunks[chunkId] = loadStylesheet(chunkId).then(function() {
@@ -73654,7 +73654,7 @@ var TheContainer = function TheContainer() {
 };
 
 var formRender = function formRender() {
-  return Promise.all(/* import() */[__webpack_require__.e(797), __webpack_require__.e(785), __webpack_require__.e(300), __webpack_require__.e(673)]).then(__webpack_require__.bind(__webpack_require__, 50572));
+  return Promise.all(/* import() */[__webpack_require__.e(797), __webpack_require__.e(785), __webpack_require__.e(300), __webpack_require__.e(52)]).then(__webpack_require__.bind(__webpack_require__, 70233));
 };
 
 external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vue_router_esm);
@@ -74044,9 +74044,31 @@ var rootConfig = __webpack_require__(56722);
       }, {
         keys: ["type_color_theme"]
       }, {
-        keys: ["site_theme_color"]
+        keys: ["site_theme_color"],
+        states: [{
+          step: {
+            action: "visible",
+            name: "type_color_theme",
+            operator: "==",
+            value: "1",
+            state_name: ""
+          }
+        }],
+        status: true
       }, {
-        keys: ["color_primary", "color_secondary", "color_linkhover", "background"]
+        keys: ["color_primary", "color_secondary", "color_linkhover", "background"],
+        states: [{
+          step: {
+            action: "visible",
+            name: "type_color_theme",
+            operator: "==",
+            value: "0",
+            state_name: ""
+          }
+        }],
+        status: true
+      }, {
+        keys: ["image_logo"]
       }, {
         keys: ["pages"]
       }, // {
@@ -74063,7 +74085,8 @@ var rootConfig = __webpack_require__(56722);
         templates: ["page_register"],
         states: [{
           custom: "check_user_login"
-        }]
+        }],
+        status: true
       }, {
         keys: [],
         templates: ["page_save"]
@@ -74086,7 +74109,11 @@ var rootConfig = __webpack_require__(56722);
       }
     },
     previewStep: function previewStep(state) {
-      if (state.current_step > 0) {
+      var step = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+      if (step !== null) {
+        state.current_step = step;
+      } else if (state.current_step > 0) {
         state.current_step--;
       }
     },
