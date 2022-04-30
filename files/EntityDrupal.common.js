@@ -74040,7 +74040,7 @@ var rootConfig = __webpack_require__(76924);
             action: "visible",
             name: "type_color_theme",
             operator: "==",
-            value: "1",
+            value: "0",
             state_name: ""
           }
         }],
@@ -74052,7 +74052,7 @@ var rootConfig = __webpack_require__(76924);
             action: "visible",
             name: "type_color_theme",
             operator: "==",
-            value: "0",
+            value: "1",
             state_name: ""
           }
         }],
