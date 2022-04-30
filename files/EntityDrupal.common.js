@@ -73957,7 +73957,12 @@ var rootConfig = __webpack_require__(76924);
           "page.404": "",
           "page.403": ""
         })
-      }]
+      }],
+      wbubackground: this.donneeInternetEntity.background && this.donneeInternetEntity.background.length ? this.donneeInternetEntity.background : [],
+      color_link_hover: this.donneeInternetEntity.color_linkhover && this.donneeInternetEntity.color_linkhover.length ? this.donneeInternetEntity.color_linkhover : [],
+      color_primary: this.donneeInternetEntity.color_primary && this.donneeInternetEntity.color_primary.length ? this.donneeInternetEntity.color_primary : [],
+      color_secondaire: this.donneeInternetEntity.color_secondary && this.donneeInternetEntity.color_secondary.length ? this.donneeInternetEntity.color_secondary : [],
+      logo: this.donneeInternetEntity.image_logo && this.donneeInternetEntity.image_logo.length ? this.donneeInternetEntity.image_logo : []
     }; //
 
     if (this.domainRegister.id) {
@@ -73990,14 +73995,13 @@ var rootConfig = __webpack_require__(76924);
         comment_sa_marche: 1,
         retructement: 16
       };
-      this.donneeInternetEntity.pages.forEach(function (type_content) {
-        if (menusR[type_content]) {
-          items.push(menusR[type_content]);
+      this.donneeInternetEntity.pages.forEach(function (item) {
+        if (menusR[item.value]) {
+          items.push(menusR[item.value]);
         }
       });
-    }
-
-    return items;
+      return items;
+    } else return items;
   }
 })); // ^ array:7 [▼
 //   "edit-config" => "domain.config.v2lesroisdelareno_kksa.system.site"
