@@ -14,11 +14,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Drupal\lesroidelareno\Entity\DonneeSiteInternetEntity;
 use Jawira\CaseConverter\Convert;
 use Stephane888\Debug\Utility as UtilityError;
+use Drupal\node\Entity\Node;
+use Drupal\block_content\Entity\BlockContent;
 
 /**
  * Returns responses for vuejs entity routes.
  */
 class FormEntityController extends ControllerBase {
+  protected static $field_domain_access = 'field_domain_access';
   
   /**
    *
@@ -40,17 +43,93 @@ class FormEntityController extends ControllerBase {
     return $build;
   }
   
+  /**
+   * Cree les nouveaux entitées et duplique les entites existant.
+   *
+   * @param Request $Request
+   * @param string $entity_type_id
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   */
   public function saveDatas(Request $Request, $entity_type_id) {
     $entity_type = $this->entityTypeManager()->getStorage($entity_type_id);
     $values = Json::decode($Request->getContent(), true);
     if ($entity_type && !empty($values)) {
       try {
+        /**
+         */
         $entity = $entity_type->create($values);
+        if ($entity_type_id == 'node')
+          $this->duplicateExistantReference($entity);
         $entity->save();
         return $this->reponse($entity->toArray());
       }
       catch (\Exception $e) {
         return $this->reponse(UtilityError::errorAll($e), 400, $e->getMessage());
+      }
+    }
+  }
+  
+  /**
+   * Duplique les entites existante et changent de domain.
+   * Fonctionne uniquement sur les nodes.
+   */
+  protected function duplicateExistantReference(Node &$entity) {
+    foreach ($entity->toArray() as $k => $vals) {
+      if (!empty($vals[0]['target_id'])) {
+        $newNodesIds = [];
+        $setings = $entity->get($k)->getSettings();
+        \Stephane888\Debug\debugLog::kintDebugDrupal($setings, $entity->bundle(), true);
+        // Duplication des sous nodes.
+        if (!empty($setings['target_type']) && $setings['target_type'] == 'node') {
+          foreach ($vals as $value) {
+            $node = Node::load($value['target_id']);
+            if ($node) {
+              $cloneNode = $node->createDuplicate();
+              // On verifie pour les sous entites.
+              $this->duplicateExistantReference($cloneNode);
+              // On ajoute le champs field_domain_access; ci-possible.
+              if ($cloneNode->hasField(self::$field_domain_access) && $entity->hasField(self::$field_domain_access)) {
+                $cloneNode->get(self::$field_domain_access)->setValue($entity->get(self::$field_domain_access)->getValue());
+              }
+              $cloneNode->save();
+              $newNodesIds[] = [
+                'target_id' => $cloneNode->id()
+              ];
+            }
+          }
+          $entity->set($k, $newNodesIds);
+        }
+        // Duplication des sous blocs.
+        elseif (!empty($setings['target_type']) && $setings['target_type'] == 'block_content') {
+          $newBlockIds = [];
+          foreach ($vals as $value) {
+            $BlockContent = BlockContent::load($value['target_id']);
+            if ($BlockContent) {
+              $CloneBlockContent = $BlockContent->createDuplicate();
+              // On ajoute le champs field_domain_access; ci-possible.
+              if ($CloneBlockContent->hasField(self::$field_domain_access) && $entity->hasField(self::$field_domain_access)) {
+                $CloneBlockContent->get(self::$field_domain_access)->setValue($entity->get(self::$field_domain_access)->getValue());
+              }
+              // on met à jour le champs info (car sa valeur doit etre unique).
+              if ($CloneBlockContent->hasField("info")) {
+                $val = $CloneBlockContent->get('info')->first()->getValue();
+                $dmn = $entity->get(self::$field_domain_access)->first()->getValue();
+                $dmn = empty($dmn['target_id']) ? 'domaine.test' : $dmn['target_id'];
+                if (!empty($val['value']))
+                  $val = $val['value'] . ' - ' . $dmn . ' - ' . $entity->bundle();
+                $CloneBlockContent->get('info')->setValue([
+                  'value' => $val . rand(1, 99)
+                ]);
+              }
+              //
+              $CloneBlockContent->save();
+              $newBlockIds[] = [
+                'target_id' => $CloneBlockContent->id()
+              ];
+            }
+          }
+          $entity->set($k, $newBlockIds);
+        }
       }
     }
   }
