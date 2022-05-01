@@ -78,7 +78,6 @@ class FormEntityController extends ControllerBase {
       if (!empty($vals[0]['target_id'])) {
         $newNodesIds = [];
         $setings = $entity->get($k)->getSettings();
-        \Stephane888\Debug\debugLog::kintDebugDrupal($setings, $entity->bundle(), true);
         // Duplication des sous nodes.
         if (!empty($setings['target_type']) && $setings['target_type'] == 'node') {
           foreach ($vals as $value) {
