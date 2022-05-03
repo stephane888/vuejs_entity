@@ -20,8 +20,8 @@ var staticRenderFns = []
 ;// CONCATENATED MODULE: ./node_modules/bootstrap-vue/dist/bootstrap-vue-icons.min.css
 // extracted by mini-css-extract-plugin
 
-// EXTERNAL MODULE: ../drupal-vuejs/index.js + 43 modules
-var drupal_vuejs = __webpack_require__(14794);
+// EXTERNAL MODULE: ../drupal-vuejs/index.js + 42 modules
+var drupal_vuejs = __webpack_require__(31597);
 ;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-80[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/views/TheContainer.vue?vue&type=script&lang=js&
 //
 //

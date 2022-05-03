@@ -18,6 +18,7 @@ use Drupal\Core\Plugin\PluginWithFormsInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Component\Utility\NestedArray;
+use Drupal\layout_builder\Plugin\SectionStorage\DefaultsSectionStorage;
 
 /**
  * Returns responses for vuejs entity routes.
@@ -34,7 +35,7 @@ class LayoutPluginController extends ControllerBase {
   /**
    * The section storage.
    *
-   * @var \Drupal\layout_builder\Plugin\SectionStorage\DefaultsSectionStorage
+   * @var DefaultsSectionStorage
    */
   protected $sectionStorage;
   
