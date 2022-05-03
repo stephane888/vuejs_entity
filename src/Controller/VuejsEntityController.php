@@ -32,6 +32,11 @@ class VuejsEntityController extends ControllerBase {
     return $this->reponse($img_url);
   }
   
+  /**
+   *
+   * @param string $menu_name
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   */
   public function getMenuItems($menu_name) {
     $menuLinks = $this->entityTypeManager()->getStorage('menu_link_content')->loadByProperties([
       'bundle' => $menu_name

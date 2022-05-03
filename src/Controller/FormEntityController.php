@@ -51,6 +51,7 @@ class FormEntityController extends ControllerBase {
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    */
   public function saveDatas(Request $Request, $entity_type_id) {
+    \Stephane888\Debug\debugLog::$max_depth = 6;
     $entity_type = $this->entityTypeManager()->getStorage($entity_type_id);
     $values = Json::decode($Request->getContent(), true);
     if ($entity_type && !empty($values)) {
@@ -58,8 +59,10 @@ class FormEntityController extends ControllerBase {
         /**
          */
         $entity = $entity_type->create($values);
-        if ($entity_type_id == 'node')
+        if ($entity_type_id == 'node') {
           $this->duplicateExistantReference($entity);
+        }
+        
         $entity->save();
         return $this->reponse($entity->toArray());
       }
@@ -74,7 +77,10 @@ class FormEntityController extends ControllerBase {
    * Fonctionne uniquement sur les nodes.
    */
   protected function duplicateExistantReference(Node &$entity) {
-    foreach ($entity->toArray() as $k => $vals) {
+    $uid = \Drupal::currentUser()->id();
+    $entity->setCreatedTime(time());
+    $values = $entity->toArray();
+    foreach ($values as $k => $vals) {
       if (!empty($vals[0]['target_id'])) {
         $newNodesIds = [];
         $setings = $entity->get($k)->getSettings();
@@ -87,15 +93,24 @@ class FormEntityController extends ControllerBase {
               // On verifie pour les sous entites.
               $this->duplicateExistantReference($cloneNode);
               // On ajoute le champs field_domain_access; ci-possible.
-              if ($cloneNode->hasField(self::$field_domain_access) && $entity->hasField(self::$field_domain_access)) {
-                $cloneNode->get(self::$field_domain_access)->setValue($entity->get(self::$field_domain_access)->getValue());
+              if ($cloneNode->hasField(self::$field_domain_access)) {
+                $cloneNode->set(self::$field_domain_access, $entity->get(self::$field_domain_access)->getValue());
               }
+              //
               $cloneNode->save();
               $newNodesIds[] = [
                 'target_id' => $cloneNode->id()
               ];
             }
           }
+          //
+          // \Stephane888\Debug\debugLog::kintDebugDrupal([
+          // 'newNodesIds' => $newNodesIds,
+          // 'vals' => $vals,
+          // 'values' => $values,
+          // 'entity_end' => $entity->toArray()
+          // ], "newNodesIds---" . $entity->bundle(), true);
+          //
           $entity->set($k, $newNodesIds);
         }
         // Duplication des sous blocs.
@@ -106,10 +121,24 @@ class FormEntityController extends ControllerBase {
             if ($BlockContent) {
               $CloneBlockContent = $BlockContent->createDuplicate();
               // On ajoute le champs field_domain_access; ci-possible.
-              if ($CloneBlockContent->hasField(self::$field_domain_access) && $entity->hasField(self::$field_domain_access)) {
-                $CloneBlockContent->get(self::$field_domain_access)->setValue($entity->get(self::$field_domain_access)->getValue());
+              if ($CloneBlockContent->hasField(self::$field_domain_access)) {
+                $dmn = $entity->get(self::$field_domain_access)->first()->getValue();
+                $dmn = empty($dmn['target_id']) ? null : [
+                  'value' => $dmn['target_id']
+                ];
+                if ($dmn)
+                  $CloneBlockContent->get(self::$field_domain_access)->setValue($dmn);
               }
-              // on met à jour le champs info (car sa valeur doit etre unique).
+              // On ajoute l'utilisateur courant:
+              if ($CloneBlockContent->hasField('user_id') && $uid) {
+                $CloneBlockContent->set('user_id', $uid);
+              }
+              // On jour la date de MAJ
+              if ($CloneBlockContent->hasField('changed')) {
+                $CloneBlockContent->set('changed', time());
+              }
+              //
+              // On met à jour le champs info (car sa valeur doit etre unique).
               if ($CloneBlockContent->hasField("info")) {
                 $val = $CloneBlockContent->get('info')->first()->getValue();
                 $dmn = $entity->get(self::$field_domain_access)->first()->getValue();
@@ -117,7 +146,7 @@ class FormEntityController extends ControllerBase {
                 if (!empty($val['value']))
                   $val = $val['value'] . ' - ' . $dmn . ' - ' . $entity->bundle();
                 $CloneBlockContent->get('info')->setValue([
-                  'value' => $val . rand(1, 99)
+                  'value' => $val . count($newBlockIds)
                 ]);
               }
               //

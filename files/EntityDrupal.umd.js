@@ -94408,6 +94408,8 @@ var rootConfig = __webpack_require__(56722);
 
 
 
+
+
  //
 
 /* harmony default export */ var saveEntity = ((0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({}, rootConfig/* default */.Z), {}, {
@@ -94562,12 +94564,26 @@ var rootConfig = __webpack_require__(56722);
       return this.bPost("/vuejs-entity/domaine/add/" + this.donneeInternetEntity.domain_ovh_entity[0].target_id);
     }
   },
-  // On va cree un contenu static,
+  // On va cree la page d'accueil en function de l'identifiant present dans l'url.
+  // Plus tard, on transmettra directement le type de "Site type datas"
   CreateContent: function CreateContent() {
-    //home page
+    //Get home page
+    var idHome = window.location.pathname.split("/").pop();
+    var type_page = "model_d_affichage_theme_partenai";
+
+    switch (idHome) {
+      case "9":
+        type_page = "model_d_affichage_rc_webr_";
+        break;
+
+      case "1":
+        type_page = "model_d_affichage_architecte_";
+        break;
+    }
+
     var title = this.donneeInternetEntity.name[0] && this.donneeInternetEntity.name[0].value ? "Bienvenue chez " + this.donneeInternetEntity.name[0].value : "Theme generer";
     var values = {
-      type: "model_d_affichage_theme_partenai",
+      type: type_page,
       title: [{
         value: title
       }],
