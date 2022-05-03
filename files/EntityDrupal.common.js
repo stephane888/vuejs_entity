@@ -95477,13 +95477,29 @@ var rootConfig = __webpack_require__(76924);
     var _this4 = this;
 
     return (0,asyncToGenerator/* default */.Z)( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+      var idHome, lirairy;
       return regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
+              idHome = window.location.pathname.split("/").pop();
+              lirairy = "lesroisdelareno/prestataires_m5";
+              _context.t0 = idHome;
+              _context.next = _context.t0 === "9" ? 5 : _context.t0 === "1" ? 7 : 9;
+              break;
+
+            case 5:
+              lirairy = "lesroisdelareno/prestataires_m8";
+              return _context.abrupt("break", 9);
+
+            case 7:
+              lirairy = "lesroisdelareno/prestataires_m7";
+              return _context.abrupt("break", 9);
+
+            case 9:
               return _context.abrupt("return", new Promise(function (resolv) {
                 var values = {
-                  lirairy: "lesroisdelareno/prestataires_m5",
+                  lirairy: lirairy,
                   site_config: [{
                     value: JSON.stringify({
                       "edit-config": "domain.config." + _this4.domainRegister.id + ".system.site",
@@ -95516,7 +95532,7 @@ var rootConfig = __webpack_require__(76924);
                 });
               }));
 
-            case 1:
+            case 10:
             case "end":
               return _context.stop();
           }
