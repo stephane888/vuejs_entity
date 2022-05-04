@@ -95207,9 +95207,6 @@ var rootConfig = __webpack_require__(76924);
 
 
 
-
-
-
  //
 
 /* harmony default export */ var saveEntity = ((0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({}, rootConfig/* default */.Z), {}, {
@@ -95400,17 +95397,17 @@ var rootConfig = __webpack_require__(76924);
   CreateOrtherPages: function CreateOrtherPages() {
     var _this2 = this;
 
-    return new Promise(function (resolv) {
-      var options = _this2.getLabelPages();
-
-      console.log(" options get : ", options);
-
+    return new Promise(function (resolv, reject) {
       if (_this2.donneeInternetEntity.pages && _this2.donneeInternetEntity.pages.length) {
-        var promises = [];
-        promises.push(_this2.CreateMenus());
+        var options = _this2.getLabelPages();
+
+        var pages = []; // Creation de menus.
+
+        _this2.CreateMenus();
 
         _this2.donneeInternetEntity.pages.forEach(function (item) {
           // Pour l'instant les pages sont tous les nodes.
+          // On doit pouvoir suivre la creation de chaque page. et la relencer si elle ne marche pas.
           var values = {
             type: item.value,
             title: [{
@@ -95423,14 +95420,38 @@ var rootConfig = __webpack_require__(76924);
               target_id: _this2.domainRegister.id
             }]
           };
-          promises.push(_this2.bPost("/vuejs-entity/entity/save/node", values));
-        });
+          pages.push(values);
+        }); //;
 
-        Promise.all(promises).then(function () {
-          return resolv(true);
-        }).catch(function (err) {
-          resolv(err);
-        });
+
+        var loop = function loop() {
+          var i = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+          var essaie = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+          return new Promise(function (resolv) {
+            var page = pages[i];
+
+            if (page && page.type) {
+              _this2.bPost("/vuejs-entity/entity/save/node", page).then(function () {
+                var id = i + 1;
+                resolv(loop(id));
+              }).catch(function () {
+                setTimeout(function () {
+                  if (essaie == 1) loop(i, 2);else {
+                    var id2 = i + 1;
+                    loop(id2);
+                  }
+                }, 1000);
+              });
+            } else {
+              resolv();
+            }
+          });
+        }; // On lance la page 0.
+
+
+        resolv(loop());
+      } else {
+        reject();
       }
     });
   },
@@ -95561,7 +95582,7 @@ var rootConfig = __webpack_require__(76924);
         nos_services_rc_web_: 58,
         qui_sommes_nous: 38,
         page_realisation: 14,
-        page_tarif_rc_web: 56,
+        page_tarif_rc_web_: 56,
         comment_sa_marche: 1,
         retructement: 16
       };
@@ -95752,8 +95773,7 @@ var rootConfig = __webpack_require__(76924);
   },
   getLabelPages: function getLabelPages() {
     var options = {};
-    var form = store.state.renderByStep.form; //console.log("store : ", store);
-    //console.log("getLabelPages store : ", form);
+    var form = store.state.renderByStep.form;
 
     if (form.pages && form.pages.entity_form_settings && form.pages.entity_form_settings.list_options && form.pages.entity_form_settings.list_options.length) {
       var list_options = form.pages.entity_form_settings.list_options;
