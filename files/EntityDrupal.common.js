@@ -95403,6 +95403,8 @@ var rootConfig = __webpack_require__(76924);
     return new Promise(function (resolv) {
       var options = _this2.getLabelPages();
 
+      console.log(" options get : ", options);
+
       if (_this2.donneeInternetEntity.pages && _this2.donneeInternetEntity.pages.length) {
         var promises = [];
         promises.push(_this2.CreateMenus());
@@ -95412,7 +95414,7 @@ var rootConfig = __webpack_require__(76924);
           var values = {
             type: item.value,
             title: [{
-              value: options[item.value] ? options[item.label] : item.value
+              value: options[item.value] ? options[item.value] : item.value
             }],
             field_domain_access: [{
               target_id: _this2.domainRegister.id
@@ -95750,14 +95752,20 @@ var rootConfig = __webpack_require__(76924);
   },
   getLabelPages: function getLabelPages() {
     var options = {};
+    var form = store.state.renderByStep.form; //console.log("store : ", store);
+    //console.log("getLabelPages store : ", form);
 
-    if (store.state.form.pages && store.state.form.pages.entity_form_settings && store.state.form.pages.entity_form_settings.list_options && store.state.form.pages.entity_form_settings.list_options.length) {
-      var list_options = store.state.form.pages.entity_form_settings.list_options;
+    if (form.pages && form.pages.entity_form_settings && form.pages.entity_form_settings.list_options && form.pages.entity_form_settings.list_options.length) {
+      var list_options = form.pages.entity_form_settings.list_options;
       list_options.forEach(function (item) {
         options[item.value] = item.label;
       });
       return options;
-    } else return options;
+    } else {
+      // eslint-disable-next-line
+      // debugger;
+      return options;
+    }
   }
 })); // ^ array:7 [▼
 //   "edit-config" => "domain.config.v2lesroisdelareno_kksa.system.site"
