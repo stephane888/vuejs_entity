@@ -95411,6 +95411,8 @@ var rootConfig = __webpack_require__(56722);
     var _this2 = this;
 
     return new Promise(function (resolv) {
+      var options = _this2.getLabelPages();
+
       if (_this2.donneeInternetEntity.pages && _this2.donneeInternetEntity.pages.length) {
         var promises = [];
         promises.push(_this2.CreateMenus());
@@ -95420,7 +95422,7 @@ var rootConfig = __webpack_require__(56722);
           var values = {
             type: item.value,
             title: [{
-              value: item.value
+              value: options[item.value] ? options[item.label] : item.value
             }],
             field_domain_access: [{
               target_id: _this2.domainRegister.id
@@ -95755,6 +95757,17 @@ var rootConfig = __webpack_require__(56722);
     }
 
     return colors;
+  },
+  getLabelPages: function getLabelPages() {
+    var options = {};
+
+    if (store.state.form.pages && store.state.form.pages.entity_form_settings && store.state.form.pages.entity_form_settings.list_options && store.state.form.pages.entity_form_settings.list_options.length) {
+      var list_options = store.state.form.pages.entity_form_settings.list_options;
+      list_options.forEach(function (item) {
+        options[item.value] = item.label;
+      });
+      return options;
+    } else return options;
   }
 })); // ^ array:7 [▼
 //   "edit-config" => "domain.config.v2lesroisdelareno_kksa.system.site"
@@ -95765,6 +95778,7 @@ var rootConfig = __webpack_require__(56722);
 //   "page.403" => ""
 //   "page.404" => ""
 // ]
+//http://dimmat.lesroisdelareno.fr
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es.string.includes.js
 var es_string_includes = __webpack_require__(32023);
 ;// CONCATENATED MODULE: ./src/components/formRender/config.js
