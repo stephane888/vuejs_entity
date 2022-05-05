@@ -7036,7 +7036,7 @@ $({ global: true, forced: !USE_NATIVE_URL, sham: !DESCRIPTORS }, {
 
 /***/ }),
 
-/***/ 73457:
+/***/ 87725:
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -7046,10 +7046,12 @@ __webpack_require__.d(__webpack_exports__, {
   "Z": function() { return /* binding */ layoutRenderFooter; }
 });
 
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsLayout/layoutRenderFooter.vue?vue&type=template&id=223bfce8&
-var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"text-left"},[_c('div',{staticClass:"accordion",attrs:{"role":"tablist"}},_vm._l((_vm.buildFields()),function(card,c){return _c('b-card',{key:c,staticClass:"mb-1",attrs:{"no-body":""}},[_c('b-card-header',{staticClass:"p-1",attrs:{"header-tag":"header","role":"tab"}},[_c('b-button',{directives:[{name:"b-toggle",rawName:"v-b-toggle",value:('accordion-' + c),expression:"'accordion-' + c"}],attrs:{"block":"","variant":"info"},domProps:{"innerHTML":_vm._s(card.title)}})],1),_c('b-collapse',{attrs:{"id":'accordion-' + c,"visible":"","accordion":"my-accordion-layout-render","role":"tabpanel"}},[_c('b-card-body',_vm._l((card.fields),function(render,k){return _c(render.template,{key:k,tag:"component",attrs:{"field":render.field,"fieldName":render.fieldName,"key_config":render.key_config,"sub_store":"storeLayoutFooter","class_css":[]}})}),1)],1)],1)}),1)])}
-var staticRenderFns = []
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsLayout/layoutRenderFooter.vue?vue&type=template&id=49ae2fbc&
+var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"text-left row",class:_vm.class_css},[_c('div',{staticClass:"col-md-6"},[_c('div',{staticClass:"accordion",attrs:{"role":"tablist"}},_vm._l((_vm.buildFields()),function(card,c){return _c('b-card',{key:c,staticClass:"mb-1",attrs:{"no-body":""}},[_c('b-card-header',{staticClass:"p-1",attrs:{"header-tag":"header","role":"tab"}},[_c('b-button',{directives:[{name:"b-toggle",rawName:"v-b-toggle",value:('accordion-' + c),expression:"'accordion-' + c"}],attrs:{"block":"","variant":"info"},domProps:{"innerHTML":_vm._s(card.title)}})],1),_c('b-collapse',{attrs:{"id":'accordion-' + c,"visible":"","accordion":"my-accordion-layout-render","role":"tabpanel"}},[_c('b-card-body',_vm._l((card.fields),function(render,k){return _c(render.template,{key:k,tag:"component",attrs:{"field":render.field,"fieldName":render.fieldName,"key_config":render.key_config,"sub_store":"storeLayoutFooter","class_css":[]}})}),1)],1)],1)}),1)]),_vm._m(0)])}
+var staticRenderFns = [function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"col-md-6"},[_c('label',[_vm._v(" Apercu du pied de page ")]),_c('img',{staticClass:"img-fluid",attrs:{"src":"https://lesroisdelareno.fr/sites/default/files/2022-05/opera-instantane_2022-05-05_111523_lesroisdelareno.kksa_.png"}})])}]
 
+
+;// CONCATENATED MODULE: ./src/components/fieldsLayout/layoutRenderFooter.vue?vue&type=template&id=49ae2fbc&
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/objectSpread2.js + 1 modules
 var objectSpread2 = __webpack_require__(56473);
@@ -7098,10 +7100,26 @@ var loadField = __webpack_require__(78316);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ var layoutRenderFootervue_type_script_lang_js_ = ({
   name: "layoutRenderFooter",
+  props: {
+    class_css: {
+      type: [Array]
+    }
+  },
   computed: (0,objectSpread2/* default */.Z)({}, (0,vuex_esm/* mapState */.rn)("storeLayoutFooter", {
     configuration: function configuration(state) {
       return state.configuration;
@@ -7165,7 +7183,7 @@ var component = (0,componentNormalizer/* default */.Z)(
 
 /***/ }),
 
-/***/ 55028:
+/***/ 16238:
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -7175,10 +7193,12 @@ __webpack_require__.d(__webpack_exports__, {
   "Z": function() { return /* binding */ layoutRenderHeader; }
 });
 
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsLayout/layoutRenderHeader.vue?vue&type=template&id=adee78d4&
-var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"text-left"},[_c('div',{staticClass:"accordion",attrs:{"role":"tablist"}},_vm._l((_vm.buildFields()),function(card,c){return _c('b-card',{key:c,staticClass:"mb-1",attrs:{"no-body":""}},[_c('b-card-header',{staticClass:"p-1",attrs:{"header-tag":"header","role":"tab"}},[_c('b-button',{directives:[{name:"b-toggle",rawName:"v-b-toggle",value:('accordion-' + c),expression:"'accordion-' + c"}],attrs:{"block":"","variant":"info"},domProps:{"innerHTML":_vm._s(card.title)}})],1),_c('b-collapse',{attrs:{"id":'accordion-' + c,"visible":"","accordion":"my-accordion-layout-render","role":"tabpanel"}},[_c('b-card-body',_vm._l((card.fields),function(render,k){return _c(render.template,{key:k,tag:"component",attrs:{"field":render.field,"fieldName":render.fieldName,"key_config":render.key_config,"class_css":[]}})}),1)],1)],1)}),1)])}
-var staticRenderFns = []
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsLayout/layoutRenderHeader.vue?vue&type=template&id=34b295e6&
+var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"text-left row"},[_c('div',{staticClass:"accordion col-md-6",attrs:{"role":"tablist"}},_vm._l((_vm.buildFields()),function(card,c){return _c('b-card',{key:c,staticClass:"mb-1",attrs:{"no-body":""}},[_c('b-card-header',{staticClass:"p-1",attrs:{"header-tag":"header","role":"tab"}},[_c('b-button',{directives:[{name:"b-toggle",rawName:"v-b-toggle",value:('accordion-' + c),expression:"'accordion-' + c"}],attrs:{"block":"","variant":"info"},domProps:{"innerHTML":_vm._s(card.title)}})],1),_c('b-collapse',{attrs:{"id":'accordion-' + c,"visible":"","accordion":"my-accordion-layout-render","role":"tabpanel"}},[_c('b-card-body',_vm._l((card.fields),function(render,k){return _c(render.template,{key:k,tag:"component",attrs:{"field":render.field,"fieldName":render.fieldName,"key_config":render.key_config,"class_css":[]}})}),1)],1)],1)}),1),_vm._m(0)])}
+var staticRenderFns = [function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"col-md-6"},[_c('label',[_vm._v(" Apercu de l'entete ")]),_c('img',{staticClass:"img-fluid",attrs:{"src":"https://lesroisdelareno.fr/sites/default/files/2022-05/opera-instantane_2022-05-05_111359_lesroisdelareno.kksa_.png"}})])}]
 
+
+;// CONCATENATED MODULE: ./src/components/fieldsLayout/layoutRenderHeader.vue?vue&type=template&id=34b295e6&
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/objectSpread2.js + 1 modules
 var objectSpread2 = __webpack_require__(56473);
@@ -7188,6 +7208,13 @@ var vuex_esm = __webpack_require__(46372);
 var loadField = __webpack_require__(78316);
 ;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-80[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsLayout/layoutRenderHeader.vue?vue&type=script&lang=js&
 
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -49782,7 +49809,7 @@ function _typeof(obj) {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.miniCssF = function(chunkId) {
 /******/ 			// return url for filenames based on template
-/******/ 			return "css/" + chunkId + "." + {"636":"d8f2ee6a","817":"a576b81d"}[chunkId] + ".css";
+/******/ 			return "css/" + chunkId + "." + {"368":"95be2d3c","636":"d8f2ee6a","817":"a576b81d"}[chunkId] + ".css";
 /******/ 		};
 /******/ 	}();
 /******/ 	
@@ -49931,7 +49958,7 @@ function _typeof(obj) {
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.f.miniCss = function(chunkId, promises) {
-/******/ 			var cssChunks = {"636":1,"817":1};
+/******/ 			var cssChunks = {"368":1,"636":1,"817":1};
 /******/ 			if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);
 /******/ 			else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {
 /******/ 				promises.push(installedCssChunks[chunkId] = loadStylesheet(chunkId).then(function() {
@@ -95159,7 +95186,7 @@ var TheContainer = function TheContainer() {
 };
 
 var formRender = function formRender() {
-  return __webpack_require__.e(/* import() */ 428).then(__webpack_require__.bind(__webpack_require__, 4428));
+  return __webpack_require__.e(/* import() */ 368).then(__webpack_require__.bind(__webpack_require__, 32368));
 };
 
 external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vue_router_esm);
@@ -95815,10 +95842,10 @@ var es_string_includes = __webpack_require__(32023);
 /* harmony default export */ var config = ((0,objectSpread2/* default */.Z)({}, rootConfig/* default */.Z));
 // EXTERNAL MODULE: ./src/components/fieldsDrupal/loadField.js + 26 modules
 var loadField = __webpack_require__(56710);
-// EXTERNAL MODULE: ./src/components/fieldsLayout/layoutRenderHeader.vue + 3 modules
-var layoutRenderHeader = __webpack_require__(55028);
-// EXTERNAL MODULE: ./src/components/fieldsLayout/layoutRenderFooter.vue + 3 modules
-var layoutRenderFooter = __webpack_require__(73457);
+// EXTERNAL MODULE: ./src/components/fieldsLayout/layoutRenderHeader.vue + 4 modules
+var layoutRenderHeader = __webpack_require__(16238);
+// EXTERNAL MODULE: ./src/components/fieldsLayout/layoutRenderFooter.vue + 4 modules
+var layoutRenderFooter = __webpack_require__(87725);
 // EXTERNAL MODULE: ./src/components/sections/page-register.vue + 3 modules
 var page_register = __webpack_require__(60981);
 // EXTERNAL MODULE: ./src/components/sections/page-save.vue + 4 modules
