@@ -7058,7 +7058,7 @@ var objectSpread2 = __webpack_require__(56473);
 // EXTERNAL MODULE: ./node_modules/vuex/dist/vuex.esm.js
 var vuex_esm = __webpack_require__(46372);
 // EXTERNAL MODULE: ./src/components/fieldsLayout/loadField.js + 8 modules
-var loadField = __webpack_require__(78316);
+var loadField = __webpack_require__(57614);
 ;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-80[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsLayout/layoutRenderFooter.vue?vue&type=script&lang=js&
 
 //
@@ -7207,7 +7207,7 @@ var objectSpread2 = __webpack_require__(56473);
 // EXTERNAL MODULE: ./node_modules/vuex/dist/vuex.esm.js
 var vuex_esm = __webpack_require__(46372);
 // EXTERNAL MODULE: ./src/components/fieldsLayout/loadField.js + 8 modules
-var loadField = __webpack_require__(78316);
+var loadField = __webpack_require__(57614);
 ;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-80[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsLayout/layoutRenderHeader.vue?vue&type=script&lang=js&
 
 //
@@ -31946,7 +31946,7 @@ var drupal_file_component = (0,componentNormalizer/* default */.Z)(
 
 /***/ }),
 
-/***/ 78316:
+/***/ 57614:
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -32040,12 +32040,16 @@ var component = (0,componentNormalizer/* default */.Z)(
 )
 
 /* harmony default export */ var fieldText = (component.exports);
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsLayout/textarea-layout.vue?vue&type=template&id=c4295a56&
-var textarea_layoutvue_type_template_id_c4295a56_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.class_css},[_c('b-form-group',{attrs:{"label":_vm.field.text_html.label}},[_c('ckeditor',{attrs:{"config":_vm.editorConfig},model:{value:(_vm.editorData),callback:function ($$v) {_vm.editorData=$$v},expression:"editorData"}})],1)],1)}
-var textarea_layoutvue_type_template_id_c4295a56_staticRenderFns = []
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsLayout/textarea-layout.vue?vue&type=template&id=5329fb0e&
+var textarea_layoutvue_type_template_id_5329fb0e_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.class_css},[_c('b-form-group',{attrs:{"label":_vm.field.text_html.label}},[_c('ckeditor',{attrs:{"config":_vm.editorConfig},on:{"input":_vm.input},model:{value:(_vm.editorData),callback:function ($$v) {_vm.editorData=$$v},expression:"editorData"}})],1)],1)}
+var textarea_layoutvue_type_template_id_5329fb0e_staticRenderFns = []
 
 
 ;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-80[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsLayout/textarea-layout.vue?vue&type=script&lang=js&
+//
+//
+//
+//
 //
 //
 //
@@ -32092,7 +32096,7 @@ var textarea_layoutvue_type_template_id_c4295a56_staticRenderFns = []
         type: "text_html",
         value: val
       };
-      this.$store.commit(this.sub_store + "/setValue", payload);
+      this.$store.commit(this.sub_store + "/setValue", payload); //console.log("input ", payload);
     }
   }
 });
@@ -32108,8 +32112,8 @@ var textarea_layoutvue_type_template_id_c4295a56_staticRenderFns = []
 ;
 var textarea_layout_component = (0,componentNormalizer/* default */.Z)(
   fieldsLayout_textarea_layoutvue_type_script_lang_js_,
-  textarea_layoutvue_type_template_id_c4295a56_render,
-  textarea_layoutvue_type_template_id_c4295a56_staticRenderFns,
+  textarea_layoutvue_type_template_id_5329fb0e_render,
+  textarea_layoutvue_type_template_id_5329fb0e_staticRenderFns,
   false,
   null,
   null,
