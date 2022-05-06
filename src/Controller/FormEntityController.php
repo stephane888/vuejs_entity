@@ -22,6 +22,7 @@ use Drupal\commerce_product\Entity\Product;
  */
 class FormEntityController extends ControllerBase {
   protected static $field_domain_access = 'field_domain_access';
+  protected static $field_domain_all_affiliates = 'field_domain_all_affiliates';
   
   /**
    *
@@ -80,6 +81,10 @@ class FormEntityController extends ControllerBase {
     $entity->setCreatedTime(time());
     $entity->setChangedTime(time());
     $entity->setOwnerId($uid);
+    // On desactive la disponibilité du contenu sur tous les domaines.
+    if ($entity->hasField(self::$field_domain_all_affiliates)) {
+      $entity->set(self::$field_domain_all_affiliates, false);
+    }
     $values = $entity->toArray();
     foreach ($values as $k => $vals) {
       if (!empty($vals[0]['target_id'])) {
