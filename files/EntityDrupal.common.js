@@ -7026,7 +7026,7 @@ $({ global: true, forced: !USE_NATIVE_URL, sham: !DESCRIPTORS }, {
 
 /***/ }),
 
-/***/ 92524:
+/***/ 23730:
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -7036,12 +7036,12 @@ __webpack_require__.d(__webpack_exports__, {
   "Z": function() { return /* binding */ layoutRenderFooter; }
 });
 
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsLayout/layoutRenderFooter.vue?vue&type=template&id=49ae2fbc&
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsLayout/layoutRenderFooter.vue?vue&type=template&id=acaf12ea&
 var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"text-left row",class:_vm.class_css},[_c('div',{staticClass:"col-md-6"},[_c('div',{staticClass:"accordion",attrs:{"role":"tablist"}},_vm._l((_vm.buildFields()),function(card,c){return _c('b-card',{key:c,staticClass:"mb-1",attrs:{"no-body":""}},[_c('b-card-header',{staticClass:"p-1",attrs:{"header-tag":"header","role":"tab"}},[_c('b-button',{directives:[{name:"b-toggle",rawName:"v-b-toggle",value:('accordion-' + c),expression:"'accordion-' + c"}],attrs:{"block":"","variant":"info"},domProps:{"innerHTML":_vm._s(card.title)}})],1),_c('b-collapse',{attrs:{"id":'accordion-' + c,"visible":"","accordion":"my-accordion-layout-render","role":"tabpanel"}},[_c('b-card-body',_vm._l((card.fields),function(render,k){return _c(render.template,{key:k,tag:"component",attrs:{"field":render.field,"fieldName":render.fieldName,"key_config":render.key_config,"sub_store":"storeLayoutFooter","class_css":[]}})}),1)],1)],1)}),1)]),_vm._m(0)])}
-var staticRenderFns = [function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"col-md-6"},[_c('label',[_vm._v(" Apercu du pied de page ")]),_c('img',{staticClass:"img-fluid",attrs:{"src":"https://lesroisdelareno.fr/sites/default/files/2022-05/opera-instantane_2022-05-05_111523_lesroisdelareno.kksa_.png"}})])}]
+var staticRenderFns = [function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"col-md-6"},[_c('div',{staticClass:"position-sticky render-model"},[_c('label',[_vm._v(" Apercu du pied de page ")]),_c('img',{staticClass:"img-fluid",attrs:{"src":"https://lesroisdelareno.fr/sites/default/files/2022-05/opera-instantane_2022-05-05_111523_lesroisdelareno.kksa_.png"}})])])}]
 
 
-;// CONCATENATED MODULE: ./src/components/fieldsLayout/layoutRenderFooter.vue?vue&type=template&id=49ae2fbc&
+;// CONCATENATED MODULE: ./src/components/fieldsLayout/layoutRenderFooter.vue?vue&type=template&id=acaf12ea&
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/objectSpread2.js + 1 modules
 var objectSpread2 = __webpack_require__(93019);
@@ -7051,6 +7051,8 @@ var vuex_esm = __webpack_require__(34665);
 var loadField = __webpack_require__(24142);
 ;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-40[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsLayout/layoutRenderFooter.vue?vue&type=script&lang=js&
 
+//
+//
 //
 //
 //
@@ -7173,7 +7175,7 @@ var component = (0,componentNormalizer/* default */.Z)(
 
 /***/ }),
 
-/***/ 48033:
+/***/ 3406:
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -7183,12 +7185,12 @@ __webpack_require__.d(__webpack_exports__, {
   "Z": function() { return /* binding */ layoutRenderHeader; }
 });
 
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsLayout/layoutRenderHeader.vue?vue&type=template&id=34b295e6&
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsLayout/layoutRenderHeader.vue?vue&type=template&id=f9a8739a&
 var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"text-left row"},[_c('div',{staticClass:"accordion col-md-6",attrs:{"role":"tablist"}},_vm._l((_vm.buildFields()),function(card,c){return _c('b-card',{key:c,staticClass:"mb-1",attrs:{"no-body":""}},[_c('b-card-header',{staticClass:"p-1",attrs:{"header-tag":"header","role":"tab"}},[_c('b-button',{directives:[{name:"b-toggle",rawName:"v-b-toggle",value:('accordion-' + c),expression:"'accordion-' + c"}],attrs:{"block":"","variant":"info"},domProps:{"innerHTML":_vm._s(card.title)}})],1),_c('b-collapse',{attrs:{"id":'accordion-' + c,"visible":"","accordion":"my-accordion-layout-render","role":"tabpanel"}},[_c('b-card-body',_vm._l((card.fields),function(render,k){return _c(render.template,{key:k,tag:"component",attrs:{"field":render.field,"fieldName":render.fieldName,"key_config":render.key_config,"class_css":[]}})}),1)],1)],1)}),1),_vm._m(0)])}
-var staticRenderFns = [function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"col-md-6"},[_c('label',[_vm._v(" Apercu de l'entete ")]),_c('img',{staticClass:"img-fluid",attrs:{"src":"https://lesroisdelareno.fr/sites/default/files/2022-05/opera-instantane_2022-05-05_111359_lesroisdelareno.kksa_.png"}})])}]
+var staticRenderFns = [function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"col-md-6"},[_c('div',{staticClass:"position-sticky render-model"},[_c('label',[_vm._v(" Apercu de l'entete ")]),_c('img',{staticClass:"img-fluid",attrs:{"src":"https://lesroisdelareno.fr/sites/default/files/2022-05/opera-instantane_2022-05-05_111359_lesroisdelareno.kksa_.png"}})])])}]
 
 
-;// CONCATENATED MODULE: ./src/components/fieldsLayout/layoutRenderHeader.vue?vue&type=template&id=34b295e6&
+;// CONCATENATED MODULE: ./src/components/fieldsLayout/layoutRenderHeader.vue?vue&type=template&id=f9a8739a&
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/objectSpread2.js + 1 modules
 var objectSpread2 = __webpack_require__(93019);
@@ -7198,6 +7200,8 @@ var vuex_esm = __webpack_require__(34665);
 var loadField = __webpack_require__(24142);
 ;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-40[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsLayout/layoutRenderHeader.vue?vue&type=script&lang=js&
 
+//
+//
 //
 //
 //
@@ -49799,7 +49803,7 @@ function _typeof(obj) {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.miniCssF = function(chunkId) {
 /******/ 			// return url for filenames based on template
-/******/ 			return "css/" + chunkId + "." + {"174":"d8f2ee6a","563":"a576b81d","873":"95be2d3c"}[chunkId] + ".css";
+/******/ 			return "css/" + chunkId + "." + {"174":"d8f2ee6a","563":"a576b81d","754":"a29ef49f"}[chunkId] + ".css";
 /******/ 		};
 /******/ 	}();
 /******/ 	
@@ -49948,7 +49952,7 @@ function _typeof(obj) {
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.f.miniCss = function(chunkId, promises) {
-/******/ 			var cssChunks = {"174":1,"563":1,"873":1};
+/******/ 			var cssChunks = {"174":1,"563":1,"754":1};
 /******/ 			if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);
 /******/ 			else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {
 /******/ 				promises.push(installedCssChunks[chunkId] = loadStylesheet(chunkId).then(function() {
@@ -95176,7 +95180,7 @@ var TheContainer = function TheContainer() {
 };
 
 var formRender = function formRender() {
-  return __webpack_require__.e(/* import() */ 873).then(__webpack_require__.bind(__webpack_require__, 79873));
+  return __webpack_require__.e(/* import() */ 754).then(__webpack_require__.bind(__webpack_require__, 20754));
 };
 
 external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vue_router_esm);
@@ -95403,6 +95407,10 @@ var rootConfig = __webpack_require__(76924);
       case "1":
         type_page = "model_d_affichage_architecte_";
         break;
+
+      case "10":
+        type_page = "model_d_affichage_theme_commerce";
+        break;
     }
 
     var title = this.donneeInternetEntity.name[0] && this.donneeInternetEntity.name[0].value ? "Bienvenue chez " + this.donneeInternetEntity.name[0].value : "Theme generer";
@@ -95537,18 +95545,22 @@ var rootConfig = __webpack_require__(76924);
               idHome = window.location.pathname.split("/").pop();
               lirairy = "lesroisdelareno/prestataires_m5";
               _context.t0 = idHome;
-              _context.next = _context.t0 === "9" ? 5 : _context.t0 === "1" ? 7 : 9;
+              _context.next = _context.t0 === "9" ? 5 : _context.t0 === "1" ? 7 : _context.t0 === "10" ? 9 : 11;
               break;
 
             case 5:
               lirairy = "lesroisdelareno/prestataires_m8";
-              return _context.abrupt("break", 9);
+              return _context.abrupt("break", 11);
 
             case 7:
               lirairy = "lesroisdelareno/prestataires_m7";
-              return _context.abrupt("break", 9);
+              return _context.abrupt("break", 11);
 
             case 9:
+              lirairy = "lesroisdelareno/prestataires_m6";
+              return _context.abrupt("break", 11);
+
+            case 11:
               return _context.abrupt("return", new Promise(function (resolv) {
                 var values = {
                   lirairy: lirairy,
@@ -95584,7 +95596,7 @@ var rootConfig = __webpack_require__(76924);
                 });
               }));
 
-            case 10:
+            case 12:
             case "end":
               return _context.stop();
           }
@@ -95833,9 +95845,9 @@ var es_string_includes = __webpack_require__(32023);
 // EXTERNAL MODULE: ./src/components/fieldsDrupal/loadField.js + 26 modules
 var loadField = __webpack_require__(34830);
 // EXTERNAL MODULE: ./src/components/fieldsLayout/layoutRenderHeader.vue + 4 modules
-var layoutRenderHeader = __webpack_require__(48033);
+var layoutRenderHeader = __webpack_require__(3406);
 // EXTERNAL MODULE: ./src/components/fieldsLayout/layoutRenderFooter.vue + 4 modules
-var layoutRenderFooter = __webpack_require__(92524);
+var layoutRenderFooter = __webpack_require__(23730);
 // EXTERNAL MODULE: ./src/components/sections/page-register.vue + 3 modules
 var page_register = __webpack_require__(26927);
 // EXTERNAL MODULE: ./src/components/sections/page-save.vue + 4 modules

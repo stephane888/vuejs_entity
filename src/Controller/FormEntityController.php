@@ -9,13 +9,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityFormInterface;
 use Symfony\Component\Serializer\Serializer;
 use Drupal\Core\Entity\EntityFieldManager;
-use Stephane888\Debug\debugLog;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\lesroidelareno\Entity\DonneeSiteInternetEntity;
 use Jawira\CaseConverter\Convert;
 use Stephane888\Debug\Utility as UtilityError;
 use Drupal\node\Entity\Node;
 use Drupal\block_content\Entity\BlockContent;
+use Drupal\commerce_product\Entity\Product;
 
 /**
  * Returns responses for vuejs entity routes.
@@ -51,7 +51,6 @@ class FormEntityController extends ControllerBase {
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    */
   public function saveDatas(Request $Request, $entity_type_id) {
-    \Stephane888\Debug\debugLog::$max_depth = 6;
     $entity_type = $this->entityTypeManager()->getStorage($entity_type_id);
     $values = Json::decode($Request->getContent(), true);
     if ($entity_type && !empty($values)) {
@@ -79,6 +78,8 @@ class FormEntityController extends ControllerBase {
   protected function duplicateExistantReference(Node &$entity) {
     $uid = \Drupal::currentUser()->id();
     $entity->setCreatedTime(time());
+    $entity->setChangedTime(time());
+    $entity->setOwnerId($uid);
     $values = $entity->toArray();
     foreach ($values as $k => $vals) {
       if (!empty($vals[0]['target_id'])) {
@@ -103,14 +104,7 @@ class FormEntityController extends ControllerBase {
               ];
             }
           }
-          //
-          // \Stephane888\Debug\debugLog::kintDebugDrupal([
-          // 'newNodesIds' => $newNodesIds,
-          // 'vals' => $vals,
-          // 'values' => $values,
-          // 'entity_end' => $entity->toArray()
-          // ], "newNodesIds---" . $entity->bundle(), true);
-          //
+          
           $entity->set($k, $newNodesIds);
         }
         // Duplication des sous blocs.
@@ -133,7 +127,7 @@ class FormEntityController extends ControllerBase {
               if ($CloneBlockContent->hasField('user_id') && $uid) {
                 $CloneBlockContent->set('user_id', $uid);
               }
-              // On jour la date de MAJ
+              // On met jour la date de MAJ
               if ($CloneBlockContent->hasField('changed')) {
                 $CloneBlockContent->set('changed', time());
               }
@@ -157,6 +151,33 @@ class FormEntityController extends ControllerBase {
             }
           }
           $entity->set($k, $newBlockIds);
+        }
+        // Dupliquer les produits.
+        elseif (!empty($setings['target_type']) && $setings['target_type'] == 'commerce_product') {
+          $newProducts = [];
+          foreach ($vals as $value) {
+            $Product = Product::load($value['target_id']);
+            if ($Product) {
+              $CloneProduct = $Product->createDuplicate();
+              // On ajoute le champs field_domain_access; ci-possible.
+              // if ($CloneProduct->hasField(self::$field_domain_access)) {
+              $dmn = $entity->get(self::$field_domain_access)->first()->getValue();
+              $dmn = empty($dmn['target_id']) ? null : $dmn['target_id'];
+              if ($dmn)
+                $CloneProduct->set(self::$field_domain_access, $dmn);
+              // }
+              // On met jour la date de MAJ
+              $CloneProduct->setCreatedTime(time());
+              $CloneProduct->setChangedTime(time());
+              $CloneProduct->setOwnerId($uid);
+              //
+              $CloneProduct->save();
+              $newProducts[] = [
+                'target_id' => $CloneProduct->id()
+              ];
+            }
+          }
+          $entity->set($k, $newProducts);
         }
       }
     }
@@ -209,7 +230,7 @@ class FormEntityController extends ControllerBase {
      */
     $entityManager = \Drupal::service('entity_field.manager');
     $Allfields = $entityManager->getFieldDefinitions($entity_type_id, $bundle);
-    // debugLog::$max_depth = 8;
+    
     /**
      *
      * @var \Drupal\Core\Entity\Entity\EntityFormDisplay $entity_form_view
@@ -217,8 +238,6 @@ class FormEntityController extends ControllerBase {
     $entity_form_view = $this->entityTypeManager()->getStorage('entity_form_display')->load($entity_type_id . '.' . $entity_type_id . '.default');
     $fieldsEntityForm = $entity_form_view->toArray();
     
-    // debugLog::kintDebugDrupal($entity_form_view->toArray(), 'entityTypeManager__entity_form_display__loadMultiple', true);
-    // debugLog::kintDebugDrupal($Allfields['name']->getType(), 'get_type');
     $form = [];
     foreach ($fields as $k => $value) {
       if (!empty($Allfields[$k])) {
