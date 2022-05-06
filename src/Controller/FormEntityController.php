@@ -81,6 +81,7 @@ class FormEntityController extends ControllerBase {
     $entity->setCreatedTime(time());
     $entity->setChangedTime(time());
     $entity->setOwnerId($uid);
+    $entity->setPublished();
     // On desactive la disponibilité du contenu sur tous les domaines.
     if ($entity->hasField(self::$field_domain_all_affiliates)) {
       $entity->set(self::$field_domain_all_affiliates, false);
@@ -109,7 +110,7 @@ class FormEntityController extends ControllerBase {
               ];
             }
           }
-          
+          //
           $entity->set($k, $newNodesIds);
         }
         // Duplication des sous blocs.
