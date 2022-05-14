@@ -219,6 +219,7 @@ class FormEntityController extends ControllerBase {
   
   /**
    * Builds the response.
+   * REcupere les champs pour un entité
    */
   public function getForm($entity_type_id, $view_mode, $bundle = null) {
     //
