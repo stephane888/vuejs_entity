@@ -263,7 +263,7 @@ class FormEntityController extends ControllerBase {
         }
         //
         if (!empty($fieldsEntityForm['content'][$k]['settings'])) {
-          $form[$k]['entity_form_settings'] = $fieldsEntityForm['content'][$k]['settings'];
+          $form[$k]['entity_form_settings'] = $this->translateConfigField($fieldsEntityForm['content'][$k]['settings']);
           $form[$k]['entity_form_type'] = $fieldsEntityForm['content'][$k]['type'];
           $form[$k]['entity_form'] = $fieldsEntityForm['content'][$k];
         }
@@ -273,16 +273,28 @@ class FormEntityController extends ControllerBase {
       }
     }
     // on recupere les champs annexe:
+    $title = $this->t("Let's bring your ideas to life");
+    $descp = $this->t('Answer a few questions and get the best tools for your creations');
     $form['html_1'] = [
       'type' => 'render_html',
-      'content' => '<div class="step-donneesite--header with-tablet mx-auto text-center" data-drupal-selector="edit-ctm-description"><h2 class="step-donneesite--title" data-drupal-selector="edit-0">Donnons vie à vos idées</h2>
-<p class="step-donneesite--label" data-drupal-selector="edit-1"> Repondez à quelques questions et obtenez les meilleurs outils pour vos créations </p>
+      'content' => '<div class="step-donneesite--header with-tablet mx-auto text-center" data-drupal-selector="edit-ctm-description"><h2 class="step-donneesite--title" data-drupal-selector="edit-0">' . $title . '</h2>
+<p class="step-donneesite--label" data-drupal-selector="edit-1"> ' . $descp . ' </p>
 </div>'
     ];
     return $this->reponse([
       'form' => $form,
       'model' => $fields
     ]);
+  }
+  
+  protected function translateConfigField(array $settings) {
+    if (!empty($settings['list_options']))
+      foreach ($settings['list_options'] as $k => $val) {
+        $settings['list_options'][$k]['label'] = $this->t($val['label']);
+        if (!empty($val['description']['value']))
+          $settings['list_options'][$k]['description']['value'] = $this->t($val['description']['value']);
+      }
+    return $settings;
   }
   
   /**

@@ -25,7 +25,8 @@ class VuejsEntityController extends ControllerBase {
         $img_url = $renderStyle->buildUrl($file->getFileUri());
       }
       else
-        // $img_url = \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
+        // $img_url =
+        // \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
         // ou
         $img_url = \Drupal::service('file_system')->realpath($file->getFileUri());
     }
@@ -46,6 +47,20 @@ class VuejsEntityController extends ControllerBase {
       $options[$value->id()] = 0;
     }
     return $this->reponse($options);
+  }
+  
+  public function getStringTranslate() {
+    $strings = [
+      'next' => $this->t('Next'),
+      'previous' => $this->t('Previous'),
+      'create_web_site' => $this->t('I create my site'),
+      'page_save_1' => $this->t("If your content suits you, click on the button
+       <b> 'I create my site' </b>. You could change it at any time."),
+      'page_save_vue' => $this->t('Visit your new site'),
+      "page_save_admin" => $this->t('Manage your content'),
+      "page_save_url" => $this->t('Your website:')
+    ];
+    return $this->reponse($strings);
   }
   
   /**

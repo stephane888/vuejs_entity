@@ -81,6 +81,14 @@ vuejs_entity.layout.add.subconfig:
     _title: 'ModelChoisieForm'
   requirements:
     _access: 'TRUE' 
+
+vuejs_entity.default-string:
+  path: '/vuejs-entity/default-string'
+  defaults:
+    _controller: '\Drupal\vuejs_entity\Controller\VuejsEntityController::getStringTranslate'
+    _title: 'ModelChoisieForm'
+  requirements:
+    _access: 'TRUE' 
     
     
     
