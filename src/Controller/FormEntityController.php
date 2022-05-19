@@ -41,6 +41,8 @@ class FormEntityController extends ControllerBase {
       ]
     ];
     $build['content']['#attached']['library'][] = 'vuejs_entity/vuejs_entity';
+    // $build['content']['#attached']['drupalSettings']['vuejs_entity']['language']
+    // = \Drupal::languageManager()->getCurrentLanguage();
     return $build;
   }
   

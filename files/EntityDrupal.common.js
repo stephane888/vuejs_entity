@@ -32216,8 +32216,10 @@ var textarea_layout_component = (0,componentNormalizer/* default */.Z)(
 /* harmony import */ var _siteweb_AppVuejs_entity_drupal_node_modules_babel_runtime_helpers_esm_objectSpread2_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(93019);
 /* harmony import */ var wbuutilities__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(84184);
 
+ //
 
 /* harmony default export */ __webpack_exports__["Z"] = ((0,_siteweb_AppVuejs_entity_drupal_node_modules_babel_runtime_helpers_esm_objectSpread2_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z)((0,_siteweb_AppVuejs_entity_drupal_node_modules_babel_runtime_helpers_esm_objectSpread2_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z)({}, wbuutilities__WEBPACK_IMPORTED_MODULE_1__/* .AjaxToastBootStrap */ .Ht), {}, {
+  languageId: window.drupalSettings && window.drupalSettings.path && window.drupalSettings.path.currentLanguage ? window.drupalSettings.path.currentLanguage : null,
   TestDomain: "http://v2lesroisdelareno.kksa"
 }));
 
@@ -32492,6 +32494,12 @@ var basicRequest = {
   baseUrl: null,
 
   /**
+   * Utiliser si le module supporte la traduction
+   * example : fr, en, ar ...
+   */
+  languageId: null,
+
+  /**
    * Permet de determiner, si nous sommes en local ou pas.
    * @public
    * @returns Booleans
@@ -32510,6 +32518,8 @@ var basicRequest = {
     var _this = this;
 
     return new Promise(function (resolv, reject) {
+      if (_this.languageId) url = "/" + _this.languageId + url;
+      console.log(" LanguageId : ", _this.languageId);
       var urlFinal = url.includes("://") ? url : _this.getBaseUrl() + url;
       InstAxios.post(urlFinal, datas, configs).then(function (reponse) {
         resolv({
@@ -32553,6 +32563,7 @@ var basicRequest = {
     var _this3 = this;
 
     return new Promise(function (resolv, reject) {
+      if (_this3.languageId) url = "/" + _this3.languageId + url;
       var urlFinal = url.includes("://") ? url : _this3.getBaseUrl() + url;
       InstAxios.get(urlFinal, configs).then(function (reponse) {
         resolv({
@@ -95928,6 +95939,7 @@ var es_string_includes = __webpack_require__(32023);
 ;// CONCATENATED MODULE: ./src/components/formRender/config.js
 
 
+console.log("config Render : ", rootConfig/* default */.Z);
 /* harmony default export */ var config = ((0,objectSpread2/* default */.Z)({}, rootConfig/* default */.Z));
 // EXTERNAL MODULE: ./src/components/fieldsDrupal/loadField.js + 34 modules
 var loadField = __webpack_require__(37439);
@@ -95956,6 +95968,7 @@ var page_save = __webpack_require__(45006);
 
 
 
+console.log("config store : ", config);
 /* harmony default export */ var storeFields = ({
   namespaced: true,
   state: function state() {
@@ -96082,6 +96095,7 @@ var page_save = __webpack_require__(45006);
     loadForm: function loadForm(_ref) {
       var commit = _ref.commit;
       commit("ACTIVE_RUNNING");
+      console.log(" loadForm config ", config);
       return config.bPost("/vuejs-entity/form/donnee_internet_entity/default/bundle").then(function (resp) {
         if (resp.data) {
           commit("SET_FORM", resp.data);
