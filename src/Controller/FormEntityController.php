@@ -16,13 +16,39 @@ use Stephane888\Debug\Utility as UtilityError;
 use Drupal\node\Entity\Node;
 use Drupal\block_content\Entity\BlockContent;
 use Drupal\commerce_product\Entity\Product;
+use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\system\Entity\Menu;
+use Drupal\menu_link_content\Entity\MenuLinkContent;
+use Drupal\block\Entity\Block;
 
 /**
  * Returns responses for vuejs entity routes.
  */
 class FormEntityController extends ControllerBase {
-  protected static $field_domain_access = 'field_domain_access';
+  protected static $field_domain_access = \Drupal\domain_access\DomainAccessManagerInterface::DOMAIN_ACCESS_FIELD;
+  protected static $field_source = \Drupal\domain_source\DomainSourceElementManagerInterface::DOMAIN_SOURCE_FIELD;
   protected static $field_domain_all_affiliates = 'field_domain_all_affiliates';
+  protected static $field_un_use_paragrph = [
+    'id',
+    'revision_id',
+    'langcode',
+    'uuid',
+    'status',
+    'created',
+    'type',
+    'parent_id',
+    'parent_type',
+    'parent_field_name',
+    'parent_field_name',
+    'default_langcode',
+    'revision_default',
+    'revision_translation_affected',
+    'revision_translation_affected',
+    "revision_translation_affected",
+    'content_translation_source',
+    'content_translation_outdated',
+    'content_translation_changed'
+  ];
   
   /**
    *
@@ -75,15 +101,123 @@ class FormEntityController extends ControllerBase {
   }
   
   /**
+   * Permet de generer une page web à partir de l'id du model fournit.
+   */
+  public function generatePageWebByModel(Request $Request, $id) {
+    /**
+     * C'est le contenu model.
+     * Dans ce contenu model, seul quelques sont necessaire.
+     * [ layout_paragraphs ]
+     *
+     * @var \Drupal\creation_site_virtuel\Entity\SiteTypeDatas $entityModel
+     */
+    $entityModel = $this->entityTypeManager()->getStorage("site_type_datas")->load($id);
+    if ($entityModel) {
+      try {
+        $values = Json::decode($Request->getContent(), true);
+        $values['type'] = $entityModel->getType();
+        // On generate la page web.
+        /**
+         *
+         * @var \Drupal\creation_site_virtuel\Entity\SiteInternetEntity $pageWeb
+         */
+        $pageWeb = $this->entityTypeManager()->getStorage("site_internet_entity")->create($values);
+        $pageWeb->set('layout_paragraphs', $entityModel->get('layout_paragraphs')->getValue());
+        $this->duplicateExistantReference($pageWeb);
+        $pageWeb->save();
+        return $this->reponse($pageWeb->toArray());
+      }
+      catch (\Exception $e) {
+        return $this->reponse(UtilityError::errorAll($e), 400, $e->getMessage());
+      }
+    }
+    else
+      $this->reponse([], 400, "Le contenu model n'existe plus : " . $id);
+  }
+  
+  /**
+   * Permet d'ajouter le contenu d'un paragraph dans une entité.
+   */
+  public function AddParagraphInEntity(Request $Request, $entity_type_id, $bundle) {
+    try {
+      $datas = Json::decode($Request->getContent(), true);
+      $valuesEntity = [];
+      if (!empty($datas["entity"])) {
+        $valuesEntity = $datas["entity"];
+      }
+      /**
+       *
+       * @var \Drupal\Core\Entity\EntityStorageInterface $entity_type
+       */
+      $entity_type = $this->entityTypeManager()->getStorage($entity_type_id);
+      if ($bundle == $entity_type_id) {
+        $entity = $entity_type->create($valuesEntity);
+      }
+      else {
+        $valuesEntity['type'] = $bundle;
+        $entity = $entity_type->create($valuesEntity);
+      }
+      $entity->save();
+      //
+      if (!empty($datas["paragraph"]))
+        $valuesEntity = $datas["paragraph"];
+      // On cree le paragraph
+      $entity_P = $this->entityTypeManager()->getStorage('paragraph')->create($valuesEntity);
+      $entity_P->save();
+      // on l'ajoute à l'entité
+      $entity->set('layout_paragraphs', $entity_P->id());
+      $entity->save();
+      return $this->reponse($entity->toArray());
+    }
+    catch (\Exception $e) {
+      return $this->reponse(UtilityError::errorAll($e), 400, $e->getMessage());
+    }
+  }
+  
+  /**
+   *
+   * @param Request $Request
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   */
+  function AddBlockInRegion(Request $Request) {
+    $themes = \Drupal::service('theme_handler')->listInfo();
+    try {
+      $values = Json::decode($Request->getContent(), true);
+      if (empty($themes[$values['theme']])) {
+        drupal_flush_all_caches();
+        return $this->reponse([
+          $themes,
+          system_region_list($values['theme'])
+        ], 400);
+      }
+      /**
+       *
+       * @var Block $block
+       */
+      $block = $this->entityTypeManager()->getStorage('block')->create($values);
+      // $block->set('region', $values['theme']);
+      $block->save();
+      return $this->reponse($block->toArray());
+    }
+    catch (\Exception $e) {
+      return $this->reponse(UtilityError::errorAll($e), 400, $e->getMessage());
+    }
+  }
+  
+  /**
    * Duplique les entites existante et changent de domain.
    * Fonctionne uniquement sur les nodes.
    */
-  protected function duplicateExistantReference(Node &$entity) {
+  protected function duplicateExistantReference(\Drupal\Core\Entity\ContentEntityBase &$entity) {
     $uid = \Drupal::currentUser()->id();
-    $entity->setCreatedTime(time());
-    $entity->setChangedTime(time());
-    $entity->setOwnerId($uid);
-    $entity->setPublished();
+    if (method_exists($entity, 'setCreatedTime'))
+      $entity->setCreatedTime(time());
+    if (method_exists($entity, 'setChangedTime'))
+      $entity->setChangedTime(time());
+    if (method_exists($entity, 'setOwnerId'))
+      $entity->setOwnerId($uid);
+    if (method_exists($entity, 'setPublished'))
+      $entity->setPublished();
     // On desactive la disponibilité du contenu sur tous les domaines.
     if ($entity->hasField(self::$field_domain_all_affiliates)) {
       $entity->set(self::$field_domain_all_affiliates, false);
@@ -91,20 +225,40 @@ class FormEntityController extends ControllerBase {
     $values = $entity->toArray();
     foreach ($values as $k => $vals) {
       if (!empty($vals[0]['target_id'])) {
-        $newNodesIds = [];
         $setings = $entity->get($k)->getSettings();
+        // Duplication des paragraph
+        if (!empty($setings['target_type']) && $setings['target_type'] == 'paragraph') {
+          $NewParagraphIds = [];
+          foreach ($vals as $value) {
+            $Paragraph = Paragraph::load($value['target_id']);
+            if ($Paragraph) {
+              $CloneParagraph = $Paragraph->createDuplicate();
+              if ($CloneParagraph->hasField(self::$field_domain_access)) {
+                $CloneParagraph->set(self::$field_domain_access, $entity->get(self::$field_domain_access)->getValue());
+              }
+              // On verifie pour les sous entites.
+              $this->duplicateExistantReference($CloneParagraph);
+              $CloneParagraph->save();
+              $NewParagraphIds[] = [
+                'target_id' => $CloneParagraph->id()
+              ];
+            }
+          }
+          $entity->set($k, $NewParagraphIds);
+        }
         // Duplication des sous nodes.
-        if (!empty($setings['target_type']) && $setings['target_type'] == 'node') {
+        elseif (!empty($setings['target_type']) && $setings['target_type'] == 'node') {
+          $newNodesIds = [];
           foreach ($vals as $value) {
             $node = Node::load($value['target_id']);
             if ($node) {
               $cloneNode = $node->createDuplicate();
-              // On verifie pour les sous entites.
-              $this->duplicateExistantReference($cloneNode);
               // On ajoute le champs field_domain_access; ci-possible.
               if ($cloneNode->hasField(self::$field_domain_access)) {
                 $cloneNode->set(self::$field_domain_access, $entity->get(self::$field_domain_access)->getValue());
               }
+              // On verifie pour les sous entites.
+              $this->duplicateExistantReference($cloneNode);
               //
               $cloneNode->save();
               $newNodesIds[] = [
@@ -145,10 +299,9 @@ class FormEntityController extends ControllerBase {
                 $val = $CloneBlockContent->get('info')->first()->getValue();
                 $dmn = $entity->get(self::$field_domain_access)->first()->getValue();
                 $dmn = empty($dmn['target_id']) ? 'domaine.test' : $dmn['target_id'];
-                if (!empty($val['value']))
-                  $val = $val['value'] . ' - ' . $dmn . ' - ' . $entity->bundle();
+                $val = $dmn . ' : ' . $CloneBlockContent->get('type')->target_id;
                 $CloneBlockContent->get('info')->setValue([
-                  'value' => $val . count($newBlockIds)
+                  'value' => $val . ' : ' . count($newBlockIds)
                 ]);
               }
               //
@@ -191,6 +344,79 @@ class FormEntityController extends ControllerBase {
     }
   }
   
+  function createMenuAndItems(Request $Request) {
+    try {
+      $datas = Json::decode($Request->getContent(), true);
+      // creation du menu
+      if (!empty($datas['menu'])) {
+        /**
+         *
+         * @var Menu $menu
+         */
+        $menu = $this->entityTypeManager()->getStorage('menu')->create($datas['menu']);
+        $menu->save();
+        $menuLinkContents = [];
+        if (!empty($datas['items'])) {
+          foreach ($datas['items'] as $item) {
+            $item['bundle'] = [
+              [
+                'target_id' => $menu->id()
+              ]
+            ];
+            $item['menu_name'] = [
+              [
+                'value' => $menu->id()
+              ]
+            ];
+            /**
+             *
+             * @var MenuLinkContent $menuLinkContent
+             */
+            $menuLinkContent = $this->entityTypeManager()->getStorage('menu_link_content')->create($item);
+            $menuLinkContent->save();
+            $menuLinkContents[] = $menuLinkContent->toArray();
+          }
+        }
+        $domain = $datas['domain'];
+        // Create block-content for menu;
+        $values = [
+          'type' => [
+            [
+              'target_id' => "menus"
+            ]
+          ],
+          'info' => [
+            [
+              'value' => $domain['field_domain_access'] . ': menu'
+            ]
+          ],
+          'field_domain_access' => [
+            [
+              'target_id' => $domain['field_domain_access']
+            ]
+          ],
+          'field_menus' => [
+            [
+              'target_id' => $menu->id()
+            ]
+          ]
+        ];
+        $block_content = $this->entityTypeManager()->getStorage('block_content')->create($values);
+        $block_content->save();
+        return $this->reponse([
+          'menu' => $menu->toArray(),
+          'items' => $menuLinkContents,
+          'block_content' => $block_content->toArray()
+        ]);
+      }
+      else
+        throw new \ErrorException('Menu non definit');
+    }
+    catch (\Exception $e) {
+      return $this->reponse(UtilityError::errorAll($e), 400, $e->getMessage());
+    }
+  }
+  
   /**
    * pour plus d'info.
    * https://stackoverflow.com/questions/40514051/using-preg-replace-to-convert-camelcase-to-snake-case
@@ -230,7 +456,12 @@ class FormEntityController extends ControllerBase {
      *
      * @var DonneeSiteInternetEntity $entity
      */
-    $entity = $EntityStorage->create();
+    if ($bundle)
+      $entity = $EntityStorage->create([
+        'type' => $bundle
+      ]);
+    else
+      $entity = $EntityStorage->create();
     $fields = $entity->toArray();
     
     /**
@@ -241,10 +472,17 @@ class FormEntityController extends ControllerBase {
     $Allfields = $entityManager->getFieldDefinitions($entity_type_id, $bundle);
     
     /**
+     * ( NB )
      *
      * @var \Drupal\Core\Entity\Entity\EntityFormDisplay $entity_form_view
      */
     $entity_form_view = $this->entityTypeManager()->getStorage('entity_form_display')->load($entity_type_id . '.' . $entity_type_id . '.default');
+    if (!$entity_form_view) {
+      $entity_form_view = $this->entityTypeManager()->getStorage('entity_form_display')->create([
+        'bundle' => $bundle ? $bundle : $entity_type_id,
+        'targetEntityType' => $entity_type_id
+      ]);
+    }
     $fieldsEntityForm = $entity_form_view->toArray();
     
     $form = [];
@@ -263,11 +501,44 @@ class FormEntityController extends ControllerBase {
           $form[$k]['cardinality'] = $field->getFieldStorageDefinition()->getCardinality();
           $form[$k]['constraints'] = $field->getFieldStorageDefinition()->getConstraints();
         }
+        // Pour la creation des paragraphs, on veut juste les champs important.
+        if ($entity_type_id == 'paragraph') {
+          if (in_array($k, self::$field_un_use_paragrph)) {
+            unset($form[$k]);
+            continue;
+          }
+        }
         //
         if (!empty($fieldsEntityForm['content'][$k]['settings'])) {
           $form[$k]['entity_form_settings'] = $this->translateConfigField($fieldsEntityForm['content'][$k]['settings']);
           $form[$k]['entity_form_type'] = $fieldsEntityForm['content'][$k]['type'];
           $form[$k]['entity_form'] = $fieldsEntityForm['content'][$k];
+        }
+        // on recupere les pages de maniere dynamique.
+        if ($entity_type_id == 'donnee_internet_entity' && $k == 'pages') {
+          $query = $this->entityTypeManager()->getStorage('site_type_datas')->getQuery();
+          $query->condition('is_home_page', 0);
+          $query->condition('status', true);
+          $ids = $query->execute();
+          if ($ids) {
+            $entities = $this->entityTypeManager()->getStorage('site_type_datas')->loadMultiple($ids);
+            $pages = [];
+            foreach ($entities as $entity) {
+              /**
+               *
+               * @var \Drupal\creation_site_virtuel\Entity\SiteTypeDatas $entity
+               */
+              $pages[] = [
+                'label' => $entity->getName(),
+                'image' => $entity->getFirstImage(),
+                'value' => $entity->id(),
+                'description' => [
+                  'value' => $entity->get('description')->value
+                ]
+              ];
+            }
+            $form[$k]['entity_form_settings']['list_options'] = $pages;
+          }
         }
       }
       else {
@@ -275,14 +546,16 @@ class FormEntityController extends ControllerBase {
       }
     }
     // on recupere les champs annexe:
-    $title = $this->t("Let's bring your ideas to life");
-    $descp = $this->t('Answer a few questions and get the best tools for your creations');
-    $form['html_1'] = [
-      'type' => 'render_html',
-      'content' => '<div class="step-donneesite--header with-tablet mx-auto text-center" data-drupal-selector="edit-ctm-description"><h2 class="step-donneesite--title" data-drupal-selector="edit-0">' . $title . '</h2>
+    if ($entity_type_id == 'donnee_internet_entity') {
+      $title = $this->t("Let's bring your ideas to life");
+      $descp = $this->t('Answer a few questions and get the best tools for your creations');
+      $form['html_1'] = [
+        'type' => 'render_html',
+        'content' => '<div class="step-donneesite--header with-tablet mx-auto text-center" data-drupal-selector="edit-ctm-description"><h2 class="step-donneesite--title" data-drupal-selector="edit-0">' . $title . '</h2>
 <p class="step-donneesite--label" data-drupal-selector="edit-1"> ' . $descp . ' </p>
 </div>'
-    ];
+      ];
+    }
     return $this->reponse([
       'form' => $form,
       'model' => $fields

@@ -40,7 +40,8 @@ vuejs_entity.model_choisie_form:
     _title: 'ModelChoisieForm'
   requirements:
     _access: 'TRUE'
-    
+
+#    
 vuejs_entity.create_entity:
   path: '/vuejs-entity/entity/save/{entity_type_id}'
   defaults:
@@ -48,7 +49,44 @@ vuejs_entity.create_entity:
     _title: 'ModelChoisieForm'
   requirements:
     _access: 'TRUE'
+
+#    
+vuejs_entity.generate_page_web:
+  path: '/vuejs-entity/entity/generate-page-web/{id}'
+  defaults:
+    _controller: '\Drupal\vuejs_entity\Controller\FormEntityController::generatePageWebByModel'
+    _title: 'ModelChoisieForm'
+  requirements:
+    _access: 'TRUE'
+
+#    
+vuejs_entity.add_paragraph_in_entity:
+  path: '/vuejs-entity/entity/add-paragrph-in-entity/{entity_type_id}/{bundle}'
+  defaults:
+    _controller: '\Drupal\vuejs_entity\Controller\FormEntityController::AddParagraphInEntity'
+    _title: 'Add Paragraph In Entity'
+  requirements:
+    _access: 'TRUE'
     
+#    
+vuejs_entity.add_block_in_region:
+  path: '/vuejs-entity/entity/add-block-in-region'
+  defaults:
+    _controller: '\Drupal\vuejs_entity\Controller\FormEntityController::AddBlockInRegion'
+    _title: 'Add Block In Region'
+  requirements:
+    _access: 'TRUE'
+    
+#    
+vuejs_entity.add_menu_items:
+  path: '/vuejs-entity/entity/add-menu-items'
+  defaults:
+    _controller: '\Drupal\vuejs_entity\Controller\FormEntityController::createMenuAndItems'
+    _title: 'Add Block In Region'
+  requirements:
+    _access: 'TRUE'
+        
+#    
 vuejs_entity.create_domain:
   path: '/vuejs-entity/domaine/add/{domain_ovh_entity_id}'
   defaults:

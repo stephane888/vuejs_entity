@@ -9,5 +9,8 @@
             "email": "kksasteph888@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+    	"stephane888/login_rx_vuejs": "dev-1x|^1.0",
+    	"stephane888/filesmanager": "dev-1x|^1.0.1"
+    }
 }

@@ -4,3 +4,6 @@ description: permet de gerer les entity via vuejs et les taches supplementaire
 package: Custom
 core: 8.x
 core_version_requirement: ^8 || ^9
+dependencies:
+  - filesmanager
+  - login_rx_vuejs
