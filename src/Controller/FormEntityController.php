@@ -81,7 +81,7 @@ class FormEntityController extends ControllerBase {
    */
   public function saveDatas(Request $Request, $entity_type_id) {
     $entity_type = $this->entityTypeManager()->getStorage($entity_type_id);
-    $values = Json::decode($Request->getContent(), true);
+    $values = Json::decode($Request->getContent());
     if ($entity_type && !empty($values)) {
       try {
         /**
@@ -140,7 +140,7 @@ class FormEntityController extends ControllerBase {
    */
   public function AddParagraphInEntity(Request $Request, $entity_type_id, $bundle) {
     try {
-      $datas = Json::decode($Request->getContent(), true);
+      $datas = Json::decode($Request->getContent());
       $valuesEntity = [];
       if (!empty($datas["entity"])) {
         $valuesEntity = $datas["entity"];
@@ -182,7 +182,7 @@ class FormEntityController extends ControllerBase {
   function AddBlockInRegion(Request $Request) {
     $themes = \Drupal::service('theme_handler')->listInfo();
     try {
-      $values = Json::decode($Request->getContent(), true);
+      $values = Json::decode($Request->getContent());
       if (empty($themes[$values['theme']])) {
         drupal_flush_all_caches();
         return $this->reponse([
@@ -346,7 +346,7 @@ class FormEntityController extends ControllerBase {
   
   function createMenuAndItems(Request $Request) {
     try {
-      $datas = Json::decode($Request->getContent(), true);
+      $datas = Json::decode($Request->getContent());
       // creation du menu
       if (!empty($datas['menu'])) {
         /**
@@ -449,7 +449,7 @@ class FormEntityController extends ControllerBase {
    * Builds the response.
    * REcupere les champs pour un entité
    */
-  public function getForm($entity_type_id, $view_mode, $bundle = null) {
+  public function getForm(Request $Request, $entity_type_id, $view_mode, $bundle = null) {
     //
     $EntityStorage = $this->entityTypeManager()->getStorage($entity_type_id);
     /**
@@ -516,9 +516,27 @@ class FormEntityController extends ControllerBase {
         }
         // on recupere les pages de maniere dynamique.
         if ($entity_type_id == 'donnee_internet_entity' && $k == 'pages') {
+          //
+          $param = Json::decode($Request->getContent());
+          $categorie_id = null;
+          if (!empty($param['homepage'])) {
+            /**
+             *
+             * @var \Drupal\creation_site_virtuel\Entity\SiteTypeDatas $model
+             */
+            $model = $this->entityTypeManager()->getStorage('site_type_datas')->load($param['homepage']);
+            $categorie_id = $model->getCategorie();
+          }
+          //
           $query = $this->entityTypeManager()->getStorage('site_type_datas')->getQuery();
           $query->condition('is_home_page', 0);
           $query->condition('status', true);
+          if ($categorie_id) {
+            $query->condition('terms', $categorie_id);
+          }
+          else {
+            $query->range(0, 4);
+          }
           $ids = $query->execute();
           if ($ids) {
             $entities = $this->entityTypeManager()->getStorage('site_type_datas')->loadMultiple($ids);
@@ -530,7 +548,9 @@ class FormEntityController extends ControllerBase {
                */
               $pages[] = [
                 'label' => $entity->getName(),
-                'image' => $entity->getFirstImage(),
+                'image' => [
+                  $entity->getFirstImage()
+                ],
                 'value' => $entity->id(),
                 'description' => [
                   'value' => $entity->get('description')->value
