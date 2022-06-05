@@ -279,9 +279,6 @@ class FormEntityController extends ControllerBase {
               // On ajoute le champs field_domain_access; ci-possible.
               if ($CloneBlockContent->hasField(self::$field_domain_access)) {
                 $dmn = $entity->get(self::$field_domain_access)->first()->getValue();
-                $dmn = empty($dmn['target_id']) ? null : [
-                  'value' => $dmn['target_id']
-                ];
                 if ($dmn)
                   $CloneBlockContent->get(self::$field_domain_access)->setValue($dmn);
               }
@@ -519,6 +516,7 @@ class FormEntityController extends ControllerBase {
           //
           $param = Json::decode($Request->getContent());
           $categorie_id = null;
+          $type = null;
           if (!empty($param['homepage'])) {
             /**
              *
@@ -526,6 +524,7 @@ class FormEntityController extends ControllerBase {
              */
             $model = $this->entityTypeManager()->getStorage('site_type_datas')->load($param['homepage']);
             $categorie_id = $model->getCategorie();
+            $type = $model->getType();
           }
           //
           $query = $this->entityTypeManager()->getStorage('site_type_datas')->getQuery();
@@ -536,6 +535,9 @@ class FormEntityController extends ControllerBase {
           }
           else {
             $query->range(0, 4);
+          }
+          if ($type) {
+            $query->condition('type', $type);
           }
           $ids = $query->execute();
           if ($ids) {
