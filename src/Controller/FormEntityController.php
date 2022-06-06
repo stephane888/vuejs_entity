@@ -537,7 +537,7 @@ class FormEntityController extends ControllerBase {
             $query->range(0, 4);
           }
           if ($type) {
-            $query->condition('type', $type);
+            $query->condition('site_internet_entity_type', $type);
           }
           $ids = $query->execute();
           if ($ids) {
