@@ -1,16 +1,17 @@
 {
-    "name": "stephane888/vuejs_entity",
-    "description": "none",
-    "type": "drupal-module-custom",
-    "license": "MIt",
-    "authors": [
-        {
-            "name": "stephane888",
-            "email": "kksasteph888@gmail.com"
-        }
-    ],
-    "require": {
-    	"stephane888/login_rx_vuejs": "dev-1x|^1.0",
-    	"stephane888/filesmanager": "dev-1x|^1.0.1"
+  "name": "stephane888/vuejs_entity",
+  "description": "none",
+  "type": "drupal-module-custom",
+  "license": "MIt",
+  "authors": [
+    {
+      "name": "stephane888",
+      "email": "kksasteph888@gmail.com"
     }
+  ],
+  "require": {
+    "stephane888/login_rx_vuejs": "dev-1x|^1.0",
+    "stephane888/creation_site_virtuel": "dev-1x|^1.0",
+    "stephane888/filesmanager": "dev-1x|^1.0.1"
+  }
 }
