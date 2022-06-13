@@ -30272,7 +30272,7 @@ var basicRequest = {
     var _this = this;
 
     return new Promise(function (resolv, reject) {
-      if (_this.languageId || _this.languageId !== undefined) url = "/" + _this.languageId + url;
+      if (_this.languageId || _this.languageId !== undefined && _this.languageId !== null) url = "/" + _this.languageId + url;
       console.log(" LanguageId : ", _this.languageId);
       var urlFinal = url.includes("://") ? url : _this.getBaseUrl() + url;
       InstAxios.post(urlFinal, datas, configs).then(function (reponse) {
@@ -30317,7 +30317,7 @@ var basicRequest = {
     var _this3 = this;
 
     return new Promise(function (resolv, reject) {
-      if (_this3.languageId || _this3.languageId !== undefined) url = "/" + _this3.languageId + url;
+      if (_this3.languageId || _this3.languageId !== undefined && _this3.languageId !== null) url = "/" + _this3.languageId + url;
       var urlFinal = url.includes("://") ? url : _this3.getBaseUrl() + url;
       InstAxios.get(urlFinal, configs).then(function (reponse) {
         resolv({
