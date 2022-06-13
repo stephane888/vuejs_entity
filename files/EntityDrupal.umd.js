@@ -30272,7 +30272,7 @@ var basicRequest = {
     var _this = this;
 
     return new Promise(function (resolv, reject) {
-      if (_this.languageId) url = "/" + _this.languageId + url;
+      if (_this.languageId || _this.languageId !== undefined) url = "/" + _this.languageId + url;
       console.log(" LanguageId : ", _this.languageId);
       var urlFinal = url.includes("://") ? url : _this.getBaseUrl() + url;
       InstAxios.post(urlFinal, datas, configs).then(function (reponse) {
@@ -30317,7 +30317,7 @@ var basicRequest = {
     var _this3 = this;
 
     return new Promise(function (resolv, reject) {
-      if (_this3.languageId) url = "/" + _this3.languageId + url;
+      if (_this3.languageId || _this3.languageId !== undefined) url = "/" + _this3.languageId + url;
       var urlFinal = url.includes("://") ? url : _this3.getBaseUrl() + url;
       InstAxios.get(urlFinal, configs).then(function (reponse) {
         resolv({
@@ -93083,6 +93083,7 @@ var dist = __webpack_require__(40473);
 
 
 
+
  //
 
 /* harmony default export */ var saveEntity = ((0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({}, rootConfig/* default */.Z), {}, {
@@ -93094,7 +93095,7 @@ var dist = __webpack_require__(40473);
   runStep: function runStep(steps, state) {
     var _this = this;
 
-    console.log("currentBuildStep : ", this.currentBuildStep); // On recupere
+    console.log(" currentBuildStep : ", this.currentBuildStep); // On recupere
 
     var getDataStep = function getDataStep() {
       if (steps[_this.currentBuildStep]) {
@@ -93268,6 +93269,8 @@ var dist = __webpack_require__(40473);
       }); // Save domaine on drupal
 
       return this.bPost("/vuejs-entity/domaine/add/" + this.donneeInternetEntity.domain_ovh_entity[0].target_id);
+    } else {
+      throw new Error(" Le nom de domaine n'a pas pu etre creer ");
     }
   },
   // On va cree la page d'accueil en function de l'identifiant present dans l'url.
