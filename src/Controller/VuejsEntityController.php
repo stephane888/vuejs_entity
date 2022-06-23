@@ -58,7 +58,8 @@ class VuejsEntityController extends ControllerBase {
        <b> 'I create my site' </b>. You could change it at any time."),
       'page_save_vue' => $this->t('Visit your new site'),
       "page_save_admin" => $this->t('Manage your content'),
-      "page_save_url" => $this->t('Your website:')
+      "page_save_url" => $this->t('Your website:'),
+      "ask_to_login" => $this->t(' Please log in to save your data ')
     ];
     return $this->reponse($strings);
   }
