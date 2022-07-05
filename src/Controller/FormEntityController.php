@@ -590,6 +590,40 @@ class FormEntityController extends ControllerBase {
             }
             $form[$k]['entity_form_settings']['list_options'] = $pages;
           }
+          // on ajoute les pages par defaut. par defaut on considere que c'est
+          // un site normal.
+          $fields[$k] = [
+            [
+              'value' => 4
+            ],
+            [
+              'value' => 3
+            ],
+            [
+              'value' => 5
+            ],
+            [
+              'value' => 16
+            ]
+          ];
+          // site ecommerce.
+          $typeSiteEcommerce = [
+            18,
+            7
+          ];
+          if (in_array($categorie_id, $typeSiteEcommerce)) {
+            $fields[$k] = [
+              [
+                'value' => 18
+              ],
+              [
+                'value' => 19
+              ],
+              [
+                'value' => 22
+              ]
+            ];
+          }
         }
       }
       else {
