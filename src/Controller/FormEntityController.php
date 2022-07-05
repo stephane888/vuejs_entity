@@ -82,6 +82,7 @@ class FormEntityController extends ControllerBase {
   public function saveDatas(Request $Request, $entity_type_id) {
     $entity_type = $this->entityTypeManager()->getStorage($entity_type_id);
     $values = Json::decode($Request->getContent());
+    
     if ($entity_type && !empty($values)) {
       try {
         /**
@@ -95,8 +96,17 @@ class FormEntityController extends ControllerBase {
         return $this->reponse($entity->toArray());
       }
       catch (\Exception $e) {
-        return $this->reponse(UtilityError::errorAll($e), 400, $e->getMessage());
+        $user = \Drupal::currentUser();
+        $errors = UtilityError::errorAll($e);
+        $errors[] = 'error create : ' . $entity_type_id;
+        $errors[] = 'current user id : ' . $user->id();
+        $this->loggerFactory->get('vuejs_entity')->critical($e->getMessage() . '<br>' . implode("<br>", $errors));
+        return $this->reponse($errors, 400, $e->getMessage());
       }
+    }
+    else {
+      $this->loggerFactory->get('vuejs_entity')->critical(" impossible de creer l'entité : " . $entity_type_id);
+      return $this->reponse([], 400, "erreur inconnu");
     }
   }
   
@@ -128,11 +138,15 @@ class FormEntityController extends ControllerBase {
         return $this->reponse($pageWeb->toArray());
       }
       catch (\Exception $e) {
-        return $this->reponse(UtilityError::errorAll($e), 400, $e->getMessage());
+        $errors = UtilityError::errorAll($e);
+        $this->loggerFactory->get('vuejs_entity')->critical($e->getMessage() . '<br>' . implode("<br>", $errors));
+        return $this->reponse($errors, 400, $e->getMessage());
       }
     }
-    else
-      $this->reponse([], 400, "Le contenu model n'existe plus : " . $id);
+    else {
+      $this->loggerFactory->get('vuejs_entity')->critical(" Le contenu model n'existe plus : " . $id);
+      return $this->reponse([], 400, "Le contenu model n'existe plus : " . $id);
+    }
   }
   
   /**
@@ -170,7 +184,9 @@ class FormEntityController extends ControllerBase {
       return $this->reponse($entity->toArray());
     }
     catch (\Exception $e) {
-      return $this->reponse(UtilityError::errorAll($e), 400, $e->getMessage());
+      $errors = UtilityError::errorAll($e);
+      $this->loggerFactory->get('vuejs_entity')->critical($e->getMessage() . '<br>' . implode("<br>", $errors));
+      return $this->reponse($errors, 400, $e->getMessage());
     }
   }
   
@@ -200,7 +216,9 @@ class FormEntityController extends ControllerBase {
       return $this->reponse($block->toArray());
     }
     catch (\Exception $e) {
-      return $this->reponse(UtilityError::errorAll($e), 400, $e->getMessage());
+      $errors = UtilityError::errorAll($e);
+      $this->loggerFactory->get('vuejs_entity')->critical($e->getMessage() . '<br>' . implode("<br>", $errors));
+      return $this->reponse($errors, 400, $e->getMessage());
     }
   }
   
@@ -410,7 +428,9 @@ class FormEntityController extends ControllerBase {
         throw new \ErrorException('Menu non definit');
     }
     catch (\Exception $e) {
-      return $this->reponse(UtilityError::errorAll($e), 400, $e->getMessage());
+      $errors = UtilityError::errorAll($e);
+      $this->loggerFactory->get('vuejs_entity')->critical($e->getMessage() . '<br>' . implode("<br>", $errors));
+      return $this->reponse($errors, 400, $e->getMessage());
     }
   }
   
@@ -423,22 +443,31 @@ class FormEntityController extends ControllerBase {
   public function saveDomainByOvhEntity($domain_ovh_entity_id) {
     $domain_ovh_entity = $this->entityTypeManager()->getStorage('domain_ovh_entity')->load($domain_ovh_entity_id);
     if ($domain_ovh_entity) {
-      $sub_domain = $domain_ovh_entity->getsubDomain() . '.' . $domain_ovh_entity->getZoneName();
-      /**
-       *
-       * @var \Drupal\domain\Entity\Domain $domain
-       */
-      $domain = $this->entityTypeManager()->getStorage('domain')->create();
-      $textConvert = new Convert($sub_domain);
-      $domain_id = $textConvert->toSnake();
-      $domain_id = str_replace('.', '_', $domain_id);
-      $domain->set('name', $sub_domain);
-      $domain->set('hostname', $sub_domain);
-      $domain->set('id', $domain_id);
-      $domain->set('scheme', 'http');
-      $domain->save();
-      return $this->reponse($domain->toArray());
+      try {
+        $sub_domain = $domain_ovh_entity->getsubDomain() . '.' . $domain_ovh_entity->getZoneName();
+        /**
+         *
+         * @var \Drupal\domain\Entity\Domain $domain
+         */
+        $domain = $this->entityTypeManager()->getStorage('domain')->create();
+        $textConvert = new Convert($sub_domain);
+        $domain_id = $textConvert->toSnake();
+        $domain_id = str_replace('.', '_', $domain_id);
+        $domain->set('name', $sub_domain);
+        $domain->set('hostname', $sub_domain);
+        $domain->set('id', $domain_id);
+        $domain->set('scheme', 'http');
+        $domain->save();
+        return $this->reponse($domain->toArray());
+      }
+      catch (\Exception $e) {
+        $errors = UtilityError::errorAll($e);
+        $errors[] = "domain_ovh_entity_id : " . $domain_ovh_entity_id;
+        $this->loggerFactory->get('vuejs_entity')->critical($e->getMessage() . '<br>' . implode("<br>", $errors));
+        return $this->reponse([], 400, $e->getMessage());
+      }
     }
+    $this->loggerFactory->get('vuejs_entity')->critical(" Le domaine n'est pas encore enregistrer en tant qu'entité drupal ");
     return $this->reponse([], 400, " Le domaine n'est pas encore enregistrer en tant qu'entité drupal ");
   }
   
