@@ -100,12 +100,12 @@ class FormEntityController extends ControllerBase {
         $errors = UtilityError::errorAll($e);
         $errors[] = 'error create : ' . $entity_type_id;
         $errors[] = 'current user id : ' . $user->id();
-        $this->loggerFactory->get('vuejs_entity')->critical($e->getMessage() . '<br>' . implode("<br>", $errors));
+        $this->getLogger('vuejs_entity')->critical($e->getMessage() . '<br>' . implode("<br>", $errors));
         return $this->reponse($errors, 400, $e->getMessage());
       }
     }
     else {
-      $this->loggerFactory->get('vuejs_entity')->critical(" impossible de creer l'entité : " . $entity_type_id);
+      $this->getLogger('vuejs_entity')->critical(" impossible de creer l'entité : " . $entity_type_id);
       return $this->reponse([], 400, "erreur inconnu");
     }
   }
@@ -139,12 +139,12 @@ class FormEntityController extends ControllerBase {
       }
       catch (\Exception $e) {
         $errors = UtilityError::errorAll($e);
-        $this->loggerFactory->get('vuejs_entity')->critical($e->getMessage() . '<br>' . implode("<br>", $errors));
+        $this->getLogger('vuejs_entity')->critical($e->getMessage() . '<br>' . implode("<br>", $errors));
         return $this->reponse($errors, 400, $e->getMessage());
       }
     }
     else {
-      $this->loggerFactory->get('vuejs_entity')->critical(" Le contenu model n'existe plus : " . $id);
+      $this->getLogger('vuejs_entity')->critical(" Le contenu model n'existe plus : " . $id);
       return $this->reponse([], 400, "Le contenu model n'existe plus : " . $id);
     }
   }
@@ -185,7 +185,7 @@ class FormEntityController extends ControllerBase {
     }
     catch (\Exception $e) {
       $errors = UtilityError::errorAll($e);
-      $this->loggerFactory->get('vuejs_entity')->critical($e->getMessage() . '<br>' . implode("<br>", $errors));
+      $this->getLogger('vuejs_entity')->critical($e->getMessage() . '<br>' . implode("<br>", $errors));
       return $this->reponse($errors, 400, $e->getMessage());
     }
   }
@@ -217,7 +217,7 @@ class FormEntityController extends ControllerBase {
     }
     catch (\Exception $e) {
       $errors = UtilityError::errorAll($e);
-      $this->loggerFactory->get('vuejs_entity')->critical($e->getMessage() . '<br>' . implode("<br>", $errors));
+      $this->getLogger('vuejs_entity')->critical($e->getMessage() . '<br>' . implode("<br>", $errors));
       return $this->reponse($errors, 400, $e->getMessage());
     }
   }
@@ -429,7 +429,7 @@ class FormEntityController extends ControllerBase {
     }
     catch (\Exception $e) {
       $errors = UtilityError::errorAll($e);
-      $this->loggerFactory->get('vuejs_entity')->critical($e->getMessage() . '<br>' . implode("<br>", $errors));
+      $this->getLogger('vuejs_entity')->critical($e->getMessage() . '<br>' . implode("<br>", $errors));
       return $this->reponse($errors, 400, $e->getMessage());
     }
   }
@@ -463,11 +463,11 @@ class FormEntityController extends ControllerBase {
       catch (\Exception $e) {
         $errors = UtilityError::errorAll($e);
         $errors[] = "domain_ovh_entity_id : " . $domain_ovh_entity_id;
-        $this->loggerFactory->get('vuejs_entity')->critical($e->getMessage() . '<br>' . implode("<br>", $errors));
+        $this->getLogger('vuejs_entity')->critical($e->getMessage() . '<br>' . implode("<br>", $errors));
         return $this->reponse([], 400, $e->getMessage());
       }
     }
-    $this->loggerFactory->get('vuejs_entity')->critical(" Le domaine n'est pas encore enregistrer en tant qu'entité drupal ");
+    $this->getLogger('vuejs_entity')->critical(" Le domaine n'est pas encore enregistrer en tant qu'entité drupal ");
     return $this->reponse([], 400, " Le domaine n'est pas encore enregistrer en tant qu'entité drupal ");
   }
   
