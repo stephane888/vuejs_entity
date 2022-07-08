@@ -542,6 +542,25 @@ class FormEntityController extends ControllerBase {
         }
         // on recupere les pages de maniere dynamique.
         if ($entity_type_id == 'donnee_internet_entity' && $k == 'pages') {
+          // id de page qui seront crées par defaut.
+          $defaultPages = [
+            '3' => 3,
+            '4' => 4,
+            '5' => 5,
+            '16' => 16
+          ];
+          // id de page qui seront crées par defaut pour e-commerce.
+          $defaultPagesProduct = [
+            '18' => 18,
+            '19' => 19,
+            '22' => 22
+          ];
+          // site ecommerce.( on determine les types e-commerce via l'id du
+          // champs "terms").
+          $typeSiteEcommerce = [
+            18,
+            7
+          ];
           //
           $param = Json::decode($Request->getContent());
           $categorie_id = null;
@@ -569,6 +588,28 @@ class FormEntityController extends ControllerBase {
             $query->condition('site_internet_entity_type', $type);
           }
           $ids = $query->execute();
+          // on ajoute les pages par defaut pour les types e-commerce.
+          if (in_array($categorie_id, $typeSiteEcommerce)) {
+            foreach ($defaultPagesProduct as $id) {
+              $fields[$k][] = [
+                'value' => $id
+              ];
+            }
+            // on ajoute ces ids dans les propositions afin d'obtenir les infos
+            // des pages (titre utiliser par le menu).
+            $ids += $defaultPagesProduct;
+          }
+          else {
+            // Page par defaut pourun site non e-commerce.
+            foreach ($defaultPages as $id) {
+              $fields[$k][] = [
+                'value' => $id
+              ];
+            }
+            // on ajoute ces ids dans les propositions afin d'obtenir les infos
+            // des pages (titre utiliser par le menu).
+            $ids += $defaultPages;
+          }
           if ($ids) {
             $entities = $this->entityTypeManager()->getStorage('site_type_datas')->loadMultiple($ids);
             $pages = [];
@@ -589,40 +630,6 @@ class FormEntityController extends ControllerBase {
               ];
             }
             $form[$k]['entity_form_settings']['list_options'] = $pages;
-          }
-          // on ajoute les pages par defaut. par defaut on considere que c'est
-          // un site normal.
-          $fields[$k] = [
-            [
-              'value' => 4
-            ],
-            [
-              'value' => 3
-            ],
-            [
-              'value' => 5
-            ],
-            [
-              'value' => 16
-            ]
-          ];
-          // site ecommerce.
-          $typeSiteEcommerce = [
-            18,
-            7
-          ];
-          if (in_array($categorie_id, $typeSiteEcommerce)) {
-            $fields[$k] = [
-              [
-                'value' => 18
-              ],
-              [
-                'value' => 19
-              ],
-              [
-                'value' => 22
-              ]
-            ];
           }
         }
       }

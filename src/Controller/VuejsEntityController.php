@@ -49,6 +49,10 @@ class VuejsEntityController extends ControllerBase {
     return $this->reponse($options);
   }
   
+  /**
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   */
   public function getStringTranslate() {
     $strings = [
       'next' => $this->t('Next'),

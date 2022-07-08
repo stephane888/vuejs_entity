@@ -93185,7 +93185,6 @@ var dist = __webpack_require__(40473);
 
 
 
-
  //
 
 /* harmony default export */ var saveEntity = ((0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({}, rootConfig/* default */.Z), {}, {
@@ -93194,6 +93193,10 @@ var dist = __webpack_require__(40473);
   homePageContent: {},
   domainRegister: {},
   OrtherPages: [],
+  messages: {
+    errors: [],
+    warnings: []
+  },
   runStep: function runStep(steps, state) {
     var _this = this;
 
@@ -93219,10 +93222,10 @@ var dist = __webpack_require__(40473);
 
             _this.runStep(steps, state);
           }, 500);
-          console.log(" CreateDomaine : ", resp);
         }).catch(function (resp) {
           step.status = "error";
-          console.log(" error : ", resp);
+
+          _this.runErrorsMessages(resp);
         });
         break;
 
@@ -93245,25 +93248,32 @@ var dist = __webpack_require__(40473);
           }, 500);
         }).catch(function (resp) {
           step.status = "error";
-          console.log("error : ", resp);
+
+          _this.runErrorsMessages(resp);
         });
         break;
 
       case "create_content":
         step.status = "run";
-        this.CreateOrtherPages().then(function () {
-          _this.CreateContent().then(function (resp) {
-            _this.homePageContent = resp.data;
-            setTimeout(function () {
-              step.status = "ok";
-              _this.currentBuildStep++;
+        this.CreateContent().then(function (resp) {
+          _this.homePageContent = resp.data;
+          var passNext = setTimeout(function () {
+            step.status = "ok";
+            _this.currentBuildStep++;
 
-              _this.runStep(steps, state);
-            }, 500);
-          }).catch(function (resp) {
-            step.status = "error";
-            console.log("error : ", resp);
+            _this.runStep(steps, state);
+          }, 500); // On patiente que les autres pages soit ok.
+
+          _this.CreateOrtherPages().then(function () {
+            passNext();
+          }).catch(function () {
+            // la creation des pages n'est pas un processus blocant, donc on continue meme en cas d'echac.
+            passNext();
           });
+        }).catch(function (resp) {
+          step.status = "error";
+
+          _this.runErrorsMessages(resp);
         });
         break;
 
@@ -93278,7 +93288,8 @@ var dist = __webpack_require__(40473);
           }, 500);
         }).catch(function (resp) {
           step.status = "error";
-          console.log("error : ", resp);
+
+          _this.runErrorsMessages(resp);
         });
         break;
 
@@ -93287,15 +93298,22 @@ var dist = __webpack_require__(40473);
 
         if (this.domainRegister.id) {
           this.createBlockContentHeader(state).then(function (resp) {
-            //
-            _this.addEntityToBlock(resp.data, "top_header").then(function () {
-              setTimeout(function () {
-                step.status = "ok";
-                _this.currentBuildStep++;
+            var passNext = setTimeout(function () {
+              step.status = "ok";
+              _this.currentBuildStep++;
 
-                _this.runStep(steps, state);
-              }, 500);
+              _this.runStep(steps, state);
+            }, 500);
+
+            _this.addEntityToBlock(resp.data, "top_header").then(function () {
+              passNext();
+            }).catch(function () {
+              passNext();
             });
+          }).catch(function (resp) {
+            step.status = "error";
+
+            _this.runErrorsMessages(resp);
           });
         } else {
           step.status = "error";
@@ -93310,14 +93328,22 @@ var dist = __webpack_require__(40473);
 
         if (this.domainRegister.id) {
           this.createBlockContentFooter(state).then(function (resp) {
-            _this.addEntityToBlock(resp.data, "footer").then(function () {
-              setTimeout(function () {
-                step.status = "ok";
-                _this.currentBuildStep++;
+            var passNext = setTimeout(function () {
+              step.status = "ok";
+              _this.currentBuildStep++;
 
-                _this.runStep(steps, state);
-              }, 500);
+              _this.runStep(steps, state);
+            }, 500);
+
+            _this.addEntityToBlock(resp.data, "footer").then(function () {
+              passNext();
+            }).catch(function () {
+              passNext();
             });
+          }).catch(function (resp) {
+            step.status = "error";
+
+            _this.runErrorsMessages(resp);
           });
         } else {
           step.status = "error";
@@ -93331,13 +93357,16 @@ var dist = __webpack_require__(40473);
         step.status = "run";
 
         if (this.domainRegister.id) {
-          this.generateStyleTheme().then(function () {
-            setTimeout(function () {
-              step.status = "ok";
-              _this.currentBuildStep++;
+          var passNext = setTimeout(function () {
+            step.status = "ok";
+            _this.currentBuildStep++;
 
-              _this.runStep(steps, state);
-            }, 500);
+            _this.runStep(steps, state);
+          }, 500);
+          this.generateStyleTheme().then(function () {
+            passNext();
+          }).catch(function () {
+            passNext();
           });
         } else {
           step.status = "error";
@@ -93348,12 +93377,12 @@ var dist = __webpack_require__(40473);
         break;
 
       default:
-        console.log("pre active finish");
         store.commit("ACTIVE_FINISH");
+        store.commit("CLEAN_LOCALSTORAGE");
+        this.runWarningsMessages();
         break;
     } else {
-      console.log("pre active finish");
-      store.commit("ACTIVE_FINISH");
+      this.runErrorsMessages("");
     }
   },
   // Dans cette etape, on cree l'entité "donnee_internet_entity", l'entite pour OVH.
@@ -93362,23 +93391,26 @@ var dist = __webpack_require__(40473);
   },
   // On enregistre le domaine sur OVH et on l'enregistre egalement comme multidomaine sur drupal.
   RegisterDomaine: function RegisterDomaine() {
-    if (this.donneeInternetEntity.domain_ovh_entity && this.donneeInternetEntity.domain_ovh_entity[0].target_id) {
-      // Save domaine on OVH.
-      this.bPost("/ovh-api-rest/create-domaine/" + this.donneeInternetEntity.domain_ovh_entity[0].target_id).then(function (resp) {
-        console.log(" Domaine enregistrer sur OVH : ", resp);
-      }).catch(function (resp) {
-        console.log(" ECHEC Domaine save sur OVH : ", resp);
-      }); // Save domaine on drupal
+    var _this2 = this;
 
-      return this.bPost("/vuejs-entity/domaine/add/" + this.donneeInternetEntity.domain_ovh_entity[0].target_id);
-    } else {
-      throw new Error(" Le nom de domaine n'a pas pu etre creer ");
-    }
+    return new Promise(function (resolv, reject) {
+      if (_this2.donneeInternetEntity.domain_ovh_entity && _this2.donneeInternetEntity.domain_ovh_entity[0] && _this2.donneeInternetEntity.domain_ovh_entity[0].target_id) {
+        // Save domaine on OVH.
+        _this2.bPost("/ovh-api-rest/create-domaine/" + _this2.donneeInternetEntity.domain_ovh_entity[0].target_id).catch(function () {
+          _this2.messages.warnings.push(" Votre domaine n'a pas pu etre generer ");
+        }); // Save domaine on drupal
+
+
+        resolv(_this2.bPost("/vuejs-entity/domaine/add/" + _this2.donneeInternetEntity.domain_ovh_entity[0].target_id));
+      } else {
+        reject(" Le nom de domaine n'a pas pu etre creer ");
+      }
+    });
   },
   // On va cree la page d'accueil en function de l'identifiant present dans l'url.
   CreateContent: function CreateContent() {
     var idHome = window.location.pathname.split("/").pop();
-    var title = this.donneeInternetEntity.name[0] && this.donneeInternetEntity.name[0].value ? "Bienvenue chez " + this.donneeInternetEntity.name[0].value : "Theme generer";
+    var title = this.donneeInternetEntity.name[0] && this.donneeInternetEntity.name[0].value ? "Bienvenue chez " + this.donneeInternetEntity.name[0].value : "Theme generé";
     var values = {
       name: [{
         value: title
@@ -93397,23 +93429,24 @@ var dist = __webpack_require__(40473);
   },
   // On cree les autres pages :
   CreateOrtherPages: function CreateOrtherPages() {
-    var _this2 = this;
+    var _this3 = this;
 
     return new Promise(function (resolv, reject) {
-      if (_this2.donneeInternetEntity.pages && _this2.donneeInternetEntity.pages.length) {
-        var options = _this2.getLabelPages();
+      if (_this3.donneeInternetEntity.pages && _this3.donneeInternetEntity.pages.length) {
+        var options = _this3.getLabelPages();
 
         var loop = function loop() {
           var i = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
           var essaie = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
           return new Promise(function (resolv) {
-            var id = _this2.donneeInternetEntity.pages[i] ? _this2.donneeInternetEntity.pages[i].value : null;
+            var id = _this3.donneeInternetEntity.pages[i] ? _this3.donneeInternetEntity.pages[i].value : null;
+            var title = options[id] ? options[id] : "page generate";
             var values = {
               field_domain_access: [{
-                target_id: _this2.domainRegister.id
+                target_id: _this3.domainRegister.id
               }],
               field_domain_source: [{
-                target_id: _this2.domainRegister.id
+                target_id: _this3.domainRegister.id
               }],
               is_default_theme: [{
                 value: false
@@ -93422,17 +93455,19 @@ var dist = __webpack_require__(40473);
                 value: false
               }],
               name: [{
-                value: options[id] ? options[id] : "page generate"
+                value: title
               }]
             };
 
             if (id) {
-              _this2.bPost("/vuejs-entity/entity/generate-page-web/" + id, values).then(function (resp) {
-                _this2.OrtherPages.push(resp.data);
+              _this3.bPost("/vuejs-entity/entity/generate-page-web/" + id, values).then(function (resp) {
+                _this3.OrtherPages.push(resp.data);
 
                 var id = i + 1;
                 resolv(loop(id));
               }).catch(function () {
+                _this3.messages.warnings.push(" Erreur rencontrée lors de la creation de cette page : <b>" + title + "</b> vous pourriez la re-creer plus tard. ");
+
                 setTimeout(function () {
                   if (essaie == 1) loop(i, 2);else {
                     var id2 = i + 1;
@@ -93460,19 +93495,19 @@ var dist = __webpack_require__(40473);
    * @returns
    */
   CreateMenus: function CreateMenus() {
-    var _this3 = this;
+    var _this4 = this;
 
     return new Promise(function (resolv, reject) {
       // build menu :
       var menu = {
-        id: (0,dist.limit)(_this3.domainRegister.id + "_main", 30, ""),
-        label: _this3.domainRegister.id + ": menu principal",
+        id: (0,dist.limit)(_this4.domainRegister.id + "_main", 30, ""),
+        label: _this4.domainRegister.id + ": menu principal",
         description: "Menu generé automatiquement"
       }; // build items
 
       var items = [];
 
-      _this3.OrtherPages.forEach(function (page) {
+      _this4.OrtherPages.forEach(function (page) {
         if (page.id[0] && page.id[0].value) items.push({
           title: [{
             value: page.name[0] ? page.name[0].value : "lien genere :" + page.id[0].value
@@ -93487,18 +93522,24 @@ var dist = __webpack_require__(40473);
       }); // contruit le menus et les items.
 
 
-      _this3.bPost("/vuejs-entity/entity/add-menu-items", {
+      _this4.bPost("/vuejs-entity/entity/add-menu-items", {
         menu: menu,
         items: items,
         domain: {
-          field_domain_access: _this3.domainRegister.id,
-          field_domain_source: _this3.domainRegister.id
+          field_domain_access: _this4.domainRegister.id,
+          field_domain_source: _this4.domainRegister.id
         }
       }).then(function (resp) {
         if (resp.data.block_content) {
-          resolv(_this3.addEntityToBlock(resp.data.block_content, "header"));
-        } else reject();
+          resolv(_this4.addEntityToBlock(resp.data.block_content, "header"));
+        } else {
+          _this4.messages.warnings.push(" Une erreur est survenu lors de la disposition des menus, vous pourriez le faire plus tard. ");
+
+          reject();
+        }
       }).catch(function () {
+        _this4.messages.warnings.push(" Une erreur est survenu lors de la creation des menus, vous pourriez le faire plus tard. ");
+
         reject();
       });
     });
@@ -93539,7 +93580,7 @@ var dist = __webpack_require__(40473);
   // On cree le theme de maniere statique, mais il faudra le rendre dynamique.
   // Il faudra aussi definir la page daccueil.
   CreateTheme: function CreateTheme() {
-    var _this4 = this;
+    var _this5 = this;
 
     return (0,asyncToGenerator/* default */.Z)( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
       return regeneratorRuntime.wrap(function _callee$(_context) {
@@ -93550,36 +93591,30 @@ var dist = __webpack_require__(40473);
                 var values = {
                   site_config: [{
                     value: JSON.stringify({
-                      "edit-config": "domain.config." + _this4.domainRegister.id + ".system.site",
-                      "page.front": _this4.homePageContent.id && _this4.homePageContent.id[0] ? "/site-internet-entity/" + _this4.homePageContent.id[0].value : "",
-                      name: _this4.donneeInternetEntity.name[0] && _this4.donneeInternetEntity.name[0].value ? _this4.donneeInternetEntity.name[0].value : "",
+                      "edit-config": "domain.config." + _this5.domainRegister.id + ".system.site",
+                      "page.front": _this5.homePageContent.id && _this5.homePageContent.id[0] ? "/site-internet-entity/" + _this5.homePageContent.id[0].value : "",
+                      name: _this5.donneeInternetEntity.name[0] && _this5.donneeInternetEntity.name[0].value ? _this5.donneeInternetEntity.name[0].value : "",
                       "page.404": "",
                       "page.403": ""
                     })
                   }],
-                  logo: _this4.donneeInternetEntity.image_logo && _this4.donneeInternetEntity.image_logo.length ? _this4.donneeInternetEntity.image_logo : [],
+                  logo: _this5.donneeInternetEntity.image_logo && _this5.donneeInternetEntity.image_logo.length ? _this5.donneeInternetEntity.image_logo : [],
                   run_npm: [{
                     value: false
                   }]
                 }; //
 
                 //
-                if (_this4.domainRegister.id) {
+                if (_this5.domainRegister.id) {
                   values["hostname"] = [{
-                    value: _this4.domainRegister.id
+                    value: _this5.domainRegister.id
                   }];
                 } // Applis colors
 
 
                 // Applis colors
-                _this4.ApplieColor(values).then(function (resp) {
-                  console.log(" Value : ", values);
-                  console.log(" Value : ", resp); // eslint-disable-next-line
-                  // debugger;
-
-                  // eslint-disable-next-line
-                  // debugger;
-                  resolv(_this4.bPost("/vuejs-entity/entity/save/config_theme_entity", resp));
+                _this5.ApplieColor(values).then(function (resp) {
+                  resolv(_this5.bPost("/vuejs-entity/entity/save/config_theme_entity", resp));
                 });
               }));
 
@@ -93599,33 +93634,35 @@ var dist = __webpack_require__(40473);
    * @returns
    */
   createBlockContentHeader: function createBlockContentHeader(state) {
-    var _this5 = this;
+    var _this6 = this;
 
-    return new Promise(function (resolv) {
+    return new Promise(function (resolv, reject) {
       state.storeFormRenderHeader.model.field_domain_access = [{
-        target_id: _this5.domainRegister.id
+        target_id: _this6.domainRegister.id
       }];
       state.storeFormRenderHeader.model.field_domain_source = [{
-        target_id: _this5.domainRegister.id
-      }]; //pas necesssaire
+        target_id: _this6.domainRegister.id
+      }]; // Pas necesssaire
 
-      _this5.addDefaultBlockInRegion();
+      _this6.addDefaultBlockInRegion();
 
-      _this5.CreateMenus().then(function () {
-        resolv(_this5.bPost("/vuejs-entity/entity/add-paragrph-in-entity/block_content/header", {
+      _this6.CreateMenus().then(function () {
+        resolv(_this6.bPost("/vuejs-entity/entity/add-paragrph-in-entity/block_content/header", {
           paragraph: state.storeFormRenderHeader.model,
           entity: {
             info: [{
-              value: _this5.domainRegister.id + " : header"
+              value: _this6.domainRegister.id + " : header"
             }],
             field_domain_access: [{
-              target_id: _this5.domainRegister.id
+              target_id: _this6.domainRegister.id
             }],
             field_domain_source: [{
-              target_id: _this5.domainRegister.id
+              target_id: _this6.domainRegister.id
             }]
           }
         }));
+      }).catch(function () {
+        reject();
       });
     });
   },
@@ -93635,18 +93672,18 @@ var dist = __webpack_require__(40473);
    * @param {*} blockContent
    */
   addEntityToBlock: function addEntityToBlock(blockContent, region) {
-    var _this6 = this;
+    var _this7 = this;
 
     return new Promise(function (resolv, reject) {
       if (blockContent["uuid"]) {
         var type = blockContent["type"][0]["target_id"];
         var uuid = blockContent["uuid"][0]["value"];
         var label = blockContent["info"][0]["value"];
-        var id_domaine = (0,dist.limit)(_this6.domainRegister.id, 20, "");
+        var id_domaine = (0,dist.limit)(_this7.domainRegister.id, 20, "");
         var id_system = (0,dist.limit)(id_domaine + type, 30, "");
         var values = {
           id: id_system,
-          theme: _this6.domainRegister.id,
+          theme: _this7.domainRegister.id,
           region: region,
           plugin: "block_content:" + uuid,
           status: true,
@@ -93657,7 +93694,7 @@ var dist = __webpack_require__(40473);
               context_mapping: {
                 domain: "@domain.current_domain_context:domain"
               },
-              domains: (0,esm_defineProperty/* default */.Z)({}, _this6.domainRegister.id, _this6.domainRegister.id)
+              domains: (0,esm_defineProperty/* default */.Z)({}, _this7.domainRegister.id, _this7.domainRegister.id)
             }
           },
           settings: {
@@ -93667,8 +93704,10 @@ var dist = __webpack_require__(40473);
             provider: "block_content"
           }
         };
-        resolv(_this6.bPost("/vuejs-entity/entity/add-block-in-region", values));
+        resolv(_this7.bPost("/vuejs-entity/entity/add-block-in-region", values));
       } else {
+        _this7.messages.warnings.push(" Impossible d'ajouter le bloc, region : " + region);
+
         reject();
       }
     });
@@ -93697,11 +93736,13 @@ var dist = __webpack_require__(40473);
     });
   },
   generateStyleTheme: function generateStyleTheme() {
-    var _this7 = this;
+    var _this8 = this;
 
-    return new Promise(function (resolv) {
-      _this7.bGet("/layoutgenentitystyles/manuel/api-generate/" + _this7.domainRegister.id).then(function () {
-        resolv(_this7.bGet("/generate-style-theme/update-style-theme/" + _this7.domainRegister.id));
+    return new Promise(function (resolv, reject) {
+      _this8.bGet("/layoutgenentitystyles/manuel/api-generate/" + _this8.domainRegister.id).then(function () {
+        resolv(_this8.bGet("/generate-style-theme/update-style-theme/" + _this8.domainRegister.id));
+      }).catch(function () {
+        reject();
       });
     });
   },
@@ -93732,21 +93773,21 @@ var dist = __webpack_require__(40473);
   },
   //
   ApplieColor: function ApplieColor(values) {
-    var _this8 = this;
+    var _this9 = this;
 
     return new Promise(function (resolv) {
       var newValue = {};
-      var type = _this8.donneeInternetEntity.type_color_theme.length ? _this8.donneeInternetEntity.type_color_theme[0].value : "0"; // l'utilisateur a choisie les couleurs.
+      var type = _this9.donneeInternetEntity.type_color_theme.length ? _this9.donneeInternetEntity.type_color_theme[0].value : "0"; // l'utilisateur a choisie les couleurs.
 
       if (type == "0") {
         newValue = (0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({}, values), {}, {
-          wbubackground: _this8.donneeInternetEntity.background && _this8.donneeInternetEntity.background.length ? _this8.donneeInternetEntity.background : [],
-          color_link_hover: _this8.donneeInternetEntity.color_linkhover && _this8.donneeInternetEntity.color_linkhover.length ? _this8.donneeInternetEntity.color_linkhover : [],
-          color_primary: _this8.donneeInternetEntity.color_primary && _this8.donneeInternetEntity.color_primary.length ? _this8.donneeInternetEntity.color_primary : [],
-          color_secondaire: _this8.donneeInternetEntity.color_secondary && _this8.donneeInternetEntity.color_secondary.length ? _this8.donneeInternetEntity.color_secondary : []
+          wbubackground: _this9.donneeInternetEntity.background && _this9.donneeInternetEntity.background.length ? _this9.donneeInternetEntity.background : [],
+          color_link_hover: _this9.donneeInternetEntity.color_linkhover && _this9.donneeInternetEntity.color_linkhover.length ? _this9.donneeInternetEntity.color_linkhover : [],
+          color_primary: _this9.donneeInternetEntity.color_primary && _this9.donneeInternetEntity.color_primary.length ? _this9.donneeInternetEntity.color_primary : [],
+          color_secondaire: _this9.donneeInternetEntity.color_secondary && _this9.donneeInternetEntity.color_secondary.length ? _this9.donneeInternetEntity.color_secondary : []
         });
       } else {
-        newValue = (0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({}, values), _this8.themeColors());
+        newValue = (0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({}, values), _this9.themeColors());
       }
 
       resolv(newValue);
@@ -93911,7 +93952,7 @@ var dist = __webpack_require__(40473);
   /**
    * Retorune les id/Label.
    * L'id representant l'identifiant de la page à dupliquer.
-   * @deprecated
+   * //@deprecated
    */
   getLabelPages: function getLabelPages() {
     var options = {};
@@ -93928,17 +93969,31 @@ var dist = __webpack_require__(40473);
       // debugger;
       return options;
     }
+  },
+
+  /**
+   *
+   * @param {*} resp
+   */
+  runErrorsMessages: function runErrorsMessages(resp) {
+    this.messages.errors.push("<h3> Oups! Un problème est survenu. Veuillez réessayer </h3>");
+
+    if (typeof resp === "string" || resp instanceof String) {
+      this.messages.errors.push(resp);
+    }
+
+    store.commit("SET_ERROR_MESSAGES", this.messages.errors);
+    store.commit("CLEAN_LOCALSTORAGE");
+    this.runWarningsMessages();
+  },
+
+  /**
+   * -
+   */
+  runWarningsMessages: function runWarningsMessages() {
+    if (this.messages.warnings.length) store.commit("SET_WARNING_MESSAGES", this.messages.warnings);
   }
-})); // ^ array:7 [▼
-//   "edit-config" => "domain.config.v2lesroisdelareno_kksa.system.site"
-//   "name" => "Les rois de la réno ........."
-//   "slogan" => "Un devis travaux en ligne dès que vous en avez besoin..."
-//   "mail" => "contact@lesroisdelareno.fr"
-//   "page.front" => "/node/1682"
-//   "page.403" => ""
-//   "page.404" => ""
-// ]
-//http://dimmat.lesroisdelareno.fr
+}));
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es.string.includes.js
 var es_string_includes = __webpack_require__(32023);
 // EXTERNAL MODULE: ./node_modules/core-js/modules/web.url-search-params.js
@@ -96263,17 +96318,40 @@ var page_register_component = (0,componentNormalizer/* default */.Z)(
 )
 
 /* harmony default export */ var page_register = (page_register_component.exports);
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/sections/page-save.vue?vue&type=template&id=9b286862&
-var page_savevue_type_template_id_9b286862_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"last-stepe"},[_c('label',[_vm._v(" Creer votre site maintenant !!! ")]),_c('p',{staticClass:"step-donneesite--label"},[_c('span',{domProps:{"innerHTML":_vm._s(_vm.strings.page_save_1)}})]),(_vm.creation_running)?_c('div',{staticClass:"text-left mx-auto content-save-text"},[_c('ul',{staticClass:"puce-step-vertical step-build"},_vm._l((_vm.build_steps),function(item,i){return _c('li',{key:i,class:[
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/sections/page-save.vue?vue&type=template&id=7fc4853c&
+var page_savevue_type_template_id_7fc4853c_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"last-stepe"},[_c('label',[_vm._v(" Creer votre site maintenant !!! ")]),_c('p',{staticClass:"step-donneesite--label"},[_c('span',{domProps:{"innerHTML":_vm._s(_vm.strings.page_save_1)}})]),(_vm.errorMessages.length)?_c('div',{staticClass:"content-save-text mx-auto mt-5"},_vm._l((_vm.errorMessages),function(msg,i){return _c('b-alert',{key:i,attrs:{"show":"","dismissible":"","variant":"danger"}},[_c('div',{domProps:{"innerHTML":_vm._s(msg)}})])}),1):_vm._e(),(_vm.warningMessages.length)?_c('div',{staticClass:"content-save-text mx-auto mt-5"},_vm._l((_vm.warningMessages),function(msg,i){return _c('b-alert',{key:i,attrs:{"show":"","dismissible":"","variant":"warning"}},[_c('div',{domProps:{"innerHTML":_vm._s(msg)}})])}),1):_vm._e(),(_vm.creation_running)?_c('div',{staticClass:"text-left mx-auto content-save-text"},[_c('ul',{staticClass:"puce-step-vertical step-build"},_vm._l((_vm.build_steps),function(item,i){return _c('li',{key:i,class:[
           item.status == 'ok' ? 'active' : '',
           item.status == 'error' ? 'text-danger' : '' ]},[_vm._v(" "+_vm._s(item.titre)+" "),(item.status == 'run')?_c('b-icon',{staticClass:"ml-auto",attrs:{"icon":"three-dots","font-scale":"1.3","animation":"cylon","variant":"primary"}}):_vm._e(),(item.status == 'ok')?_c('b-icon',{staticClass:"ml-auto",attrs:{"icon":"check2","font-scale":"1.5","variant":"primary"}}):_vm._e()],1)}),0),(_vm.finish_status)?_c('div',{staticClass:"my-5 h3 text-primary d-none"},[_vm._v(" Votre site serra disponible d'ici 15 minutes "),_vm._m(0)]):_vm._e(),(_vm.finish_status)?_c('div',{staticClass:"action d-flex flex-column"},[_c('b-button',{on:{"click":_vm.open_new_site}},[_c('span',{domProps:{"innerHTML":_vm._s(_vm.strings.page_save_vue)}}),_c('b-icon',{staticClass:"float-right",attrs:{"icon":"award","font-scale":"1.3"}})],1),_c('b-button',{on:{"click":_vm.open_new_site_admin}},[_vm._v(" "+_vm._s(_vm.strings.page_save_admin)+" "),_c('b-icon',{staticClass:"float-right",attrs:{"icon":"folder-symlink","font-scale":"1.3"}})],1)],1):_vm._e(),(_vm.finish_status)?_c('div',{staticClass:"my-5 h3"},[_vm._v(" "+_vm._s(_vm.strings.page_save_url)+" "),_c('a',{on:{"click":_vm.open_new_site}},[_c('b',[_vm._v(" "+_vm._s(_vm.new_hostname)+" ")])])]):_vm._e()]):_vm._e()])}
-var page_savevue_type_template_id_9b286862_staticRenderFns = [function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('small',[_c('i',{staticClass:"d-block"},[_vm._v(" (le temps de progagation des données DNS) ")])])}]
+var page_savevue_type_template_id_7fc4853c_staticRenderFns = [function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('small',[_c('i',{staticClass:"d-block"},[_vm._v(" (le temps de progagation des données DNS) ")])])}]
 
 
-;// CONCATENATED MODULE: ./src/components/sections/page-save.vue?vue&type=template&id=9b286862&
+;// CONCATENATED MODULE: ./src/components/sections/page-save.vue?vue&type=template&id=7fc4853c&
 
 ;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-80[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/sections/page-save.vue?vue&type=script&lang=js&
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -96344,7 +96422,7 @@ var page_savevue_type_template_id_9b286862_staticRenderFns = [function () {var _
   data: function data() {
     return {};
   },
-  computed: (0,objectSpread2/* default */.Z)({}, (0,vuex_esm/* mapState */.rn)({
+  computed: (0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({}, (0,vuex_esm/* mapState */.rn)({
     build_steps: function build_steps(state) {
       return state.build_steps;
     },
@@ -96359,8 +96437,26 @@ var page_savevue_type_template_id_9b286862_staticRenderFns = [function () {var _
     },
     strings: function strings(state) {
       return state.strings;
+    },
+    messages: function messages(state) {
+      return state.messages;
     }
-  })),
+  })), {}, {
+    warningMessages: function warningMessages() {
+      if (this.messages.warnings && this.messages.warnings.length) {
+        return this.messages.warnings;
+      } else {
+        return [];
+      }
+    },
+    errorMessages: function errorMessages() {
+      if (this.messages.errors && this.messages.errors.length) {
+        return this.messages.errors;
+      } else {
+        return [];
+      }
+    }
+  }),
   methods: {
     open_new_site: function open_new_site() {
       window.open(this.new_hostname, "_blank");
@@ -96382,8 +96478,8 @@ var page_savevue_type_template_id_9b286862_staticRenderFns = [function () {var _
 ;
 var page_save_component = (0,componentNormalizer/* default */.Z)(
   sections_page_savevue_type_script_lang_js_,
-  page_savevue_type_template_id_9b286862_render,
-  page_savevue_type_template_id_9b286862_staticRenderFns,
+  page_savevue_type_template_id_7fc4853c_render,
+  page_savevue_type_template_id_7fc4853c_staticRenderFns,
   false,
   null,
   null,
@@ -96393,6 +96489,7 @@ var page_save_component = (0,componentNormalizer/* default */.Z)(
 
 /* harmony default export */ var page_save = (page_save_component.exports);
 ;// CONCATENATED MODULE: ./src/components/formRender/storeFields.js
+
 
 
 
@@ -96559,7 +96656,8 @@ var page_save_component = (0,componentNormalizer/* default */.Z)(
   actions: {
     // On charge les données du formulaire.
     loadForm: function loadForm(_ref) {
-      var commit = _ref.commit;
+      var commit = _ref.commit,
+          state = _ref.state;
       commit("ACTIVE_RUNNING");
       console.log(" loadForm config ", config);
       var param = {
@@ -96580,9 +96678,18 @@ var page_save_component = (0,componentNormalizer/* default */.Z)(
               model: model
             }); // commit("SET_VALID_STEPPERS", valid_steppers);
           } else {
-            commit("SET_FORM", resp.data);
-            commit("DISABLE_RUNNING");
-            localStorage.setItem("app.hash", hash);
+            /**
+             * On doit se rassurer que l'utilisateur est à l'etape 0;
+             * Si c'est pas le cas on le renvoit à l'etape initial.
+             * ( Car dans ce cas de figure, il nya pas ou plus de donnée en cache. )
+             */
+            if (state.current_step) {
+              window.location.replace(window.location.pathname + window.location.search);
+            } else {
+              commit("SET_FORM", resp.data);
+              commit("DISABLE_RUNNING");
+              localStorage.setItem("app.hash", hash);
+            }
           }
         }
       });
@@ -96842,7 +96949,12 @@ external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vuex_esm/* default */
     // utilisateur connecter.
     user: {},
     // Contient les textes traduites.
-    strings: {}
+    strings: {},
+    //
+    messages: {
+      errors: [],
+      warnings: []
+    }
   },
   getters: {},
   mutations: {
@@ -96854,8 +96966,6 @@ external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vuex_esm/* default */
     },
     ACTIVE_FINISH: function ACTIVE_FINISH(state) {
       state.finish_status = true;
-      localStorage.removeItem("app.model");
-      localStorage.removeItem("app.form");
     },
     SET_HOSTNAME: function SET_HOSTNAME(state, payload) {
       if (payload.domain && payload.scheme) {
@@ -96867,6 +96977,17 @@ external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vuex_esm/* default */
     },
     SET_STRINGS: function SET_STRINGS(state, strings) {
       state.strings = strings;
+    },
+    SET_WARNING_MESSAGES: function SET_WARNING_MESSAGES(state, messages) {
+      state.messages.warnings = messages;
+    },
+    SET_ERROR_MESSAGES: function SET_ERROR_MESSAGES(state, messages) {
+      state.messages.errors = messages;
+    },
+    CLEAN_LOCALSTORAGE: function CLEAN_LOCALSTORAGE() {
+      localStorage.removeItem("app.model");
+      localStorage.removeItem("app.form");
+      localStorage.removeItem("app.hash");
     }
   },
   actions: {
