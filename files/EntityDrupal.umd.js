@@ -93257,12 +93257,16 @@ var dist = __webpack_require__(40473);
         step.status = "run";
         this.CreateContent().then(function (resp) {
           _this.homePageContent = resp.data;
-          var passNext = setTimeout(function () {
-            step.status = "ok";
-            _this.currentBuildStep++;
 
-            _this.runStep(steps, state);
-          }, 500); // On patiente que les autres pages soit ok.
+          var passNext = function passNext() {
+            setTimeout(function () {
+              step.status = "ok";
+              _this.currentBuildStep++;
+
+              _this.runStep(steps, state);
+            }, 500);
+          }; // On patiente que les autres pages soit ok.
+
 
           _this.CreateOrtherPages().then(function () {
             passNext();
@@ -93298,12 +93302,14 @@ var dist = __webpack_require__(40473);
 
         if (this.domainRegister.id) {
           this.createBlockContentHeader(state).then(function (resp) {
-            var passNext = setTimeout(function () {
-              step.status = "ok";
-              _this.currentBuildStep++;
+            var passNext = function passNext() {
+              setTimeout(function () {
+                step.status = "ok";
+                _this.currentBuildStep++;
 
-              _this.runStep(steps, state);
-            }, 500);
+                _this.runStep(steps, state);
+              }, 500);
+            };
 
             _this.addEntityToBlock(resp.data, "top_header").then(function () {
               passNext();
@@ -93328,12 +93334,14 @@ var dist = __webpack_require__(40473);
 
         if (this.domainRegister.id) {
           this.createBlockContentFooter(state).then(function (resp) {
-            var passNext = setTimeout(function () {
-              step.status = "ok";
-              _this.currentBuildStep++;
+            var passNext = function passNext() {
+              setTimeout(function () {
+                step.status = "ok";
+                _this.currentBuildStep++;
 
-              _this.runStep(steps, state);
-            }, 500);
+                _this.runStep(steps, state);
+              }, 500);
+            };
 
             _this.addEntityToBlock(resp.data, "footer").then(function () {
               passNext();
@@ -93357,12 +93365,15 @@ var dist = __webpack_require__(40473);
         step.status = "run";
 
         if (this.domainRegister.id) {
-          var passNext = setTimeout(function () {
-            step.status = "ok";
-            _this.currentBuildStep++;
+          var passNext = function passNext() {
+            setTimeout(function () {
+              step.status = "ok";
+              _this.currentBuildStep++;
 
-            _this.runStep(steps, state);
-          }, 500);
+              _this.runStep(steps, state);
+            }, 500);
+          };
+
           this.generateStyleTheme().then(function () {
             passNext();
           }).catch(function () {
@@ -93377,12 +93388,17 @@ var dist = __webpack_require__(40473);
         break;
 
       default:
-        store.commit("ACTIVE_FINISH");
-        store.commit("CLEAN_LOCALSTORAGE");
-        this.runWarningsMessages();
+        // on ne devrait pas arrivé ici.
+        this.messages.warnings.push(" Cette etape n'est pas definit : " + step.step);
+        step.status = "ok";
+        this.currentBuildStep++;
+        this.runStep(steps, state);
         break;
-    } else {
-      this.runErrorsMessages("");
+    } //execution terminée.
+    else {
+      store.commit("ACTIVE_FINISH");
+      store.commit("CLEAN_LOCALSTORAGE");
+      this.runWarningsMessages();
     }
   },
   // Dans cette etape, on cree l'entité "donnee_internet_entity", l'entite pour OVH.
