@@ -93667,7 +93667,7 @@ var dist = __webpack_require__(40473);
           paragraph: state.storeFormRenderHeader.model,
           entity: {
             info: [{
-              value: _this6.domainRegister.id + " : header"
+              value: " Entete "
             }],
             field_domain_access: [{
               target_id: _this6.domainRegister.id
@@ -93740,7 +93740,7 @@ var dist = __webpack_require__(40473);
       paragraph: state.storeFormRenderFooter.model,
       entity: {
         info: [{
-          value: this.domainRegister.id + " : footer "
+          value: " Pied de page "
         }],
         field_domain_access: [{
           target_id: this.domainRegister.id
