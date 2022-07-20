@@ -458,6 +458,11 @@ class FormEntityController extends ControllerBase {
         $domain->set('id', $domain_id);
         $domain->set('scheme', 'http');
         $domain->save();
+        // On met à jour le champs domain_id_drupal
+        if ($domain->id()) {
+          $domain_ovh_entity->set('domain_id_drupal', $domain->id());
+          $domain_ovh_entity->save(); 
+        }
         return $this->reponse($domain->toArray());
       }
       catch (\Exception $e) {
