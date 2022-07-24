@@ -93384,14 +93384,14 @@ var dist = __webpack_require__(63489);
         this.currentBuildStep++;
         this.runStep(steps, state);
         break;
-    } //execution terminée.
+    } // Execution terminée.
     else {
       store.commit("ACTIVE_FINISH");
       store.commit("CLEAN_LOCALSTORAGE");
       this.runWarningsMessages();
     }
   },
-  // Dans cette etape, on cree l'entité "donnee_internet_entity", l'entite pour OVH.
+  // Dans cette etape, on cree les entités "donnee_internet_entity" et "domain_ovh_entity".
   CreateDomaine: function CreateDomaine(entity) {
     return this.bPost("/vuejs-entity/entity/save/donnee_internet_entity", entity);
   },
@@ -93404,7 +93404,7 @@ var dist = __webpack_require__(63489);
         // Save domaine on OVH.
         _this2.bPost("/ovh-api-rest/create-domaine/" + _this2.donneeInternetEntity.domain_ovh_entity[0].target_id).catch(function () {
           _this2.messages.warnings.push(" Votre domaine n'a pas pu etre generer ");
-        }); // Save domaine on drupal
+        }); // Save domaine on drupal ( id dans l'entité domain ) et met à jour l'entité "domain_ovh_entity" avec le id de domain.
 
 
         resolv(_this2.bPost("/vuejs-entity/domaine/add/" + _this2.donneeInternetEntity.domain_ovh_entity[0].target_id));
@@ -95701,6 +95701,222 @@ var drupal_list_string_component = (0,componentNormalizer/* default */.Z)(
 )
 
 /* harmony default export */ var drupal_list_string = (drupal_list_string_component.exports);
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsDrupal/textarea-ckeditor.vue?vue&type=template&id=cd1c8f3e&
+var textarea_ckeditorvue_type_template_id_cd1c8f3e_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"mb-4",class:_vm.class_css},[_c('ValidationProvider',{staticClass:"form-group",attrs:{"name":_vm.field.label,"rules":{ required: true }},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('legend',{domProps:{"innerHTML":_vm._s(_vm.field.label)}}),_c('ckeditor',{attrs:{"config":_vm.editorConfig},on:{"input":_vm.input,"namespaceloaded":_vm.onNamespaceLoaded},model:{value:(_vm.editorData),callback:function ($$v) {_vm.editorData=$$v},expression:"editorData"}}),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()]}}])})],1)}
+var textarea_ckeditorvue_type_template_id_cd1c8f3e_staticRenderFns = []
+
+
+;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-40[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsDrupal/textarea-ckeditor.vue?vue&type=script&lang=js&
+
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/* harmony default export */ var textarea_ckeditorvue_type_script_lang_js_ = ({
+  name: "drupal-string",
+  props: {
+    class_css: {
+      type: [Array]
+    },
+    field: {
+      type: Object,
+      required: true
+    },
+    model: {
+      type: [Object, Array],
+      required: true
+    },
+    namespace_store: {
+      type: String,
+      required: true
+    }
+  },
+  components: {
+    ValidationProvider: vee_validate_esm/* ValidationProvider */.d_
+  },
+  data: function data() {
+    return {
+      editorData: "",
+      preEditorConfig: {
+        codeSnippet_theme: "monokai_sublime",
+        stylesSet: [],
+        contentsCss: "@import '" + loadField.getBaseUrl() + "/themes/contrib/wb_universe/node_modules/%40fortawesome/fontawesome-free/css/all.min.css'; @import 'http://wb-horizon.com/themes/custom/wb_horizon_com/css/vendor-style.css';",
+        on: {
+          instanceReady: function instanceReady(ev) {
+            ev.sender.dataProcessor.writer.setRules("p", {
+              indent: true,
+              breakBeforeOpen: true,
+              breakAfterOpen: false,
+              breakBeforeClose: true,
+              breakAfterClose: true
+            });
+            ev.sender.dataProcessor.writer.setRules("img", {
+              indent: true,
+              breakBeforeOpen: true,
+              breakAfterOpen: false,
+              breakBeforeClose: false,
+              breakAfterClose: false
+            });
+            ev.sender.dataProcessor.writer.setRules("h1", {
+              indent: true,
+              breakBeforeOpen: false,
+              breakAfterOpen: false,
+              breakBeforeClose: false,
+              breakAfterClose: false
+            });
+            ev.sender.dataProcessor.writer.setRules("h2", {
+              indent: true,
+              breakBeforeOpen: false,
+              breakAfterOpen: false,
+              breakBeforeClose: false,
+              breakAfterClose: false
+            });
+            ev.sender.dataProcessor.writer.setRules("h3", {
+              indent: true,
+              breakBeforeOpen: false,
+              breakAfterOpen: false,
+              breakBeforeClose: false,
+              breakAfterClose: false
+            });
+            ev.sender.dataProcessor.writer.setRules("h4", {
+              indent: true,
+              breakBeforeOpen: false,
+              breakAfterOpen: false,
+              breakBeforeClose: false,
+              breakAfterClose: false
+            });
+            ev.sender.dataProcessor.writer.setRules("h5", {
+              indent: true,
+              breakBeforeOpen: false,
+              breakAfterOpen: false,
+              breakBeforeClose: false,
+              breakAfterClose: false
+            });
+            ev.sender.dataProcessor.writer.setRules("h6", {
+              indent: true,
+              breakBeforeOpen: false,
+              breakAfterOpen: false,
+              breakBeforeClose: false,
+              breakAfterClose: false
+            });
+            ev.sender.dataProcessor.writer.setRules("div", {
+              indent: true,
+              breakBeforeOpen: true,
+              breakAfterOpen: true,
+              breakBeforeClose: true,
+              breakAfterClose: false
+            });
+          }
+        }
+      }
+    };
+  },
+  mounted: function mounted() {
+    this.editorData = this.getValue();
+    console.log("config.baseUrl : ", loadField.baseUrl);
+  },
+  computed: {
+    editorConfig: function editorConfig() {
+      //,ckawesome, ckeditorfa
+      var extraPlugins = "codesnippet,print,format,font,colorbutton,justify,image,filebrowser,stylesheetparser";
+      return (0,objectSpread2/* default */.Z)({
+        extraPlugins: extraPlugins
+      }, this.preEditorConfig);
+    }
+  },
+  methods: {
+    getValidationState: function getValidationState(_ref) {
+      var dirty = _ref.dirty,
+          validated = _ref.validated,
+          _ref$valid = _ref.valid,
+          valid = _ref$valid === void 0 ? null : _ref$valid;
+      return (dirty || validated) && !valid ? valid : null;
+    },
+    getRules: function getRules() {
+      return loadField.getRules(this.field);
+    },
+    setValue: function setValue(vals) {
+      if (this.namespace_store) {
+        this.$store.dispatch(this.namespace_store, {
+          value: vals,
+          fieldName: this.field.name
+        });
+      } else this.$store.dispatch({
+        value: vals,
+        fieldName: this.field.name
+      });
+    },
+    getValue: function getValue() {
+      if (this.model[this.field.name] && this.model[this.field.name][0]) {
+        return this.model[this.field.name][0].value;
+      }
+    },
+    input: function input(v) {
+      var vals = [];
+      vals.push({
+        value: v
+      });
+      this.setValue(vals);
+    },
+    onNamespaceLoaded: function onNamespaceLoaded(CKEDITOR) {
+      CKEDITOR.config.allowedContent = true; // CKEDITOR.config.contentsCss =
+      //   "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css";
+
+      CKEDITOR.config.htmlEncodeOutput = false;
+      CKEDITOR.config.entities = false; // CKEDITOR.config.entities_processNumerical = 'force';
+
+      CKEDITOR.dtd.$removeEmpty.span = 0;
+      CKEDITOR.dtd.$removeEmpty.i = 0;
+      CKEDITOR.dtd.$removeEmpty.label = 0;
+    }
+  }
+});
+;// CONCATENATED MODULE: ./src/components/fieldsDrupal/textarea-ckeditor.vue?vue&type=script&lang=js&
+ /* harmony default export */ var fieldsDrupal_textarea_ckeditorvue_type_script_lang_js_ = (textarea_ckeditorvue_type_script_lang_js_); 
+;// CONCATENATED MODULE: ./src/components/fieldsDrupal/textarea-ckeditor.vue
+
+
+
+
+
+/* normalize component */
+;
+var textarea_ckeditor_component = (0,componentNormalizer/* default */.Z)(
+  fieldsDrupal_textarea_ckeditorvue_type_script_lang_js_,
+  textarea_ckeditorvue_type_template_id_cd1c8f3e_render,
+  textarea_ckeditorvue_type_template_id_cd1c8f3e_staticRenderFns,
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* harmony default export */ var textarea_ckeditor = (textarea_ckeditor_component.exports);
 ;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsDrupal/html-render.vue?vue&type=template&id=a9022ae0&
 var html_rendervue_type_template_id_a9022ae0_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.class_css},[_c('div',{domProps:{"innerHTML":_vm._s(_vm.field.content)}})])}
 var html_rendervue_type_template_id_a9022ae0_staticRenderFns = []
@@ -96000,7 +96216,7 @@ var drupal_file_component = (0,componentNormalizer/* default */.Z)(
         break;
 
       case "text_long":
-        template = html_render;
+        template = textarea_ckeditor;
         break;
 
       case "image":
