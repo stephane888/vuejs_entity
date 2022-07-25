@@ -461,8 +461,12 @@ class FormEntityController extends ControllerBase {
         // On met à jour le champs domain_id_drupal
         if ($domain->id()) {
           $domain_ovh_entity->set('domain_id_drupal', $domain->id());
-          $domain_ovh_entity->save(); 
+          $domain_ovh_entity->save();
+          // pour essayer de comprendre pouquoi on a pas la MAJ.
+          $this->getLogger('vuejs_entity')->info('domain_ovh_entity MAJ : ' . $domain_ovh_entity->id() . ' : ' . $domain->id());
         }
+        else
+          $this->getLogger('vuejs_entity')->info('domain_ovh_entity Error : ' . $domain_ovh_entity->id() . ' : ' . $domain->id());
         return $this->reponse($domain->toArray());
       }
       catch (\Exception $e) {
