@@ -441,6 +441,7 @@ class FormEntityController extends ControllerBase {
    * @param integer $domain_ovh_entity_id
    */
   public function saveDomainByOvhEntity($domain_ovh_entity_id) {
+    /** @var \Drupal\ovh_api_rest\Entity\DomainOvhEntity $domain_ovh_entity */
     $domain_ovh_entity = $this->entityTypeManager()->getStorage('domain_ovh_entity')->load($domain_ovh_entity_id);
     if ($domain_ovh_entity) {
       try {
@@ -460,7 +461,7 @@ class FormEntityController extends ControllerBase {
         $domain->save();
         // On met à jour le champs domain_id_drupal
         if ($domain->id()) {
-          $domain_ovh_entity->set('domain_id_drupal', $domain->id());
+          $domain_ovh_entity->setDomainIdDrupal($domain->id());
           $domain_ovh_entity->save();
           // pour essayer de comprendre pouquoi on a pas la MAJ.
           $this->getLogger('vuejs_entity')->info('domain_ovh_entity MAJ : ' . $domain_ovh_entity->id() . ' : ' . $domain->id());
