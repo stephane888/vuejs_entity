@@ -93745,10 +93745,16 @@ var dist = __webpack_require__(63489);
     var _this8 = this;
 
     return new Promise(function (resolv, reject) {
-      _this8.bGet("/layoutgenentitystyles/manuel/api-generate/" + _this8.domainRegister.id).then(function () {
-        resolv(_this8.bGet("/generate-style-theme/update-style-theme/" + _this8.domainRegister.id));
-      }).catch(function () {
-        reject();
+      var idHome = window.location.pathname.split("/").pop();
+
+      _this8.bGet("/generate_style_theme/set_default_style/" + idHome + "/" + _this8.domainRegister.id).then(function () {
+        _this8.bGet("/layoutgenentitystyles/manuel/api-generate/" + _this8.domainRegister.id).then(function () {
+          resolv(_this8.bGet("/generate-style-theme/update-style-theme/" + _this8.domainRegister.id));
+        }).catch(function () {
+          reject();
+        });
+      }).catch(function (e) {
+        reject(e);
       });
     });
   },
