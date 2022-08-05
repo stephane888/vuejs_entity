@@ -93222,6 +93222,11 @@ var dist = __webpack_require__(63489);
       case "register_domaine":
         step.status = "run";
         this.RegisterDomaine().then(function (resp) {
+          // On lance la creation sur OVH, apres cette etape.(car les deux etapes modifie la meme entité)
+          _this.bPost("/ovh-api-rest/create-domaine/" + _this.donneeInternetEntity.domain_ovh_entity[0].target_id).catch(function () {
+            _this.messages.warnings.push(" Votre domaine n'a pas pu etre generer ");
+          });
+
           setTimeout(function () {
             step.status = "ok";
             _this.currentBuildStep++;
@@ -93401,12 +93406,7 @@ var dist = __webpack_require__(63489);
 
     return new Promise(function (resolv, reject) {
       if (_this2.donneeInternetEntity.domain_ovh_entity && _this2.donneeInternetEntity.domain_ovh_entity[0] && _this2.donneeInternetEntity.domain_ovh_entity[0].target_id) {
-        // Save domaine on OVH.
-        _this2.bPost("/ovh-api-rest/create-domaine/" + _this2.donneeInternetEntity.domain_ovh_entity[0].target_id).catch(function () {
-          _this2.messages.warnings.push(" Votre domaine n'a pas pu etre generer ");
-        }); // Save domaine on drupal ( id dans l'entité domain ) et met à jour l'entité "domain_ovh_entity" avec le id de domain.
-
-
+        // Save domaine on drupal ( id dans l'entité domain ) et met à jour l'entité "domain_ovh_entity" avec le id de domain.
         resolv(_this2.bPost("/vuejs-entity/domaine/add/" + _this2.donneeInternetEntity.domain_ovh_entity[0].target_id));
       } else {
         reject(" Le nom de domaine n'a pas pu etre creer ");
