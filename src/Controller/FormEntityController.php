@@ -52,6 +52,14 @@ class FormEntityController extends ControllerBase {
   
   /**
    *
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static();
+  }
+  
+  /**
+   *
    * @return string[]|\Drupal\Core\StringTranslation\TranslatableMarkup[]
    */
   public function getDatas($id_entity) {
@@ -227,7 +235,8 @@ class FormEntityController extends ControllerBase {
    * Fonctionne uniquement sur les nodes.
    */
   protected function duplicateExistantReference(\Drupal\Core\Entity\ContentEntityBase &$entity) {
-    $uid = \Drupal::currentUser()->id();
+    //
+    $uid = $this->currentUser()->id();
     if (method_exists($entity, 'setCreatedTime'))
       $entity->setCreatedTime(time());
     if (method_exists($entity, 'setChangedTime'))
@@ -236,6 +245,7 @@ class FormEntityController extends ControllerBase {
       $entity->setOwnerId($uid);
     if (method_exists($entity, 'setPublished'))
       $entity->setPublished();
+    //
     // On desactive la disponibilité du contenu sur tous les domaines.
     if ($entity->hasField(self::$field_domain_all_affiliates)) {
       $entity->set(self::$field_domain_all_affiliates, false);
@@ -330,6 +340,13 @@ class FormEntityController extends ControllerBase {
         }
         // Dupliquer les produits.
         elseif (!empty($setings['target_type']) && $setings['target_type'] == 'commerce_product') {
+          // Pour le type prodit, on doit Ajouter le role à l'utilisateur.
+          if (!empty($this->currentUser()->id()) && !in_array('manage_ecommerce', $this->currentUser()->getRoles())) {
+            $user = \Drupal\user\Entity\User::load($this->currentUser->id());
+            $user->addRole('manage_ecommerce');
+            $user->save();
+            $this->messenger()->addMessage(' Vous avez le role de vendeur ');
+          }
           $newProducts = [];
           foreach ($vals as $value) {
             $Product = Product::load($value['target_id']);
@@ -575,6 +592,7 @@ class FormEntityController extends ControllerBase {
           $param = Json::decode($Request->getContent());
           $categorie_id = null;
           $type = null;
+          //
           if (!empty($param['homepage'])) {
             /**
              *
@@ -583,6 +601,9 @@ class FormEntityController extends ControllerBase {
             $model = $this->entityTypeManager()->getStorage('site_type_datas')->load($param['homepage']);
             $categorie_id = $model->getCategorie();
             $type = $model->getType();
+            $pageSub = $model->getPageSupplementaireIds();
+            $defaultPages += $pageSub;
+            $defaultPagesProduct += $pageSub;
           }
           //
           $query = $this->entityTypeManager()->getStorage('site_type_datas')->getQuery();
@@ -594,6 +615,7 @@ class FormEntityController extends ControllerBase {
           else {
             $query->range(0, 4);
           }
+          // ??? pourquoi ? et quel est son impact ?
           if ($type) {
             $query->condition('site_internet_entity_type', $type);
           }
@@ -664,6 +686,11 @@ class FormEntityController extends ControllerBase {
     ]);
   }
   
+  /**
+   *
+   * @param array $settings
+   * @return \Drupal\Core\StringTranslation\TranslatableMarkup
+   */
   protected function translateConfigField(array $settings) {
     if (!empty($settings['list_options']))
       foreach ($settings['list_options'] as $k => $val) {
