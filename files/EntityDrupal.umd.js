@@ -96900,7 +96900,8 @@ var page_save_component = (0,componentNormalizer/* default */.Z)(
       };
       return config.bPost("/vuejs-entity/form/donnee_internet_entity/default/bundle", param).then(function (resp) {
         if (resp.data) {
-          //on recupere la valeur hash
+          commit("DISABLE_RUNNING"); //on recupere la valeur hash
+
           var urlParams = new URLSearchParams(window.location.search);
           var hash = urlParams.get("hash"); //on verifie si on a des données en cache.
 
@@ -96921,11 +96922,12 @@ var page_save_component = (0,componentNormalizer/* default */.Z)(
               window.location.replace(window.location.pathname + window.location.search);
             } else {
               commit("SET_FORM", resp.data);
-              commit("DISABLE_RUNNING");
               localStorage.setItem("app.hash", hash);
             }
           }
         }
+      }).catch(function () {
+        commit("DISABLE_RUNNING");
       });
     },
     // Permet de mettre à jour un champs ...
