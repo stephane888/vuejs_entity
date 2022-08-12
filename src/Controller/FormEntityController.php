@@ -672,7 +672,7 @@ class FormEntityController extends ControllerBase {
     // on recupere les champs annexe:
     if ($entity_type_id == 'donnee_internet_entity') {
       $title = $this->t("Let's bring your ideas to life");
-      $descp = $this->t('Answer a few questions and get the best tools for your creations');
+      $descp = $this->t("Answer a few questions and get the best tools for your creations");
       $form['html_1'] = [
         'type' => 'render_html',
         'content' => '<div class="step-donneesite--header with-tablet mx-auto text-center" data-drupal-selector="edit-ctm-description"><h2 class="step-donneesite--title" data-drupal-selector="edit-0">' . $title . '</h2>
@@ -703,7 +703,7 @@ class FormEntityController extends ControllerBase {
   
   /**
    *
-   * @param array|string $configs
+   * @param Array|string $configs
    * @param number $code
    * @param string $message
    * @return \Symfony\Component\HttpFoundation\JsonResponse

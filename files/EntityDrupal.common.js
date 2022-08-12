@@ -47740,7 +47740,7 @@ function _typeof(obj) {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.miniCssF = function(chunkId) {
 /******/ 			// return url for filenames based on template
-/******/ 			return "css/" + chunkId + "." + {"434":"342e5091","493":"40693ac0","563":"a576b81d"}[chunkId] + ".css";
+/******/ 			return "css/" + chunkId + "." + {"325":"58213ea5","563":"a576b81d","972":"40693ac0"}[chunkId] + ".css";
 /******/ 		};
 /******/ 	}();
 /******/ 	
@@ -47889,7 +47889,7 @@ function _typeof(obj) {
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.f.miniCss = function(chunkId, promises) {
-/******/ 			var cssChunks = {"434":1,"493":1,"563":1};
+/******/ 			var cssChunks = {"325":1,"563":1,"972":1};
 /******/ 			if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);
 /******/ 			else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {
 /******/ 				promises.push(installedCssChunks[chunkId] = loadStylesheet(chunkId).then(function() {
@@ -93113,11 +93113,11 @@ if (inBrowser && window.Vue) {
  //import HomeView from "../views/HomeView.vue";
 
 var TheContainer = function TheContainer() {
-  return __webpack_require__.e(/* import() */ 434).then(__webpack_require__.bind(__webpack_require__, 83434));
+  return __webpack_require__.e(/* import() */ 325).then(__webpack_require__.bind(__webpack_require__, 89325));
 };
 
 var formRender = function formRender() {
-  return __webpack_require__.e(/* import() */ 493).then(__webpack_require__.bind(__webpack_require__, 47493));
+  return __webpack_require__.e(/* import() */ 972).then(__webpack_require__.bind(__webpack_require__, 85972));
 };
 
 external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vue_router_esm);
@@ -95963,9 +95963,9 @@ var html_render_component = (0,componentNormalizer/* default */.Z)(
 )
 
 /* harmony default export */ var html_render = (html_render_component.exports);
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsDrupal/drupal-file.vue?vue&type=template&id=4feb73d8&
-var drupal_filevue_type_template_id_4feb73d8_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"vuejs-uploader",class:_vm.class_css},[_c('ValidationProvider',{attrs:{"name":_vm.field.name,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('b-form-group',{attrs:{"label":_vm.field.label,"description":_vm.field.description}},[_c('b-form-file',{attrs:{"placeholder":"Ajouter un fichier ...","drop-placeholder":"Drop file here...","multiple":_vm.cardinality,"accept":".jpg, .png, .gif, webp","size":"sm","state":_vm.getValidationState(v)},on:{"input":_vm.previewImage},model:{value:(_vm.files),callback:function ($$v) {_vm.files=$$v},expression:"files"}})],1)]}}])}),_c('div',{staticClass:"previews"},_vm._l((_vm.toUplode),function(fil,i){return _c('div',{key:i},[_c('b-img',{staticClass:"img-preview",attrs:{"src":fil.url,"fluid":"","alt":"Fluid image","thumbnail":""}})],1)}),0)],1)}
-var drupal_filevue_type_template_id_4feb73d8_staticRenderFns = []
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsDrupal/drupal-file.vue?vue&type=template&id=16d4d88e&
+var drupal_filevue_type_template_id_16d4d88e_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"vuejs-uploader",class:_vm.class_css},[_c('ValidationProvider',{attrs:{"name":_vm.field.name,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('b-form-group',{attrs:{"label":_vm.field.label,"description":_vm.field.description}},[_c('b-form-file',{attrs:{"placeholder":"Ajouter un fichier ...","drop-placeholder":"Drop file here...","multiple":_vm.cardinality,"accept":".jpg, .png, .gif, webp","size":"sm","state":_vm.getValidationState(v)},on:{"input":_vm.previewImage},model:{value:(_vm.files),callback:function ($$v) {_vm.files=$$v},expression:"files"}})],1)]}}])}),_c('div',{staticClass:"previews"},_vm._l((_vm.toUplode),function(fil,i){return _c('div',{key:i},[_c('b-img',{staticClass:"img-preview",attrs:{"src":fil.url,"fluid":"","alt":"Fluid image","thumbnail":""}})],1)}),0)],1)}
+var drupal_filevue_type_template_id_16d4d88e_staticRenderFns = []
 
 
 ;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-40[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsDrupal/drupal-file.vue?vue&type=script&lang=js&
@@ -96106,6 +96106,8 @@ var drupal_filevue_type_template_id_4feb73d8_staticRenderFns = []
         var vals = [];
         this.toUplode = [];
         loadField.postFile("/filesmanager/post", files).then(function (resp) {
+          _this.$store.commit("renderByStep/ACTIVE_RUNNING");
+
           reader.onload = function (read) {
             _this.toUplode.push({
               file: files,
@@ -96113,6 +96115,10 @@ var drupal_filevue_type_template_id_4feb73d8_staticRenderFns = []
               error: 0,
               url: read.target.result
             });
+
+            setTimeout(function () {
+              _this.$store.commit("renderByStep/DISABLE_RUNNING");
+            }, 300);
           };
 
           reader.readAsDataURL(files);
@@ -96163,8 +96169,8 @@ var drupal_filevue_type_template_id_4feb73d8_staticRenderFns = []
 ;
 var drupal_file_component = (0,componentNormalizer/* default */.Z)(
   fieldsDrupal_drupal_filevue_type_script_lang_js_,
-  drupal_filevue_type_template_id_4feb73d8_render,
-  drupal_filevue_type_template_id_4feb73d8_staticRenderFns,
+  drupal_filevue_type_template_id_16d4d88e_render,
+  drupal_filevue_type_template_id_16d4d88e_staticRenderFns,
   false,
   null,
   null,
@@ -96743,7 +96749,7 @@ var page_save_component = (0,componentNormalizer/* default */.Z)(
     return {
       // Contient l'etape encours.
       current_step: 0,
-      // permet de terminer si une requette est en attente
+      // Permet de terminer si une requette est en attente
       running: false,
       // Contient les etapes et les champs de ces etapes.
       steppers: [{
@@ -97124,7 +97130,10 @@ var page_save_component = (0,componentNormalizer/* default */.Z)(
 external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vuex_esm/* default */.ZP);
 /* harmony default export */ var store = (new vuex_esm/* default.Store */.ZP.Store({
   state: {
-    // Permet de suivre l'etat de creation du site.
+    /**
+     * Permet de suivre l'etat de creation du site.
+     * True, le site est encours de creation.
+     */
     creation_running: false,
     // Permet de determiner si la creation est terminé.
     finish_status: false,
