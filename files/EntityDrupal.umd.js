@@ -95712,9 +95712,9 @@ var drupal_list_string_component = (0,componentNormalizer/* default */.Z)(
 )
 
 /* harmony default export */ var drupal_list_string = (drupal_list_string_component.exports);
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsDrupal/textarea-ckeditor.vue?vue&type=template&id=baf08230&
-var textarea_ckeditorvue_type_template_id_baf08230_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"mb-4",class:_vm.class_css},[_c('ValidationProvider',{staticClass:"form-group",attrs:{"name":_vm.field.label,"rules":{ required: true }},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('legend',{domProps:{"innerHTML":_vm._s(_vm.field.label)}}),_c('ckeditor',{attrs:{"config":_vm.editorConfig},on:{"input":_vm.input,"namespaceloaded":_vm.onNamespaceLoaded},model:{value:(_vm.editorData),callback:function ($$v) {_vm.editorData=$$v},expression:"editorData"}}),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()]}}])})],1)}
-var textarea_ckeditorvue_type_template_id_baf08230_staticRenderFns = []
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsDrupal/textarea-ckeditor.vue?vue&type=template&id=d61758c2&
+var textarea_ckeditorvue_type_template_id_d61758c2_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"mb-4",class:_vm.class_css},[_c('ValidationProvider',{staticClass:"form-group",attrs:{"name":_vm.field.label,"rules":{ required: true }},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('legend',{domProps:{"innerHTML":_vm._s(_vm.field.label)}}),_c('ckeditor',{attrs:{"config":_vm.editorConfig},on:{"input":_vm.input,"namespaceloaded":_vm.onNamespaceLoaded},model:{value:(_vm.editorData),callback:function ($$v) {_vm.editorData=$$v},expression:"editorData"}}),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()]}}])})],1)}
+var textarea_ckeditorvue_type_template_id_d61758c2_staticRenderFns = []
 
 
 ;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-80[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsDrupal/textarea-ckeditor.vue?vue&type=script&lang=js&
@@ -95775,6 +95775,10 @@ var textarea_ckeditorvue_type_template_id_baf08230_staticRenderFns = []
       preEditorConfig: {
         codeSnippet_theme: "monokai_sublime",
         stylesSet: [],
+        toolbar: [{
+          name: "document",
+          items: ["Bold", "Italic", "-", "Cut", "Copy", "Paste", "PasteText", "PasteFromWord", "-", "Undo", "Redo"]
+        }],
         contentsCss: "@import '" + loadField.getBaseUrl() + "/themes/contrib/wb_universe/node_modules/%40fortawesome/fontawesome-free/css/all.min.css'; @import 'http://wb-horizon.com/themes/custom/wb_horizon_com/css/vendor-style.css';",
         on: {
           instanceReady: function instanceReady(ev) {
@@ -95918,8 +95922,8 @@ var textarea_ckeditorvue_type_template_id_baf08230_staticRenderFns = []
 ;
 var textarea_ckeditor_component = (0,componentNormalizer/* default */.Z)(
   fieldsDrupal_textarea_ckeditorvue_type_script_lang_js_,
-  textarea_ckeditorvue_type_template_id_baf08230_render,
-  textarea_ckeditorvue_type_template_id_baf08230_staticRenderFns,
+  textarea_ckeditorvue_type_template_id_d61758c2_render,
+  textarea_ckeditorvue_type_template_id_d61758c2_staticRenderFns,
   false,
   null,
   null,

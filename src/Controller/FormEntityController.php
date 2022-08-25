@@ -445,9 +445,8 @@ class FormEntityController extends ControllerBase {
         throw new \ErrorException('Menu non definit');
     }
     catch (\Exception $e) {
-      $errors = UtilityError::errorAll($e);
-      $this->getLogger('vuejs_entity')->critical($e->getMessage() . '<br>' . implode("<br>", $errors));
-      return $this->reponse($errors, 400, $e->getMessage());
+      $this->getLogger('vuejs_entity')->critical(UtilityError::errorAllToString($e));
+      return $this->reponse(UtilityError::errorAll($e), 400, $e->getMessage());
     }
   }
   
@@ -490,8 +489,8 @@ class FormEntityController extends ControllerBase {
       catch (\Exception $e) {
         $errors = UtilityError::errorAll($e);
         $errors[] = "domain_ovh_entity_id : " . $domain_ovh_entity_id;
-        $this->getLogger('vuejs_entity')->critical($e->getMessage() . '<br>' . implode("<br>", $errors));
-        return $this->reponse([], 400, $e->getMessage());
+        $this->getLogger('vuejs_entity')->critical(" domain_ovh_entity_id : " . $domain_ovh_entity_id . ' <br> ' . UtilityError::errorAllToString($e));
+        return $this->reponse($errors, 400, $e->getMessage());
       }
     }
     $this->getLogger('vuejs_entity')->critical(" Le domaine n'est pas encore enregistrer en tant qu'entité drupal ");
