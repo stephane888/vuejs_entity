@@ -20,6 +20,7 @@ use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\system\Entity\Menu;
 use Drupal\menu_link_content\Entity\MenuLinkContent;
 use Drupal\block\Entity\Block;
+use Drupal\vuejs_entity\Services\DuplicateEntityReference;
 
 /**
  * Returns responses for vuejs entity routes.
@@ -49,15 +50,20 @@ class FormEntityController extends ControllerBase {
     'content_translation_outdated',
     'content_translation_changed'
   ];
-  
+  protected $DuplicateEntityReference;
+
+  function __construct(DuplicateEntityReference $DuplicateEntityReference) {
+    $this->DuplicateEntityReference = $DuplicateEntityReference;
+  }
+
   /**
    *
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static();
+    return new static($container->get('vuejs_entity.duplicate.entity'));
   }
-  
+
   /**
    *
    * @return string[]|\Drupal\Core\StringTranslation\TranslatableMarkup[]
@@ -79,7 +85,7 @@ class FormEntityController extends ControllerBase {
     // = \Drupal::languageManager()->getCurrentLanguage();
     return $build;
   }
-  
+
   /**
    * Cree les nouveaux entitées et duplique les entites existant.
    *
@@ -90,16 +96,17 @@ class FormEntityController extends ControllerBase {
   public function saveDatas(Request $Request, $entity_type_id) {
     $entity_type = $this->entityTypeManager()->getStorage($entity_type_id);
     $values = Json::decode($Request->getContent());
-    
+
     if ($entity_type && !empty($values)) {
       try {
         /**
          */
         $entity = $entity_type->create($values);
         if ($entity_type_id == 'node') {
-          $this->duplicateExistantReference($entity);
+          // $this->duplicateExistantReference($entity);
+          $this->DuplicateEntityReference->duplicateExistantReference($entity);
         }
-        
+
         $entity->save();
         return $this->reponse($entity->toArray());
       }
@@ -117,7 +124,7 @@ class FormEntityController extends ControllerBase {
       return $this->reponse([], 400, "erreur inconnu");
     }
   }
-  
+
   /**
    * Permet de generer une page web à partir de l'id du model fournit.
    */
@@ -141,7 +148,8 @@ class FormEntityController extends ControllerBase {
          */
         $pageWeb = $this->entityTypeManager()->getStorage("site_internet_entity")->create($values);
         $pageWeb->set('layout_paragraphs', $entityModel->get('layout_paragraphs')->getValue());
-        $this->duplicateExistantReference($pageWeb);
+        // $this->duplicateExistantReference($pageWeb);
+        $this->DuplicateEntityReference->duplicateExistantReference($pageWeb);
         $pageWeb->save();
         return $this->reponse($pageWeb->toArray());
       }
@@ -156,7 +164,7 @@ class FormEntityController extends ControllerBase {
       return $this->reponse([], 400, "Le contenu model n'existe plus : " . $id);
     }
   }
-  
+
   /**
    * Permet d'ajouter le contenu d'un paragraph dans une entité.
    */
@@ -197,7 +205,7 @@ class FormEntityController extends ControllerBase {
       return $this->reponse($errors, 400, $e->getMessage());
     }
   }
-  
+
   /**
    *
    * @param Request $Request
@@ -229,153 +237,7 @@ class FormEntityController extends ControllerBase {
       return $this->reponse($errors, 400, $e->getMessage());
     }
   }
-  
-  /**
-   * Duplique les entites existante et changent de domain.
-   * Fonctionne uniquement sur les nodes.
-   */
-  protected function duplicateExistantReference(\Drupal\Core\Entity\ContentEntityBase &$entity) {
-    //
-    $uid = $this->currentUser()->id();
-    if (method_exists($entity, 'setCreatedTime'))
-      $entity->setCreatedTime(time());
-    if (method_exists($entity, 'setChangedTime'))
-      $entity->setChangedTime(time());
-    if (method_exists($entity, 'setOwnerId'))
-      $entity->setOwnerId($uid);
-    if (method_exists($entity, 'setPublished'))
-      $entity->setPublished();
-    //
-    // On desactive la disponibilité du contenu sur tous les domaines.
-    if ($entity->hasField(self::$field_domain_all_affiliates)) {
-      $entity->set(self::$field_domain_all_affiliates, false);
-    }
-    $values = $entity->toArray();
-    foreach ($values as $k => $vals) {
-      if (!empty($vals[0]['target_id'])) {
-        $setings = $entity->get($k)->getSettings();
-        // Duplication des paragraph
-        if (!empty($setings['target_type']) && $setings['target_type'] == 'paragraph') {
-          $NewParagraphIds = [];
-          foreach ($vals as $value) {
-            $Paragraph = Paragraph::load($value['target_id']);
-            if ($Paragraph) {
-              $CloneParagraph = $Paragraph->createDuplicate();
-              if ($CloneParagraph->hasField(self::$field_domain_access)) {
-                $CloneParagraph->set(self::$field_domain_access, $entity->get(self::$field_domain_access)->getValue());
-              }
-              // On verifie pour les sous entites.
-              $this->duplicateExistantReference($CloneParagraph);
-              $CloneParagraph->save();
-              $NewParagraphIds[] = [
-                'target_id' => $CloneParagraph->id()
-              ];
-            }
-          }
-          $entity->set($k, $NewParagraphIds);
-        }
-        // Duplication des sous nodes.
-        elseif (!empty($setings['target_type']) && $setings['target_type'] == 'node') {
-          $newNodesIds = [];
-          foreach ($vals as $value) {
-            $node = Node::load($value['target_id']);
-            if ($node) {
-              $cloneNode = $node->createDuplicate();
-              // On ajoute le champs field_domain_access; ci-possible.
-              if ($cloneNode->hasField(self::$field_domain_access)) {
-                $cloneNode->set(self::$field_domain_access, $entity->get(self::$field_domain_access)->getValue());
-              }
-              // On verifie pour les sous entites.
-              $this->duplicateExistantReference($cloneNode);
-              //
-              $cloneNode->save();
-              $newNodesIds[] = [
-                'target_id' => $cloneNode->id()
-              ];
-            }
-          }
-          //
-          $entity->set($k, $newNodesIds);
-        }
-        // Duplication des sous blocs.
-        elseif (!empty($setings['target_type']) && $setings['target_type'] == 'block_content') {
-          $newBlockIds = [];
-          foreach ($vals as $value) {
-            $BlockContent = BlockContent::load($value['target_id']);
-            if ($BlockContent) {
-              $CloneBlockContent = $BlockContent->createDuplicate();
-              // On ajoute le champs field_domain_access; ci-possible.
-              if ($CloneBlockContent->hasField(self::$field_domain_access)) {
-                $dmn = $entity->get(self::$field_domain_access)->first()->getValue();
-                if ($dmn)
-                  $CloneBlockContent->get(self::$field_domain_access)->setValue($dmn);
-              }
-              // On ajoute l'utilisateur courant:
-              if ($CloneBlockContent->hasField('user_id') && $uid) {
-                $CloneBlockContent->set('user_id', $uid);
-              }
-              // On met jour la date de MAJ
-              if ($CloneBlockContent->hasField('changed')) {
-                $CloneBlockContent->set('changed', time());
-              }
-              //
-              // On met à jour le champs info (car sa valeur doit etre unique).
-              if ($CloneBlockContent->hasField("info")) {
-                $val = $CloneBlockContent->get('info')->first()->getValue();
-                $dmn = $entity->get(self::$field_domain_access)->first()->getValue();
-                $dmn = empty($dmn['target_id']) ? 'domaine.test' : $dmn['target_id'];
-                $val = $dmn . ' : ' . $CloneBlockContent->get('type')->target_id;
-                $CloneBlockContent->get('info')->setValue([
-                  'value' => $val . ' : ' . count($newBlockIds)
-                ]);
-              }
-              //
-              $CloneBlockContent->save();
-              $newBlockIds[] = [
-                'target_id' => $CloneBlockContent->id()
-              ];
-            }
-          }
-          $entity->set($k, $newBlockIds);
-        }
-        // Dupliquer les produits.
-        elseif (!empty($setings['target_type']) && $setings['target_type'] == 'commerce_product') {
-          // Pour le type prodit, on doit Ajouter le role à l'utilisateur.
-          if (!empty($this->currentUser()->id()) && !in_array('manage_ecommerce', $this->currentUser()->getRoles())) {
-            $user = \Drupal\user\Entity\User::load($this->currentUser->id());
-            $user->addRole('manage_ecommerce');
-            $user->save();
-            $this->messenger()->addMessage(' Vous avez le role de vendeur ');
-          }
-          $newProducts = [];
-          foreach ($vals as $value) {
-            $Product = Product::load($value['target_id']);
-            if ($Product) {
-              $CloneProduct = $Product->createDuplicate();
-              // On ajoute le champs field_domain_access; ci-possible.
-              // if ($CloneProduct->hasField(self::$field_domain_access)) {
-              $dmn = $entity->get(self::$field_domain_access)->first()->getValue();
-              $dmn = empty($dmn['target_id']) ? null : $dmn['target_id'];
-              if ($dmn)
-                $CloneProduct->set(self::$field_domain_access, $dmn);
-              // }
-              // On met jour la date de MAJ
-              $CloneProduct->setCreatedTime(time());
-              $CloneProduct->setChangedTime(time());
-              $CloneProduct->setOwnerId($uid);
-              //
-              $CloneProduct->save();
-              $newProducts[] = [
-                'target_id' => $CloneProduct->id()
-              ];
-            }
-          }
-          $entity->set($k, $newProducts);
-        }
-      }
-    }
-  }
-  
+
   function createMenuAndItems(Request $Request) {
     try {
       $datas = Json::decode($Request->getContent());
@@ -449,7 +311,7 @@ class FormEntityController extends ControllerBase {
       return $this->reponse(UtilityError::errorAll($e), 400, $e->getMessage());
     }
   }
-  
+
   /**
    * pour plus d'info.
    * https://stackoverflow.com/questions/40514051/using-preg-replace-to-convert-camelcase-to-snake-case
@@ -496,7 +358,7 @@ class FormEntityController extends ControllerBase {
     $this->getLogger('vuejs_entity')->critical(" Le domaine n'est pas encore enregistrer en tant qu'entité drupal ");
     return $this->reponse([], 400, " Le domaine n'est pas encore enregistrer en tant qu'entité drupal ");
   }
-  
+
   /**
    * Builds the response.
    * REcupere les champs pour un entité
@@ -515,14 +377,14 @@ class FormEntityController extends ControllerBase {
     else
       $entity = $EntityStorage->create();
     $fields = $entity->toArray();
-    
+
     /**
      *
      * @var EntityFieldManager $entityManager
      */
     $entityManager = \Drupal::service('entity_field.manager');
     $Allfields = $entityManager->getFieldDefinitions($entity_type_id, $bundle);
-    
+
     /**
      * ( NB )
      *
@@ -536,7 +398,7 @@ class FormEntityController extends ControllerBase {
       ]);
     }
     $fieldsEntityForm = $entity_form_view->toArray();
-    
+
     $form = [];
     foreach ($fields as $k => $value) {
       if (!empty($Allfields[$k])) {
@@ -684,7 +546,7 @@ class FormEntityController extends ControllerBase {
       'model' => $fields
     ]);
   }
-  
+
   /**
    *
    * @param array $settings
@@ -699,7 +561,7 @@ class FormEntityController extends ControllerBase {
       }
     return $settings;
   }
-  
+
   /**
    *
    * @param Array|string $configs
@@ -716,9 +578,9 @@ class FormEntityController extends ControllerBase {
     $reponse->setContent($configs);
     return $reponse;
   }
-  
+
   protected function load__entity_form_display() {
     return $this->entityTypeManager()->getStorage('entity_view_display')->loadMultiple();
   }
-  
+
 }
