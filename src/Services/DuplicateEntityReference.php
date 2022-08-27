@@ -26,7 +26,7 @@ class DuplicateEntityReference extends ControllerBase {
   ];
 
   /**
-   * Permet de suppremier les references dans l'entité.
+   * Permet de supprimier les references dans l'entité.
    *
    * @param ContentEntityBase $entity
    */
@@ -39,8 +39,12 @@ class DuplicateEntityReference extends ControllerBase {
           $entityType = $this->entityTypeManager()->getStorage($setings['target_type']);
           foreach ($vals as $value) {
             $entityValue = $entityType->load($value['target_id']);
-            if ($entityValue)
+            // On verifie si ce dernier contient des references, si c'est le cas
+            // on les supprime.
+            if ($entityValue) {
+              $this->deleteExistantReference($entityValue);
               $entityValue->delete();
+            }
           }
         }
       }
