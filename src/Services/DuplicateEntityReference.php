@@ -8,6 +8,7 @@ use Drupal\block_content\Entity\BlockContent;
 use Drupal\commerce_product\Entity\Product;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\Core\Entity\ContentEntityBase;
+use Drupal\commerce_product\Entity\ProductVariation;
 
 class DuplicateEntityReference extends ControllerBase {
   protected static $field_domain_access = \Drupal\domain_access\DomainAccessManagerInterface::DOMAIN_ACCESS_FIELD;
@@ -23,6 +24,16 @@ class DuplicateEntityReference extends ControllerBase {
     'node',
     'block_content',
     'commerce_product'
+  ];
+  protected $ignorEntity = [
+    'user',
+    'domain',
+    'paragraphs_type',
+    'site_internet_entity_type',
+    'taxonomy_term',
+    'file',
+    'commerce_store',
+    'commerce_product_type'
   ];
 
   /**
@@ -74,8 +85,10 @@ class DuplicateEntityReference extends ControllerBase {
     foreach ($values as $k => $vals) {
       if (!empty($vals[0]['target_id'])) {
         $setings = $entity->get($k)->getSettings();
+        if (in_array($setings['target_type'], $this->ignorEntity))
+          continue;
         // Duplication des paragraph
-        if (!empty($setings['target_type']) && $setings['target_type'] == 'paragraph') {
+        elseif (!empty($setings['target_type']) && $setings['target_type'] == 'paragraph') {
           $NewParagraphIds = [];
           foreach ($vals as $value) {
             $Paragraph = Paragraph::load($value['target_id']);
@@ -183,10 +196,13 @@ class DuplicateEntityReference extends ControllerBase {
                 if ($dmn)
                   $CloneProduct->set(self::$field_domain_access, $dmn);
               }
+
               // On met jour la date de MAJ
               $CloneProduct->setCreatedTime(time());
               $CloneProduct->setChangedTime(time());
               $CloneProduct->setOwnerId($uid);
+              // On verifie pour les sous entites.
+              $this->duplicateExistantReference($CloneProduct);
               //
               $CloneProduct->save();
               $newProducts[] = [
@@ -195,6 +211,29 @@ class DuplicateEntityReference extends ControllerBase {
             }
           }
           $entity->set($k, $newProducts);
+        }
+        elseif (!empty($setings['target_type']) && $setings['target_type'] == 'commerce_product_variation' && $k == 'variations') {
+          $newCommerceProductVariationIds = [];
+          foreach ($vals as $value) {
+            $ProductVariation = ProductVariation::load($value['target_id']);
+            if ($ProductVariation) {
+              $CloneProductVariation = $ProductVariation->createDuplicate();
+              // On met jour la date de MAJ
+              $CloneProductVariation->setCreatedTime(time());
+              $CloneProductVariation->setChangedTime(time());
+              $CloneProductVariation->setOwnerId($uid);
+              //
+              $CloneProductVariation->save();
+              $newCommerceProductVariationIds[] = [
+                'target_id' => $CloneProductVariation->id()
+              ];
+            }
+          }
+          //
+          $entity->set($k, $newCommerceProductVariationIds);
+        }
+        else {
+          \Drupal::logger('vuejs_entity')->alert(" Entité non traitén, field :" . $k . ', type : ' . $setings['target_type']);
         }
       }
     }
