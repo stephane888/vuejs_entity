@@ -9,6 +9,7 @@ use Drupal\commerce_product\Entity\Product;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\commerce_product\Entity\ProductVariation;
+use Drupal\vuejs_entity\Event\DuplicateEntityEvent;
 
 class DuplicateEntityReference extends ControllerBase {
   protected static $field_domain_access = \Drupal\domain_access\DomainAccessManagerInterface::DOMAIN_ACCESS_FIELD;
@@ -33,7 +34,8 @@ class DuplicateEntityReference extends ControllerBase {
     'taxonomy_term',
     'file',
     'commerce_store',
-    'commerce_product_type'
+    'commerce_product_type',
+    'node_type'
   ];
 
   /**
@@ -82,6 +84,8 @@ class DuplicateEntityReference extends ControllerBase {
       $entity->set(self::$field_domain_all_affiliates, false);
     }
     $values = $entity->toArray();
+    // Get the event_dispatcher service and dispatch the event.
+    $event_dispatcher = \Drupal::service('event_dispatcher');
     foreach ($values as $k => $vals) {
       if (!empty($vals[0]['target_id'])) {
         $setings = $entity->get($k)->getSettings();
@@ -125,6 +129,9 @@ class DuplicateEntityReference extends ControllerBase {
               $newNodesIds[] = [
                 'target_id' => $cloneNode->id()
               ];
+              // send event :
+              $event = new DuplicateEntityEvent($cloneNode, $node);
+              $event_dispatcher->dispatch($event, DuplicateEntityEvent::EVENT_NAME);
             }
           }
           //
@@ -233,7 +240,7 @@ class DuplicateEntityReference extends ControllerBase {
           $entity->set($k, $newCommerceProductVariationIds);
         }
         else {
-          \Drupal::logger('vuejs_entity')->alert(" Entité non traitén, field :" . $k . ', type : ' . $setings['target_type']);
+          \Drupal::logger('vuejs_entity')->alert(" Entité non traitée, field :" . $k . ', type : ' . $setings['target_type']);
         }
       }
     }
