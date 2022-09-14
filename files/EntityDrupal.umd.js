@@ -30359,7 +30359,8 @@ var basicRequest = {
    * @public
    * @returns Booleans
    */
-  isLocalDev: window.location.host.includes("localhost") || window.location.host.includes(".kksa") ? true : false,
+  isLocalDev: window.location.host.includes("localhost") ? // || window.location.host.includes(".kksa")
+  true : false,
 
   /**
    * Permet de derminer la source du domaine, en function des paramettres definit.
@@ -30417,7 +30418,8 @@ var basicRequest = {
 
     return new Promise(function (resolv, reject) {
       if (_this3.languageId !== "" && _this3.languageId !== undefined && _this3.languageId !== null) url = "/" + _this3.languageId + url;
-      var urlFinal = url.includes("://") ? url : _this3.getBaseUrl() + url;
+      var urlFinal = url.includes("://") ? url : _this3.getBaseUrl() + url; // console.log(" this.isLocalDev: ", this.isLocalDev );
+
       InstAxios.get(urlFinal, configs).then(function (reponse) {
         resolv({
           status: true,
@@ -93412,7 +93414,7 @@ var dist = __webpack_require__(40473);
 
     return new Promise(function (resolv, reject) {
       if (_this2.donneeInternetEntity.domain_ovh_entity && _this2.donneeInternetEntity.domain_ovh_entity[0] && _this2.donneeInternetEntity.domain_ovh_entity[0].target_id) {
-        // Save domaine on drupal ( id dans l'entité domain ) et met à jour l'entité "domain_ovh_entity" avec le id de domain.
+        // Save or get domaine on drupal ( id dans l'entité domain ) et met à jour l'entité "domain_ovh_entity" avec le id de domain.
         resolv(_this2.bPost("/vuejs-entity/domaine/add/" + _this2.donneeInternetEntity.domain_ovh_entity[0].target_id));
       } else {
         reject(" Le nom de domaine n'a pas pu etre creer ");
