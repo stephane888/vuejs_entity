@@ -44,11 +44,11 @@ class FormEntityController extends ControllerBase {
     'content_translation_changed'
   ];
   protected $DuplicateEntityReference;
-  
+
   function __construct(DuplicateEntityReference $DuplicateEntityReference) {
     $this->DuplicateEntityReference = $DuplicateEntityReference;
   }
-  
+
   /**
    *
    * {@inheritdoc}
@@ -56,7 +56,7 @@ class FormEntityController extends ControllerBase {
   public static function create(ContainerInterface $container) {
     return new static($container->get('vuejs_entity.duplicate.entity'));
   }
-  
+
   /**
    *
    * @return string[]|\Drupal\Core\StringTranslation\TranslatableMarkup[]
@@ -78,7 +78,7 @@ class FormEntityController extends ControllerBase {
     // = \Drupal::languageManager()->getCurrentLanguage();
     return $build;
   }
-  
+
   /**
    * Cree les nouveaux entitées et duplique les entites existant.
    *
@@ -89,7 +89,7 @@ class FormEntityController extends ControllerBase {
   public function saveDatas(Request $Request, $entity_type_id) {
     $entity_type = $this->entityTypeManager()->getStorage($entity_type_id);
     $values = Json::decode($Request->getContent());
-    
+
     if ($entity_type && !empty($values)) {
       try {
         /**
@@ -99,7 +99,7 @@ class FormEntityController extends ControllerBase {
           // $this->duplicateExistantReference($entity);
           $this->DuplicateEntityReference->duplicateExistantReference($entity);
         }
-        
+
         $entity->save();
         return $this->reponse($entity->toArray());
       }
@@ -117,7 +117,7 @@ class FormEntityController extends ControllerBase {
       return $this->reponse([], 400, "erreur inconnu");
     }
   }
-  
+
   /**
    * Permet de generer une page web à partir de l'id du model fournit.
    */
@@ -157,7 +157,7 @@ class FormEntityController extends ControllerBase {
       return $this->reponse([], 400, "Le contenu model n'existe plus : " . $id);
     }
   }
-  
+
   /**
    * Permet d'ajouter le contenu d'un paragraph dans une entité.
    */
@@ -198,7 +198,7 @@ class FormEntityController extends ControllerBase {
       return $this->reponse($errors, 400, $e->getMessage());
     }
   }
-  
+
   /**
    *
    * @param Request $Request
@@ -230,7 +230,7 @@ class FormEntityController extends ControllerBase {
       return $this->reponse($errors, 400, $e->getMessage());
     }
   }
-  
+
   function createMenuAndItems(Request $Request) {
     try {
       $datas = Json::decode($Request->getContent());
@@ -304,7 +304,7 @@ class FormEntityController extends ControllerBase {
       return $this->reponse(UtilityError::errorAll($e), 400, $e->getMessage());
     }
   }
-  
+
   /**
    * pour plus d'info.
    * https://stackoverflow.com/questions/40514051/using-preg-replace-to-convert-camelcase-to-snake-case
@@ -331,7 +331,7 @@ class FormEntityController extends ControllerBase {
         // */
         // $domain =
         // \Drupal\vuejs_entity\VuejsEntity::createDomainFromData($sub_domain);
-        
+
         // // $domain =
         // // $this->entityTypeManager()->getStorage('domain')->create();
         // // $domain->set('name', $sub_domain);
@@ -352,7 +352,7 @@ class FormEntityController extends ControllerBase {
         // // $this->getLogger('vuejs_entity')->info('domain_ovh_entity Error :
         // '
         // // . $domain_ovh_entity->id() . ' : ' . $domain->id());
-        
+
         // }
         // else {
         // return $this->reponse($domainEntity->toArray());
@@ -368,7 +368,7 @@ class FormEntityController extends ControllerBase {
     $this->getLogger('vuejs_entity')->critical(" Le domaine n'est pas encore enregistrer en tant qu'entité drupal ");
     return $this->reponse([], 400, " Le domaine n'est pas encore enregistrer en tant qu'entité drupal ");
   }
-  
+
   /**
    * Builds the response.
    * REcupere les champs pour un entité
@@ -387,14 +387,14 @@ class FormEntityController extends ControllerBase {
     else
       $entity = $EntityStorage->create();
     $fields = $entity->toArray();
-    
+
     /**
      *
      * @var EntityFieldManager $entityManager
      */
     $entityManager = \Drupal::service('entity_field.manager');
     $Allfields = $entityManager->getFieldDefinitions($entity_type_id, $bundle);
-    
+
     /**
      * ( NB )
      *
@@ -408,7 +408,7 @@ class FormEntityController extends ControllerBase {
       ]);
     }
     $fieldsEntityForm = $entity_form_view->toArray();
-    
+
     $form = [];
     foreach ($fields as $k => $value) {
       if (!empty($Allfields[$k])) {
@@ -441,24 +441,31 @@ class FormEntityController extends ControllerBase {
         // on recupere les pages de maniere dynamique.
         if ($entity_type_id == 'donnee_internet_entity' && $k == 'pages') {
           // id de page qui seront crées par defaut.
-          $defaultPages = [
-            '3' => 3,
-            '4' => 4,
-            '5' => 5,
-            '16' => 16
-          ];
+          // $defaultPages = [
+          // '3' => 3,
+          // '4' => 4,
+          // '5' => 5,
+          // '16' => 16
+          // ];
+          $defaultPages = [];
           // id de page qui seront crées par defaut pour e-commerce.
-          $defaultPagesProduct = [
-            '18' => 18,
-            '19' => 19,
-            '22' => 22
-          ];
+          // $defaultPagesProduct = [
+          // '18' => 18,
+          // '19' => 19,
+          // '22' => 22
+          // ];
+          /**
+           *
+           * @deprecated $defaultPagesProduct
+           */
+          $defaultPagesProduct = [];
           // site ecommerce.( on determine les types e-commerce via l'id du
           // champs "terms").
-          $typeSiteEcommerce = [
-            18,
-            7
-          ];
+          // $typeSiteEcommerce = [
+          // 18,
+          // 7
+          // ];
+          $typeSiteEcommerce = [];
           //
           $param = Json::decode($Request->getContent());
           $categorie_id = null;
@@ -476,7 +483,11 @@ class FormEntityController extends ControllerBase {
             $defaultPages += $pageSub;
             $defaultPagesProduct += $pageSub;
           }
-          //
+          /**
+           * Permet de charger les pages qui ont le meme taxonomies.
+           *
+           * @var \Drupal\Core\Entity\Query\QueryInterface $query
+           */
           $query = $this->entityTypeManager()->getStorage('site_type_datas')->getQuery();
           $query->condition('is_home_page', 0);
           $query->condition('status', true);
@@ -486,7 +497,8 @@ class FormEntityController extends ControllerBase {
           else {
             $query->range(0, 4);
           }
-          // ??? pourquoi ? et quel est son impact ?
+          // permet de filtrer en function du type (ecommerce, rc-web ...), mais
+          // ne semble pas vraiment necessaire. (On verra avec le temps).
           if ($type) {
             $query->condition('site_internet_entity_type', $type);
           }
@@ -503,7 +515,7 @@ class FormEntityController extends ControllerBase {
             $ids += $defaultPagesProduct;
           }
           else {
-            // Page par defaut pourun site non e-commerce.
+            // Page par defaut pour un site non e-commerce.
             foreach ($defaultPages as $id) {
               $fields[$k][] = [
                 'value' => $id
@@ -556,7 +568,7 @@ class FormEntityController extends ControllerBase {
       'model' => $fields
     ]);
   }
-  
+
   /**
    *
    * @param array $settings
@@ -571,7 +583,7 @@ class FormEntityController extends ControllerBase {
       }
     return $settings;
   }
-  
+
   /**
    *
    * @param Array|string $configs
@@ -588,9 +600,9 @@ class FormEntityController extends ControllerBase {
     $reponse->setContent($configs);
     return $reponse;
   }
-  
+
   protected function load__entity_form_display() {
     return $this->entityTypeManager()->getStorage('entity_view_display')->loadMultiple();
   }
-  
+
 }
