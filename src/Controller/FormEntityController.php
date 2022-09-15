@@ -316,8 +316,8 @@ class FormEntityController extends ControllerBase {
     $domain_ovh_entity = $this->entityTypeManager()->getStorage('domain_ovh_entity')->load($domain_ovh_entity_id);
     if ($domain_ovh_entity) {
       try {
-        $sub_domain = $domain_ovh_entity->getsubDomain() . '.' . $domain_ovh_entity->getZoneName();
-        $domain = \Drupal\vuejs_entity\VuejsEntity::createDomainFromData($sub_domain);
+        $domaineHost = $domain_ovh_entity->getsubDomain() . '.' . $domain_ovh_entity->getZoneName();
+        $domain = \Drupal\vuejs_entity\VuejsEntity::createDomainFromData($domaineHost);
         return $this->reponse($domain->toArray());
         // $textConvert = new Convert($sub_domain);
         // $domain_id = $textConvert->toSnake();
