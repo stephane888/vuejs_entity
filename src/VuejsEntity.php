@@ -34,4 +34,16 @@ class VuejsEntity {
     return $domainEntity;
   }
 
+  /**
+   *
+   * @see \drupal_flush_all_caches()
+   */
+  static function rebuildThemeInfo() {
+    \Drupal::service('extension.list.theme_engine')->reset();
+    \Drupal::service('theme_handler')->refreshInfo();
+    // In case the active theme gets requested later in the same request we need
+    // to reset the theme manager.
+    \Drupal::theme()->resetActiveTheme();
+  }
+
 }

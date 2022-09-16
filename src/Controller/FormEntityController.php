@@ -209,12 +209,12 @@ class FormEntityController extends ControllerBase {
     try {
       $values = Json::decode($Request->getContent());
       if (empty($themes[$values['theme']])) {
-        drupal_flush_all_caches();
-        return $this->reponse([
-          $themes,
-          system_region_list($values['theme'])
-        ], 400);
+        \Drupal\vuejs_entity\VuejsEntity::rebuildThemeInfo();
       }
+      // Les id des blocks doivent etre maj afin d'avoir des id unique.
+      $id = mb_substr($values['id'], 0, 10, 'UTF-8');
+      $values['id'] = $id . uniqid();
+      $values['settings']['id'] = $values['id'];
       /**
        *
        * @var Block $block
@@ -231,11 +231,20 @@ class FormEntityController extends ControllerBase {
     }
   }
 
+  /**
+   *
+   * @param Request $Request
+   * @throws \ErrorException
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   */
   function createMenuAndItems(Request $Request) {
     try {
       $datas = Json::decode($Request->getContent());
       // creation du menu
       if (!empty($datas['menu'])) {
+        // Les id des blocks doivent etre maj afin d'avoir des id unique.
+        $id = mb_substr($datas['menu']['id'], 0, 10, 'UTF-8');
+        $datas['menu']['id'] = $id . uniqid();
         /**
          *
          * @var Menu $menu

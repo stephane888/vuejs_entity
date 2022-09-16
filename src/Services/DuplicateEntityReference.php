@@ -193,6 +193,10 @@ class DuplicateEntityReference extends ControllerBase {
           }
           $newProducts = [];
           foreach ($vals as $value) {
+            /**
+             *
+             * @var \Drupal\commerce_product\Entity\Product $Product
+             */
             $Product = Product::load($value['target_id']);
             if ($Product) {
               $CloneProduct = $Product->createDuplicate();
@@ -210,16 +214,43 @@ class DuplicateEntityReference extends ControllerBase {
               $CloneProduct->setOwnerId($uid);
               // On verifie pour les sous entites.
               $this->duplicateExistantReference($CloneProduct);
-              //
+              // on supprime les variations dans le clone
+              $CloneProduct->setVariations([]);
+
               $CloneProduct->save();
+              $cloneProducdId = $CloneProduct->id();
+              // On duplique les variations à partir du produit.
+              $variationsIds = $Product->getVariationIds();
+              $newVariations = [];
+              foreach ($variationsIds as $variationId) {
+                $variation = \Drupal\commerce_product\Entity\ProductVariation::load($variationId);
+                if ($variation) {
+                  $cloneVariation = $variation->createDuplicate();
+                  $cloneVariation->set('product_id', $cloneProducdId);
+                  $cloneVariation->save();
+                  $newVariations[] = $cloneVariation->id();
+                }
+              }
+              $CloneProduct->setVariations($newVariations);
+              \Stephane888\Debug\debugLog::$max_depth = 5;
+              \Stephane888\Debug\debugLog::kintDebugDrupal([
+                $newVariations,
+                $Product->toArray(),
+                $Product->get('variations')->target_id,
+                $Product->getVariationIds()
+              ], 'newVariations_' . $Product->id() . '__', true);
+              $CloneProduct->save();
+              //
               $newProducts[] = [
-                'target_id' => $CloneProduct->id()
+                'target_id' => $cloneProducdId
               ];
             }
           }
           $entity->set($k, $newProducts);
         }
-        elseif (!empty($setings['target_type']) && $setings['target_type'] == 'commerce_product_variation' && $k == 'variations') {
+        // La duplication de variation de produit suivant cette approche ne
+        // fonctionne pas.
+        elseif (!empty($setings['target_type']) && $setings['target_type'] == 'commerce_product_variationOO' && $k == 'variations') {
           $newCommerceProductVariationIds = [];
           foreach ($vals as $value) {
             $ProductVariation = ProductVariation::load($value['target_id']);
