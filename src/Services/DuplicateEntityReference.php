@@ -232,13 +232,13 @@ class DuplicateEntityReference extends ControllerBase {
                 }
               }
               $CloneProduct->setVariations($newVariations);
-              \Stephane888\Debug\debugLog::$max_depth = 5;
-              \Stephane888\Debug\debugLog::kintDebugDrupal([
-                $newVariations,
-                $Product->toArray(),
-                $Product->get('variations')->target_id,
-                $Product->getVariationIds()
-              ], 'newVariations_' . $Product->id() . '__', true);
+              // \Stephane888\Debug\debugLog::$max_depth = 5;
+              // \Stephane888\Debug\debugLog::kintDebugDrupal([
+              // $newVariations,
+              // $Product->toArray(),
+              // $Product->get('variations')->target_id,
+              // $Product->getVariationIds()
+              // ], 'newVariations_' . $Product->id() . '__', true);
               $CloneProduct->save();
               //
               $newProducts[] = [
