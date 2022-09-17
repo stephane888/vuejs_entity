@@ -105,11 +105,11 @@ class FormEntityController extends ControllerBase {
       }
       catch (\Exception $e) {
         $user = \Drupal::currentUser();
-        $errors = UtilityError::errorAll($e);
+        $errors = UtilityError::errorAllToString($e);
         $errors[] = 'error create : ' . $entity_type_id;
         $errors[] = 'current user id : ' . $user->id();
-        $this->getLogger('vuejs_entity')->critical($e->getMessage() . '<br>' . implode("<br>", $errors));
-        return $this->reponse($errors, 400, $e->getMessage());
+        $this->getLogger('vuejs_entity')->critical($e->getMessage() . '<br>' . $errors);
+        return $this->reponse(UtilityError::errorAll($e), 400, $e->getMessage());
       }
     }
     else {
@@ -147,9 +147,9 @@ class FormEntityController extends ControllerBase {
         return $this->reponse($pageWeb->toArray());
       }
       catch (\Exception $e) {
-        $errors = UtilityError::errorAll($e);
-        $this->getLogger('vuejs_entity')->critical($e->getMessage() . '<br>' . implode("<br>", $errors));
-        return $this->reponse($errors, 400, $e->getMessage());
+        $errors = UtilityError::errorAllToString($e);
+        $this->getLogger('vuejs_entity')->critical($e->getMessage() . '<br>' . $errors);
+        return $this->reponse(UtilityError::errorAll($e), 400, $e->getMessage());
       }
     }
     else {
@@ -193,9 +193,9 @@ class FormEntityController extends ControllerBase {
       return $this->reponse($entity->toArray());
     }
     catch (\Exception $e) {
-      $errors = UtilityError::errorAll($e);
-      $this->getLogger('vuejs_entity')->critical($e->getMessage() . '<br>' . implode("<br>", $errors));
-      return $this->reponse($errors, 400, $e->getMessage());
+      $errors = UtilityError::errorAllToString($e);
+      $this->getLogger('vuejs_entity')->critical($e->getMessage() . '<br>' . $errors);
+      return $this->reponse(UtilityError::errorAll($e), 400, $e->getMessage());
     }
   }
 
@@ -209,7 +209,9 @@ class FormEntityController extends ControllerBase {
     try {
       $values = Json::decode($Request->getContent());
       if (empty($themes[$values['theme']])) {
-        \Drupal\vuejs_entity\VuejsEntity::rebuildThemeInfo();
+        // \Drupal\vuejs_entity\VuejsEntity::rebuildThemeInfo();
+        drupal_flush_all_caches();
+        $themes = \Drupal::service('theme_handler')->listInfo();
       }
       // Les id des blocks doivent etre maj afin d'avoir des id unique.
       $id = mb_substr($values['id'], 0, 10, 'UTF-8');
@@ -225,9 +227,9 @@ class FormEntityController extends ControllerBase {
       return $this->reponse($block->toArray());
     }
     catch (\Exception $e) {
-      $errors = UtilityError::errorAll($e);
-      $this->getLogger('vuejs_entity')->critical($e->getMessage() . '<br>' . implode("<br>", $errors));
-      return $this->reponse($errors, 400, $e->getMessage());
+      $errors = UtilityError::errorAllToString($e);
+      $this->getLogger('vuejs_entity')->critical($e->getMessage() . '<br>' . $errors);
+      return $this->reponse(UtilityError::errorAll($e), 400, $e->getMessage());
     }
   }
 
