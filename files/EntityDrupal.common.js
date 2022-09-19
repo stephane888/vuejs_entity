@@ -93179,7 +93179,16 @@ var dist = __webpack_require__(63489);
   currentBuildStep: 0,
   donneeInternetEntity: {},
   homePageContent: {},
+
+  /**
+   * entité domain
+   */
   domainRegister: {},
+
+  /**
+   * entité domain
+   */
+  domainOvhEntity: {},
   OrtherPages: [],
   messages: {
     errors: [],
@@ -93228,7 +93237,8 @@ var dist = __webpack_require__(63489);
           setTimeout(function () {
             step.status = "ok";
             _this.currentBuildStep++;
-            _this.domainRegister = resp.data;
+            if (resp.data && resp.data.domain) _this.domainRegister = resp.data.domain;
+            if (resp.data && resp.data.domain_ovh_entity) _this.domainOvhEntity = resp.data.domain_ovh_entity;
 
             if (_this.domainRegister.hostname) {
               store.commit("SET_HOSTNAME", {
@@ -93404,7 +93414,7 @@ var dist = __webpack_require__(63489);
 
     return new Promise(function (resolv, reject) {
       if (_this2.donneeInternetEntity.domain_ovh_entity && _this2.donneeInternetEntity.domain_ovh_entity[0] && _this2.donneeInternetEntity.domain_ovh_entity[0].target_id) {
-        // Save or get domaine on drupal ( id dans l'entité domain ) et met à jour l'entité "domain_ovh_entity" avec le id de domain.
+        // Cree l'entité domain s'il n'existe pas et recupere les entites domain et domain_ovh_entity.
         resolv(_this2.bPost("/vuejs-entity/domaine/add/" + _this2.donneeInternetEntity.domain_ovh_entity[0].target_id));
       } else {
         reject(" Le nom de domaine n'a pas pu etre creer ");
@@ -93504,7 +93514,8 @@ var dist = __webpack_require__(63489);
     return new Promise(function (resolv, reject) {
       // build menu :
       var menu = {
-        id: (0,dist.limit)(_this4.domainRegister.id + "_main", 30, ""),
+        //this.domainOvhEntity.sub_domain[0].value contient a-z0-9,
+        id: _this4.domainOvhEntity.sub_domain[0].value + "_main",
         label: _this4.domainRegister.id + ": menu principal",
         description: "Menu generé automatiquement"
       }; // build items
@@ -96760,7 +96771,8 @@ var page_save_component = (0,componentNormalizer/* default */.Z)(
       // Contient les etapes et les champs de ces etapes.
       steppers: [{
         keys: ["html_1"]
-      }, {
+      }, // Doit etre compris entre [3-20]
+      {
         keys: ["name"]
       }, {
         keys: ["type_color_theme"]

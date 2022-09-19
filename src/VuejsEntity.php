@@ -3,6 +3,7 @@
 namespace Drupal\vuejs_entity;
 
 use Jawira\CaseConverter\Convert;
+use Drupal\Core\DrupalKernel;
 
 class VuejsEntity {
 
@@ -38,12 +39,18 @@ class VuejsEntity {
    *
    * @see \drupal_flush_all_caches()
    */
-  static function rebuildThemeInfo() {
+  static function rebuildThemeInfo($kernel = NULL) {
     \Drupal::service('extension.list.theme_engine')->reset();
     \Drupal::service('theme_handler')->refreshInfo();
     // In case the active theme gets requested later in the same request we need
     // to reset the theme manager.
     \Drupal::theme()->resetActiveTheme();
+
+    if (!$kernel instanceof DrupalKernel) {
+      $kernel = \Drupal::service('kernel');
+      $kernel->invalidateContainer();
+      $kernel->rebuildContainer();
+    }
   }
 
 }

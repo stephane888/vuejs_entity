@@ -209,9 +209,13 @@ class FormEntityController extends ControllerBase {
     try {
       $values = Json::decode($Request->getContent());
       if (empty($themes[$values['theme']])) {
-        // \Drupal\vuejs_entity\VuejsEntity::rebuildThemeInfo();
-        drupal_flush_all_caches();
+        \Drupal\vuejs_entity\VuejsEntity::rebuildThemeInfo();
+        // drupal_flush_all_caches();
         $themes = \Drupal::service('theme_handler')->listInfo();
+        sleep(5);
+        if (empty($themes[$values['theme']])) {
+          $this->getLogger('vuejs_entity')->critical(" Le theme n'existe toujours pas ... ");
+        }
       }
       // Les id des blocks doivent etre maj afin d'avoir des id unique.
       $id = mb_substr($values['id'], 0, 10, 'UTF-8');
@@ -245,8 +249,8 @@ class FormEntityController extends ControllerBase {
       // creation du menu
       if (!empty($datas['menu'])) {
         // Les id des blocks doivent etre maj afin d'avoir des id unique.
-        $id = mb_substr($datas['menu']['id'], 0, 10, 'UTF-8');
-        $datas['menu']['id'] = $id . uniqid();
+        // $id = mb_substr($datas['menu']['id'], 0, 10, 'UTF-8');
+        // $datas['menu']['id'] = $id . uniqid();
         /**
          *
          * @var Menu $menu
@@ -329,7 +333,12 @@ class FormEntityController extends ControllerBase {
       try {
         $domaineHost = $domain_ovh_entity->getsubDomain() . '.' . $domain_ovh_entity->getZoneName();
         $domain = \Drupal\vuejs_entity\VuejsEntity::createDomainFromData($domaineHost);
-        return $this->reponse($domain->toArray());
+        $datas = [
+          'domain_ovh_entity' => $domain_ovh_entity->toArray(),
+          'domain' => $domain->toArray()
+        ];
+        //
+        return $this->reponse($datas);
         // $textConvert = new Convert($sub_domain);
         // $domain_id = $textConvert->toSnake();
         // $domain_id = str_replace('.', '_', $domain_id);

@@ -35,7 +35,8 @@ class DuplicateEntityReference extends ControllerBase {
     'file',
     'commerce_store',
     'commerce_product_type',
-    'node_type'
+    'node_type',
+    'commerce_product_variation'
   ];
 
   /**
