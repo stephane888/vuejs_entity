@@ -554,7 +554,7 @@ class FormEntityController extends ControllerBase {
                * @var \Drupal\creation_site_virtuel\Entity\SiteTypeDatas $entity
                */
               $pages[] = [
-                'label' => $entity->getName(),
+                'label' => $entity->getNameToMenu(),
                 'image' => [
                   $entity->getFirstImage()
                 ],
