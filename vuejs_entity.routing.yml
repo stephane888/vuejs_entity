@@ -31,6 +31,17 @@ vuejs_entity.form_entity:
     view_mode: 'default'
   requirements:
     _permission: 'access content'
+
+# Permet de recuperer les données en function du model choisis.    
+vuejs_entity.form_entity_paragraphs:
+  path: '/vuejs-entity/form/paragraphs/{id_model}/{type}'
+  defaults:
+    _title: 'vuejs entity settings'
+    _controller: '\Drupal\vuejs_entity\Controller\FormEntityController::getFormParagraphByModel'
+    bundle: null,
+    view_mode: 'default'
+  requirements:
+    _permission: 'access content'
     
     
 vuejs_entity.model_choisie_form:

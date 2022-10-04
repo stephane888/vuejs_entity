@@ -14,6 +14,7 @@ use Stephane888\Debug\Utility as UtilityError;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Drupal\paragraphs\Entity\Paragraph;
 
 /**
  * Returns responses for vuejs entity routes.
@@ -89,7 +90,7 @@ class FormEntityController extends ControllerBase {
   public function saveDatas(Request $Request, $entity_type_id) {
     $entity_type = $this->entityTypeManager()->getStorage($entity_type_id);
     $values = Json::decode($Request->getContent());
-
+    //
     if ($entity_type && !empty($values)) {
       try {
         /**
@@ -124,7 +125,7 @@ class FormEntityController extends ControllerBase {
   public function generatePageWebByModel(Request $Request, $id) {
     /**
      * C'est le contenu model.
-     * Dans ce contenu model, seul quelques sont necessaire.
+     * Dans ce contenu model, seul quelques champs sont necessaire.
      * [ layout_paragraphs ]
      *
      * @var \Drupal\creation_site_virtuel\Entity\SiteTypeDatas $entityModel
@@ -187,7 +188,7 @@ class FormEntityController extends ControllerBase {
       // On cree le paragraph
       $entity_P = $this->entityTypeManager()->getStorage('paragraph')->create($valuesEntity);
       $entity_P->save();
-      // on l'ajoute à l'entité
+      // On l'ajoute à l'entité.
       $entity->set('layout_paragraphs', $entity_P->id());
       $entity->save();
       return $this->reponse($entity->toArray());
@@ -217,6 +218,7 @@ class FormEntityController extends ControllerBase {
           $this->getLogger('vuejs_entity')->critical(" Le theme n'existe toujours pas ... ");
         }
       }
+
       // Les id des blocks doivent etre maj afin d'avoir des id unique.
       $id = mb_substr($values['id'], 0, 10, 'UTF-8');
       $values['id'] = $id . uniqid();
@@ -279,36 +281,41 @@ class FormEntityController extends ControllerBase {
             $menuLinkContents[] = $menuLinkContent->toArray();
           }
         }
-        $domain = $datas['domain'];
+        /**
+         * Logique version 2
+         */
+        // $domain = $datas['domain'];
         // Create block-content for menu;
-        $values = [
-          'type' => [
-            [
-              'target_id' => "menus"
-            ]
-          ],
-          'info' => [
-            [
-              'value' => $domain['field_domain_access'] . ': menu'
-            ]
-          ],
-          'field_domain_access' => [
-            [
-              'target_id' => $domain['field_domain_access']
-            ]
-          ],
-          'field_menus' => [
-            [
-              'target_id' => $menu->id()
-            ]
-          ]
-        ];
-        $block_content = $this->entityTypeManager()->getStorage('block_content')->create($values);
-        $block_content->save();
+        // $values = [
+        // 'type' => [
+        // [
+        // 'target_id' => $datas['block_content_type']
+        // ]
+        // ],
+        // 'info' => [
+        // [
+        // 'value' => $domain['field_domain_access'] . ': menu'
+        // ]
+        // ],
+        // 'field_domain_access' => [
+        // [
+        // 'target_id' => $domain['field_domain_access']
+        // ]
+        // ],
+        // 'field_menus' => [
+        // [
+        // 'target_id' => $menu->id()
+        // ]
+        // ]
+        // ];
+        // $block_content =
+        // $this->entityTypeManager()->getStorage('block_content')->create($values);
+        // $block_content->save();
+
         return $this->reponse([
           'menu' => $menu->toArray(),
-          'items' => $menuLinkContents,
-          'block_content' => $block_content->toArray()
+          'items' => $menuLinkContents
+          // 'block_content' => $block_content->toArray()
         ]);
       }
       else
@@ -391,21 +398,21 @@ class FormEntityController extends ControllerBase {
 
   /**
    * Builds the response.
-   * REcupere les champs pour un entité
+   * Recupere les champs pour un entité.
    */
-  public function getForm(Request $Request, $entity_type_id, $view_mode, $bundle = null) {
+  public function getForm(Request $Request, $entity_type_id, $view_mode = 'default', $bundle = null, $entity = null) {
     //
     $EntityStorage = $this->entityTypeManager()->getStorage($entity_type_id);
-    /**
-     *
-     * @var DonneeSiteInternetEntity $entity
-     */
-    if ($bundle)
-      $entity = $EntityStorage->create([
-        'type' => $bundle
-      ]);
-    else
-      $entity = $EntityStorage->create();
+    if (!$entity) {
+      if ($bundle && $bundle != $entity_type_id)
+        $entity = $EntityStorage->create([
+          'type' => $bundle
+        ]);
+      else {
+        $bundle = $entity_type_id;
+        $entity = $EntityStorage->create();
+      }
+    }
     $fields = $entity->toArray();
 
     /**
@@ -420,13 +427,14 @@ class FormEntityController extends ControllerBase {
      *
      * @var \Drupal\Core\Entity\Entity\EntityFormDisplay $entity_form_view
      */
-    $entity_form_view = $this->entityTypeManager()->getStorage('entity_form_display')->load($entity_type_id . '.' . $entity_type_id . '.default');
+    $entity_form_view = $this->entityTypeManager()->getStorage('entity_form_display')->load($entity_type_id . '.' . $bundle . '.' . $view_mode);
     if (!$entity_form_view) {
       $entity_form_view = $this->entityTypeManager()->getStorage('entity_form_display')->create([
-        'bundle' => $bundle ? $bundle : $entity_type_id,
+        'bundle' => $bundle,
         'targetEntityType' => $entity_type_id
       ]);
     }
+
     $fieldsEntityForm = $entity_form_view->toArray();
 
     $form = [];
@@ -587,6 +595,46 @@ class FormEntityController extends ControllerBase {
       'form' => $form,
       'model' => $fields
     ]);
+  }
+
+  /**
+   * Recupere les données de l'entete le footer en function du model.
+   */
+  function getFormParagraphByModel(Request $Request, $id_model, $type) {
+    $entityModel = $this->entityTypeManager()->getStorage("site_type_datas")->load($id_model);
+    if ($entityModel) {
+      $headerId = $entityModel->get('entete_paragraph')->target_id;
+      $footerId = $entityModel->get('footer_paragraph')->target_id;
+
+      if ($headerId && $type == 'header') {
+        /**
+         *
+         * @var Paragraph $paragraphHeader
+         */
+        $paragraphHeader = $this->entityTypeManager()->getStorage("paragraph")->load($headerId);
+
+        return $this->getForm($Request, "paragraph", 'default', $paragraphHeader->bundle(), $paragraphHeader->createDuplicate());
+      }
+      //
+      if ($footerId && $type == 'footer') {
+        /**
+         *
+         * @var Paragraph $paragraphHeader
+         */
+        $paragraphFooter = $this->entityTypeManager()->getStorage("paragraph")->load($footerId);
+        return $this->getForm($Request, "paragraph", 'default', $paragraphFooter->bundle(), $paragraphFooter->createDuplicate());
+      }
+    }
+    $this->getLogger('vuejs_entity')->critical(" getFormParagraphByModel : model non definit ");
+    return $this->reponse([], 400, "getFormParagraphByModel : model non definit ");
+  }
+
+  /**
+   *
+   * @param Paragraph $paragraph
+   */
+  protected function getFormParagraph(Paragraph $paragraph) {
+    $fields = $paragraph->toArray();
   }
 
   /**

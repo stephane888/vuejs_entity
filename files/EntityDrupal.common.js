@@ -93508,11 +93508,11 @@ var dist = __webpack_require__(63489);
    * Car les liens de pages ainsi generer devront etre utiliser comme lien.
    * @returns
    */
-  CreateMenus: function CreateMenus() {
+  CreateMenus: function CreateMenus(state) {
     var _this4 = this;
 
     return new Promise(function (resolv, reject) {
-      // build menu :
+      // Build menu :
       var menu = {
         //this.domainOvhEntity.sub_domain[0].value contient a-z0-9,
         id: _this4.domainOvhEntity.sub_domain[0].value + "_main",
@@ -93534,7 +93534,7 @@ var dist = __webpack_require__(63489);
             uri: "internal:/site-internet-entity/" + page.id[0].value
           }]
         });
-      }); // contruit le menus et les items.
+      }); // Contruit le menus et les items.
 
 
       _this4.bPost("/vuejs-entity/entity/add-menu-items", {
@@ -93543,10 +93543,17 @@ var dist = __webpack_require__(63489);
         domain: {
           field_domain_access: _this4.domainRegister.id,
           field_domain_source: _this4.domainRegister.id
-        }
+        } // block_content_type: "header_footer", // La construction doit etre statique car il ya un mappage de champs à faire.
+
       }).then(function (resp) {
-        if (resp.data.block_content) {
-          resolv(_this4.addEntityToBlock(resp.data.block_content, "header"));
+        console.log("resp : ", resp);
+
+        if (resp.data.menu && resp.data.menu.id) {
+          // On met à jour le champs "field_reference_menu" au niveau de l'object du header
+          state.storeFormRenderHeader.model.field_reference_menu = [{
+            target_id: resp.data.menu.id
+          }];
+          resolv();
         } else {
           _this4.messages.warnings.push(" Une erreur est survenu lors de la disposition des menus, vous pourriez le faire plus tard. ");
 
@@ -93661,7 +93668,7 @@ var dist = __webpack_require__(63489);
 
       _this6.addDefaultBlockInRegion();
 
-      _this6.CreateMenus().then(function () {
+      _this6.CreateMenus(state).then(function () {
         resolv(_this6.bPost("/vuejs-entity/entity/add-paragrph-in-entity/block_content/header", {
           paragraph: state.storeFormRenderHeader.model,
           entity: {
@@ -95291,14 +95298,14 @@ var drupal_color_component = (0,componentNormalizer/* default */.Z)(
 )
 
 /* harmony default export */ var drupal_color = (drupal_color_component.exports);
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsDrupal/drupal-boolean.vue?vue&type=template&id=71fce67e&scoped=true&
-var drupal_booleanvue_type_template_id_71fce67e_scoped_true_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.class_css,attrs:{"field":"drupal_boolean"}},[_c('div',{staticClass:"field-item-value js-form-type-radio",attrs:{"format_val":_vm.format_val}},[_c('ValidationProvider',{attrs:{"name":_vm.field.name,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('b-form-group',{attrs:{"label":_vm.field.label,"name":_vm.field.name}},[_c('div',{staticClass:"fieldset-wrapper"},[(
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsDrupal/drupal-boolean.vue?vue&type=template&id=42f5505d&scoped=true&
+var drupal_booleanvue_type_template_id_42f5505d_scoped_true_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.class_css,attrs:{"field":"drupal_boolean"}},[_c('div',{staticClass:"field-item-value js-form-type-radio",attrs:{"format_val":_vm.format_val}},[_c('ValidationProvider',{attrs:{"name":_vm.field.name,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('b-form-group',{attrs:{"label":_vm.field.label,"name":_vm.field.name}},[_c('div',{staticClass:"fieldset-wrapper"},[(
               _vm.field.entity_form_settings &&
               _vm.field.entity_form_settings.list_options
             )?_c('div',{staticClass:"radio"},_vm._l((_vm.field.entity_form_settings.list_options),function(option,o){return _c('b-form-radio',{key:o,staticClass:"form-check",attrs:{"name":_vm.field.name,"value":option.value,"state":_vm.getValidationState(v)},model:{value:(_vm.selected),callback:function ($$v) {_vm.selected=$$v},expression:"selected"}},[_c('transition',{attrs:{"name":"fade","mode":"out-in"}},[_c('div',[(option.image_url)?_c('b-img',{attrs:{"thumbnail":"","fluid":"","src":option.image_url,"alt":"Image 1"}}):_vm._e(),(!option.image_url)?_c('svgLoader'):_vm._e()],1)]),_c('div',{staticClass:"mt-5"},[_vm._v(_vm._s(option.label))]),(
                   option.description.value && option.description.value !== ''
                 )?_c('div',{staticClass:"mt-5 text-hover",domProps:{"innerHTML":_vm._s(option.description.value)}}):_vm._e()],1)}),1):_vm._e(),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()])])]}}])})],1)])}
-var drupal_booleanvue_type_template_id_71fce67e_scoped_true_staticRenderFns = []
+var drupal_booleanvue_type_template_id_42f5505d_scoped_true_staticRenderFns = []
 
 
 ;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsDrupal/svg-preloader.vue?vue&type=template&id=2e42691e&scoped=true&
@@ -95425,6 +95432,7 @@ var svg_preloader_component = (0,componentNormalizer/* default */.Z)(
   },
   mounted: function mounted() {
     this.getImage();
+    console.log("load image boolean");
   },
   watch: {
     /**
@@ -95491,10 +95499,10 @@ var svg_preloader_component = (0,componentNormalizer/* default */.Z)(
 });
 ;// CONCATENATED MODULE: ./src/components/fieldsDrupal/drupal-boolean.vue?vue&type=script&lang=js&
  /* harmony default export */ var fieldsDrupal_drupal_booleanvue_type_script_lang_js_ = (drupal_booleanvue_type_script_lang_js_); 
-;// CONCATENATED MODULE: ./node_modules/mini-css-extract-plugin/dist/loader.js??clonedRuleSet-12[0].rules[0].use[0]!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-12[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12[0].rules[0].use[2]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsDrupal/drupal-boolean.vue?vue&type=style&index=0&id=71fce67e&scoped=true&lang=css&
+;// CONCATENATED MODULE: ./node_modules/mini-css-extract-plugin/dist/loader.js??clonedRuleSet-12[0].rules[0].use[0]!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-12[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12[0].rules[0].use[2]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/fieldsDrupal/drupal-boolean.vue?vue&type=style&index=0&id=42f5505d&scoped=true&lang=css&
 // extracted by mini-css-extract-plugin
 
-;// CONCATENATED MODULE: ./src/components/fieldsDrupal/drupal-boolean.vue?vue&type=style&index=0&id=71fce67e&scoped=true&lang=css&
+;// CONCATENATED MODULE: ./src/components/fieldsDrupal/drupal-boolean.vue?vue&type=style&index=0&id=42f5505d&scoped=true&lang=css&
 
 ;// CONCATENATED MODULE: ./src/components/fieldsDrupal/drupal-boolean.vue
 
@@ -95507,11 +95515,11 @@ var svg_preloader_component = (0,componentNormalizer/* default */.Z)(
 
 var drupal_boolean_component = (0,componentNormalizer/* default */.Z)(
   fieldsDrupal_drupal_booleanvue_type_script_lang_js_,
-  drupal_booleanvue_type_template_id_71fce67e_scoped_true_render,
-  drupal_booleanvue_type_template_id_71fce67e_scoped_true_staticRenderFns,
+  drupal_booleanvue_type_template_id_42f5505d_scoped_true_render,
+  drupal_booleanvue_type_template_id_42f5505d_scoped_true_staticRenderFns,
   false,
   null,
-  "71fce67e",
+  "42f5505d",
   null
   
 )
@@ -96212,6 +96220,7 @@ var drupal_file_component = (0,componentNormalizer/* default */.Z)(
     var key = field.type;
     if (key == "list_string" && field.cardinality == 1) key = "boolean";
     var template;
+    console.log(" key : ", key);
 
     switch (key) {
       case "string":
@@ -96906,7 +96915,7 @@ var page_save_component = (0,componentNormalizer/* default */.Z)(
       var param = {
         homepage: window.location.pathname.split("/").pop()
       };
-      return config.bPost("/vuejs-entity/form/donnee_internet_entity/default/bundle", param).then(function (resp) {
+      return config.bPost("/vuejs-entity/form/donnee_internet_entity/default/donnee_internet_entity", param).then(function (resp) {
         if (resp.data) {
           commit("DISABLE_RUNNING"); //on recupere la valeur hash
 
@@ -97049,6 +97058,8 @@ var page_save_component = (0,componentNormalizer/* default */.Z)(
 /* harmony default export */ var FormRenderHeader_config = ((0,objectSpread2/* default */.Z)({}, rootConfig/* default */.Z));
 ;// CONCATENATED MODULE: ./src/components/FormRenderHeader/storeFormRenderHeader.js
 
+
+
 /* harmony default export */ var storeFormRenderHeader = ({
   namespaced: true,
   state: function state() {
@@ -97071,7 +97082,8 @@ var page_save_component = (0,componentNormalizer/* default */.Z)(
     // /vuejs-entity/form/paragraph/default/headers
     // /vuejs-entity/form/block_content/default/header
     loadFields: function loadFields(state) {
-      FormRenderHeader_config.post("/vuejs-entity/form/paragraph/default/headers").then(function (resp) {
+      var idHome = window.location.pathname.split("/").pop();
+      FormRenderHeader_config.post("/vuejs-entity/form/paragraphs/" + idHome + "/header").then(function (resp) {
         if (resp.data) {
           state.form = resp.data.form;
           state.model = resp.data.model;
@@ -97096,6 +97108,8 @@ var page_save_component = (0,componentNormalizer/* default */.Z)(
 /* harmony default export */ var FormRenderFooter_config = ((0,objectSpread2/* default */.Z)({}, rootConfig/* default */.Z));
 ;// CONCATENATED MODULE: ./src/components/FormRenderFooter/storeFormRenderFooter.js
 
+
+
 /* harmony default export */ var storeFormRenderFooter = ({
   namespaced: true,
   state: function state() {
@@ -97118,7 +97132,8 @@ var page_save_component = (0,componentNormalizer/* default */.Z)(
     // /vuejs-entity/form/paragraph/default/headers
     // /vuejs-entity/form/block_content/default/header
     loadFields: function loadFields(state) {
-      FormRenderFooter_config.post("/vuejs-entity/form/paragraph/default/footer").then(function (resp) {
+      var idHome = window.location.pathname.split("/").pop();
+      FormRenderFooter_config.post("/vuejs-entity/form/paragraphs/" + idHome + "/footer").then(function (resp) {
         if (resp.data) {
           state.form = resp.data.form;
           state.model = resp.data.model;
