@@ -131,7 +131,7 @@ class DuplicateEntityReference extends ControllerBase {
                 'target_id' => $cloneNode->id()
               ];
               // send event :
-              $event = new DuplicateEntityEvent($cloneNode, $node);
+              $event = new DuplicateEntityEvent($cloneNode, $node, $entity);
               $event_dispatcher->dispatch($event, DuplicateEntityEvent::EVENT_NAME);
             }
           }
