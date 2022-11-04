@@ -16,6 +16,7 @@ class DuplicateEntityReference extends ControllerBase {
   protected static $field_source = \Drupal\domain_source\DomainSourceElementManagerInterface::DOMAIN_SOURCE_FIELD;
   protected static $field_domain_all_affiliates = 'field_domain_all_affiliates';
   /**
+   * Entite valide pour la suppresion.
    * Afin d'eviter de supprimer certaines données utile.
    *
    * @var array
@@ -25,6 +26,7 @@ class DuplicateEntityReference extends ControllerBase {
     'node',
     'block_content',
     'commerce_product'
+    // 'webform'
   ];
   protected $ignorEntity = [
     'user',
@@ -137,6 +139,28 @@ class DuplicateEntityReference extends ControllerBase {
           }
           //
           $entity->set($k, $newNodesIds);
+        }
+        // Duplications des formulaires.
+        elseif (!empty($setings['target_type']) && $setings['target_type'] == 'webform') {
+          $newWebforms = [];
+          foreach ($vals as $value) {
+            $Webform = \Drupal\webform\Entity\Webform::load($value['target_id']);
+            if ($Webform) {
+              $CloneWebform = $Webform->createDuplicate();
+              // Pour les webforms, on doit ajouter le ThirdParty.
+              $domaine = $entity->get(self::$field_domain_access)->target_id;
+              $CloneWebform->setThirdPartySetting('webform_domain_access', self::$field_domain_access, $domaine);
+              $CloneWebform->set('title', $domaine . ' : ' . $CloneWebform->get('title'));
+              $CloneWebform->set('id', substr($Webform->id(), 0, 10) . date('YMdi') . rand(0, 9999));
+              //
+              $CloneWebform->save();
+            }
+            $newWebforms[] = [
+              'target_id' => $CloneWebform->id()
+            ];
+          }
+          //
+          $entity->set($k, $newWebforms);
         }
         // Duplication des sous blocs.
         elseif (!empty($setings['target_type']) && $setings['target_type'] == 'block_content') {
@@ -271,6 +295,7 @@ class DuplicateEntityReference extends ControllerBase {
           //
           $entity->set($k, $newCommerceProductVariationIds);
         }
+
         else {
           \Drupal::logger('vuejs_entity')->alert(" Entité non traitée, field :" . $k . ', type : ' . $setings['target_type']);
         }
