@@ -468,36 +468,11 @@ class FormEntityController extends ControllerBase {
         }
         // on recupere les pages de maniere dynamique.
         if ($entity_type_id == 'donnee_internet_entity' && $k == 'pages') {
-          // id de page qui seront crées par defaut.
-          // $defaultPages = [
-          // '3' => 3,
-          // '4' => 4,
-          // '5' => 5,
-          // '16' => 16
-          // ];
           $defaultPages = [];
-          // id de page qui seront crées par defaut pour e-commerce.
-          // $defaultPagesProduct = [
-          // '18' => 18,
-          // '19' => 19,
-          // '22' => 22
-          // ];
-          /**
-           *
-           * @deprecated $defaultPagesProduct
-           */
-          $defaultPagesProduct = [];
-          // site ecommerce.( on determine les types e-commerce via l'id du
-          // champs "terms").
-          // $typeSiteEcommerce = [
-          // 18,
-          // 7
-          // ];
-          $typeSiteEcommerce = [];
           //
           $param = Json::decode($Request->getContent());
-          $categorie_id = null;
-          $type = null;
+          $categorie_ids = null;
+          // $type = null;
           //
           if (!empty($param['homepage'])) {
             /**
@@ -505,11 +480,10 @@ class FormEntityController extends ControllerBase {
              * @var \Drupal\creation_site_virtuel\Entity\SiteTypeDatas $model
              */
             $model = $this->entityTypeManager()->getStorage('site_type_datas')->load($param['homepage']);
-            $categorie_id = $model->getCategorie();
-            $type = $model->getType();
+            $categorie_ids = $model->getCategories();
+            // $type = $model->getType();
             $pageSub = $model->getPageSupplementaireIds();
             $defaultPages += $pageSub;
-            $defaultPagesProduct += $pageSub;
           }
           /**
            * Permet de charger les pages qui ont le meme taxonomies.
@@ -519,40 +493,29 @@ class FormEntityController extends ControllerBase {
           $query = $this->entityTypeManager()->getStorage('site_type_datas')->getQuery();
           $query->condition('is_home_page', 0);
           $query->condition('status', true);
-          if ($categorie_id) {
-            $query->condition('terms', $categorie_id);
+          if ($categorie_ids) {
+            $query->condition('terms', $categorie_ids, 'IN');
           }
-          else {
-            $query->range(0, 4);
-          }
-          // permet de filtrer en function du type (ecommerce, rc-web ...), mais
+          $query->range(0, 20);
+          // Permet de filtrer en function du type (ecommerce, rc-web ...), mais
           // ne semble pas vraiment necessaire. (On verra avec le temps).
-          if ($type) {
-            $query->condition('site_internet_entity_type', $type);
-          }
+          // Car on peut associer des pages provenant de plusieurs type.
+          // if ($type) {
+          // $query->condition('site_internet_entity_type', $type);
+          // }
           $ids = $query->execute();
-          // on ajoute les pages par defaut pour les types e-commerce.
-          if (in_array($categorie_id, $typeSiteEcommerce)) {
-            foreach ($defaultPagesProduct as $id) {
-              $fields[$k][] = [
-                'value' => $id
-              ];
-            }
+
+          // On ajoute les pages par defaut definit par l'administrateur.
+          foreach ($defaultPages as $id) {
+            $fields[$k][] = [
+              'value' => $id
+            ];
             // on ajoute ces ids dans les propositions afin d'obtenir les infos
             // des pages (titre utiliser par le menu).
-            $ids += $defaultPagesProduct;
+            if (!in_array($id, $ids))
+              $ids[] = $id;
           }
-          else {
-            // Page par defaut pour un site non e-commerce.
-            foreach ($defaultPages as $id) {
-              $fields[$k][] = [
-                'value' => $id
-              ];
-            }
-            // on ajoute ces ids dans les propositions afin d'obtenir les infos
-            // des pages (titre utiliser par le menu).
-            $ids += $defaultPages;
-          }
+
           if ($ids) {
             $entities = $this->entityTypeManager()->getStorage('site_type_datas')->loadMultiple($ids);
             $pages = [];
@@ -605,7 +568,7 @@ class FormEntityController extends ControllerBase {
     if ($entityModel) {
       $headerId = $entityModel->get('entete_paragraph')->target_id;
       $footerId = $entityModel->get('footer_paragraph')->target_id;
-
+      //
       if ($headerId && $type == 'header') {
         /**
          *
@@ -626,7 +589,7 @@ class FormEntityController extends ControllerBase {
       }
     }
     $this->getLogger('vuejs_entity')->critical(" getFormParagraphByModel : model non definit ");
-    return $this->reponse([], 400, "getFormParagraphByModel : model non definit ");
+    return $this->reponse([], 400, " getFormParagraphByModel : model non definit ");
   }
 
   /**
