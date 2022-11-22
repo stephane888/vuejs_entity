@@ -43,6 +43,16 @@ vuejs_entity.form_entity_paragraphs:
   requirements:
     _permission: 'access content'
     
+vuejs_entity.get_from_entity_id:
+  path: '/vuejs-entity/form/get-form/from/entity-id'
+  defaults:
+    _title: 'vuejs entity settings'
+    _controller: '\Drupal\vuejs_entity\Controller\FormEntityController::getFormByEntityId'
+    bundle: null,
+    view_mode: 'default'
+  requirements:
+    _permission: 'access content'
+    
     
 vuejs_entity.model_choisie_form:
   path: '/entity/form/model-choisie/{id_entity}'

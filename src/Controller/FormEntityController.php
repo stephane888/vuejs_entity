@@ -6,7 +6,6 @@ use Drupal\Component\Serialization\Json;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityFieldManager;
 use Drupal\block\Entity\Block;
-use Drupal\lesroidelareno\Entity\DonneeSiteInternetEntity;
 use Drupal\menu_link_content\Entity\MenuLinkContent;
 use Drupal\system\Entity\Menu;
 use Drupal\vuejs_entity\Services\DuplicateEntityReference;
@@ -14,11 +13,10 @@ use Stephane888\Debug\Utility as UtilityError;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Drupal\paragraphs\Entity\Paragraph;
+use Stephane888\DrupalUtility\HttpResponse;
+use Stephane888\Debug\ExceptionDebug;
+use Stephane888\Debug\ExceptionExtractMessage;
 
-/**
- * Returns responses for vuejs entity routes.
- */
 class FormEntityController extends ControllerBase {
   protected static $field_domain_access = \Drupal\domain_access\DomainAccessManagerInterface::DOMAIN_ACCESS_FIELD;
   protected static $field_source = \Drupal\domain_source\DomainSourceElementManagerInterface::DOMAIN_SOURCE_FIELD;
@@ -554,14 +552,16 @@ class FormEntityController extends ControllerBase {
 </div>'
       ];
     }
-    return $this->reponse([
+
+    return HttpResponse::response([
       'form' => $form,
       'model' => $fields
     ]);
   }
 
   /**
-   * Recupere les données de l'entete le footer en function du model.
+   * Recupere les données de l'entete le footer en function du model Pour l
+   * creation de site web.
    */
   function getFormParagraphByModel(Request $Request, $id_model, $type) {
     $entityModel = $this->entityTypeManager()->getStorage("site_type_datas")->load($id_model);
@@ -572,7 +572,7 @@ class FormEntityController extends ControllerBase {
       if ($headerId && $type == 'header') {
         /**
          *
-         * @var Paragraph $paragraphHeader
+         * @var \Drupal\paragraphs\Entity\Paragraph $paragraphHeader
          */
         $paragraphHeader = $this->entityTypeManager()->getStorage("paragraph")->load($headerId);
 
@@ -582,7 +582,7 @@ class FormEntityController extends ControllerBase {
       if ($footerId && $type == 'footer') {
         /**
          *
-         * @var Paragraph $paragraphHeader
+         * @var \Drupal\paragraphs\Entity\Paragraph $paragraphHeader
          */
         $paragraphFooter = $this->entityTypeManager()->getStorage("paragraph")->load($footerId);
         return $this->getForm($Request, "paragraph", 'default', $paragraphFooter->bundle(), $paragraphFooter->createDuplicate());
@@ -593,11 +593,38 @@ class FormEntityController extends ControllerBase {
   }
 
   /**
+   * Permet d'obtenir le formulaire à partir d'une entité.
+   * - Utilisé afin de determiner
    *
-   * @param Paragraph $paragraph
+   * @param Request $Request
+   * @param String $entity_type
+   * @param String|integer $id
    */
-  protected function getFormParagraph(Paragraph $paragraph) {
-    $fields = $paragraph->toArray();
+  function getFormByEntityId(Request $Request) {
+    try {
+      $param = Json::decode($Request->getContent());
+      if (empty($param['id']) || empty($param['entity_type_id']))
+        throw new ExceptionDebug(" Paramettre manquant ");
+      //
+      $entity = $this->entityTypeManager()->getStorage($param['entity_type_id'])->load($param['id']);
+      if (!empty($param['duplicate'])) {
+        $entity = $entity->createDuplicate();
+      }
+      if ($entity) {
+        $bundle = !empty($entity->bundle()) ? $entity->bundle() : $param['entity_type_id'];
+        return $this->getForm($Request, $param['entity_type_id'], 'default', $bundle, $entity);
+      }
+      throw new ExceptionDebug(" L'entité n'existe plus ");
+    }
+    catch (ExceptionDebug $e) {
+      return HttpResponse::response(ExceptionExtractMessage::errorAll($e), $e->getErrorCode(), $e->getMessage());
+    }
+    catch (\Exception $e) {
+      return HttpResponse::response(ExceptionExtractMessage::errorAll($e), 431, $e->getMessage());
+    }
+    catch (\Error $e) {
+      return HttpResponse::response(ExceptionExtractMessage::errorAll($e), 431, $e->getMessage());
+    }
   }
 
   /**

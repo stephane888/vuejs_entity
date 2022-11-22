@@ -28,6 +28,12 @@ class DuplicateEntityReference extends ControllerBase {
     'commerce_product'
     // 'webform'
   ];
+
+  /**
+   * Les entitées ou types qui seront ignorées.
+   *
+   * @var array
+   */
   protected $ignorEntity = [
     'user',
     'domain',
