@@ -42421,6 +42421,8 @@ if (typeof window !== 'undefined') {
 // Indicate to webpack that this file can be concatenated
 /* harmony default export */ var setPublicPath = (null);
 
+// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/objectSpread2.js
+var objectSpread2 = __webpack_require__(40406);
 // EXTERNAL MODULE: external {"commonjs":"vue","commonjs2":"vue","root":"Vue"}
 var external_commonjs_vue_commonjs2_vue_root_Vue_ = __webpack_require__(77203);
 var external_commonjs_vue_commonjs2_vue_root_Vue_default = /*#__PURE__*/__webpack_require__.n(external_commonjs_vue_commonjs2_vue_root_Vue_);
@@ -87541,8 +87543,6 @@ var vuex_esm = __webpack_require__(46372);
 var asyncToGenerator = __webpack_require__(84543);
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/defineProperty.js
 var esm_defineProperty = __webpack_require__(15594);
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/objectSpread2.js
-var objectSpread2 = __webpack_require__(40406);
 // EXTERNAL MODULE: ./node_modules/regenerator-runtime/runtime.js
 var runtime = __webpack_require__(50278);
 // EXTERNAL MODULE: ./src/rootConfig.js
@@ -87989,8 +87989,7 @@ var dist = __webpack_require__(40473);
     };
     return this.bPost("/vuejs-entity/entity/add-block-in-region", system_main_block);
   },
-  // On cree le theme de maniere statique, mais il faudra le rendre dynamique.
-  // Il faudra aussi definir la page daccueil.
+  //
   CreateTheme: function CreateTheme() {
     var _this5 = this;
 
@@ -88059,7 +88058,7 @@ var dist = __webpack_require__(40473);
       _this6.addDefaultBlockInRegion();
 
       _this6.CreateMenus(state).then(function () {
-        resolv(_this6.bPost("/vuejs-entity/entity/add-paragrph-in-entity/block_content/headers", {
+        resolv(_this6.bPost("/vuejs-entity/entity/add-paragrph-in-entity/block_content/header", {
           paragraph: state.storeFormRenderHeader.model,
           entity: {
             info: [{
@@ -91677,7 +91676,20 @@ external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vuex_esm/* default */
 
 
 
-(external_commonjs_vue_commonjs2_vue_root_Vue_default()).config.productionTip = false;
+
+(external_commonjs_vue_commonjs2_vue_root_Vue_default()).config.productionTip = false; //
+
+
+external_commonjs_vue_commonjs2_vue_root_Vue_default().component("ValidationObserver", vee_validate_esm/* ValidationObserver */._j);
+external_commonjs_vue_commonjs2_vue_root_Vue_default().component("ValidationProvider", vee_validate_esm/* ValidationProvider */.d_);
+
+
+(0,vee_validate_esm/* extend */.l7)("required", (0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({}, required), {}, {
+  message: "Ce champs est requis"
+}));
+(0,vee_validate_esm/* extend */.l7)("email", email);
+(0,vee_validate_esm/* extend */.l7)("alpha", alpha); //
+
 new (external_commonjs_vue_commonjs2_vue_root_Vue_default())({
   router: src_router,
   store: store,
