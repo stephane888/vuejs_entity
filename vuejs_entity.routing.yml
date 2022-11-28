@@ -71,6 +71,14 @@ vuejs_entity.create_entity:
   requirements:
     _access: 'TRUE'
 
+vuejs_entity.create_entity_duplique_ref:
+  path: '/vuejs-entity/entity/save-duplicate-ref/{entity_type_id}'
+  defaults:
+    _controller: '\Drupal\vuejs_entity\Controller\FormEntityController::saveEntityDuplicateRef'
+    _title: 'ModelChoisieForm'
+  requirements:
+    _access: 'TRUE'
+
 #    
 vuejs_entity.generate_page_web:
   path: '/vuejs-entity/entity/generate-page-web/{id}'

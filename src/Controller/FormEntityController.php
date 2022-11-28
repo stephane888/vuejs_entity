@@ -128,6 +128,41 @@ class FormEntityController extends ControllerBase {
   }
   
   /**
+   *
+   * @param Request $Request
+   * @param unknown $entity_type_id
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   */
+  public function saveEntityDuplicateRef(Request $Request, $entity_type_id) {
+    $entity_type = $this->entityTypeManager()->getStorage($entity_type_id);
+    $values = Json::decode($Request->getContent());
+    //
+    if ($entity_type && !empty($values)) {
+      try {
+        /**
+         */
+        $entity = $entity_type->create($values);
+        $this->DuplicateEntityReference->duplicateExistantReference($entity);
+        
+        $entity->save();
+        return $this->reponse($entity->toArray());
+      }
+      catch (\Exception $e) {
+        $user = \Drupal::currentUser();
+        $errors = ExceptionExtractMessage::errorAllToString($e);
+        $errors[] = 'error create : ' . $entity_type_id;
+        $errors[] = 'current user id : ' . $user->id();
+        $this->getLogger('vuejs_entity')->critical($e->getMessage() . '<br>' . $errors);
+        return $this->reponse(ExceptionExtractMessage::errorAll($e), 400, $e->getMessage());
+      }
+    }
+    else {
+      $this->getLogger('vuejs_entity')->critical(" impossible de creer l'entité : " . $entity_type_id);
+      return $this->reponse([], 400, "erreur inconnu");
+    }
+  }
+  
+  /**
    * Permet de generer une page web à partir de l'id du model fournit.
    */
   public function generatePageWebByModel(Request $Request, $id) {
