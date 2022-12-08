@@ -115,8 +115,8 @@ class FormEntityController extends ControllerBase {
       catch (\Exception $e) {
         $user = \Drupal::currentUser();
         $errors = ExceptionExtractMessage::errorAllToString($e);
-        $errors[] = 'error create : ' . $entity_type_id;
-        $errors[] = 'current user id : ' . $user->id();
+        $errors .= '<br> error create : ' . $entity_type_id;
+        $errors .= '<br> current user id : ' . $user->id();
         $this->getLogger('vuejs_entity')->critical($e->getMessage() . '<br>' . $errors);
         return $this->reponse(ExceptionExtractMessage::errorAll($e), 400, $e->getMessage());
       }
@@ -150,8 +150,8 @@ class FormEntityController extends ControllerBase {
       catch (\Exception $e) {
         $user = \Drupal::currentUser();
         $errors = ExceptionExtractMessage::errorAllToString($e);
-        $errors[] = 'error create : ' . $entity_type_id;
-        $errors[] = 'current user id : ' . $user->id();
+        $errors .= '<br> error create : ' . $entity_type_id;
+        $errors .= '<br> current user id : ' . $user->id();
         $this->getLogger('vuejs_entity')->critical($e->getMessage() . '<br>' . $errors);
         return $this->reponse(ExceptionExtractMessage::errorAll($e), 400, $e->getMessage());
       }
