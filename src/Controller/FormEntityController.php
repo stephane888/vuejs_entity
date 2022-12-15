@@ -613,6 +613,7 @@ class FormEntityController extends ControllerBase {
       if (empty($param['id']) || empty($param['entity_type_id']))
         throw new ExceptionDebug(" Paramettre manquant ");
       //
+      
       $entity = $this->entityTypeManager()->getStorage($param['entity_type_id'])->load($param['id']);
       if (!empty($param['duplicate'])) {
         $entity = $entity->createDuplicate();
