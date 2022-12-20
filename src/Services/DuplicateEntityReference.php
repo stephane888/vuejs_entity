@@ -28,7 +28,7 @@ class DuplicateEntityReference extends ControllerBase {
     'commerce_product'
     // 'webform'
   ];
-
+  
   /**
    * Les entitées ou types qui seront ignorées.
    *
@@ -46,7 +46,7 @@ class DuplicateEntityReference extends ControllerBase {
     'node_type',
     'commerce_product_variation'
   ];
-
+  
   /**
    * Permet de supprimier les references dans l'entité.
    *
@@ -72,7 +72,7 @@ class DuplicateEntityReference extends ControllerBase {
       }
     }
   }
-
+  
   /**
    * Duplique les entites existantes et changent de domain.
    */
@@ -98,7 +98,7 @@ class DuplicateEntityReference extends ControllerBase {
     foreach ($values as $k => $vals) {
       if (!empty($vals[0]['target_id'])) {
         $setings = $entity->get($k)->getSettings();
-        if (in_array($setings['target_type'], $this->ignorEntity))
+        if (empty($setings['target_type']) || in_array($setings['target_type'], $this->ignorEntity))
           continue;
         // Duplication des paragraph
         elseif (!empty($setings['target_type']) && $setings['target_type'] == 'paragraph') {
@@ -238,7 +238,7 @@ class DuplicateEntityReference extends ControllerBase {
                 if ($dmn)
                   $CloneProduct->set(self::$field_domain_access, $dmn);
               }
-
+              
               // On met jour la date de MAJ
               $CloneProduct->setCreatedTime(time());
               $CloneProduct->setChangedTime(time());
@@ -247,7 +247,7 @@ class DuplicateEntityReference extends ControllerBase {
               $this->duplicateExistantReference($CloneProduct);
               // on supprime les variations dans le clone
               $CloneProduct->setVariations([]);
-
+              
               $CloneProduct->save();
               $cloneProducdId = $CloneProduct->id();
               // On duplique les variations à partir du produit.
@@ -301,12 +301,12 @@ class DuplicateEntityReference extends ControllerBase {
           //
           $entity->set($k, $newCommerceProductVariationIds);
         }
-
+        
         else {
           \Drupal::logger('vuejs_entity')->alert(" Entité non traitée, field :" . $k . ', type : ' . $setings['target_type']);
         }
       }
     }
   }
-
+  
 }
