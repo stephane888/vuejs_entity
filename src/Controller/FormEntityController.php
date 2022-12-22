@@ -406,7 +406,6 @@ class FormEntityController extends ControllerBase {
    * Recupere les champs pour un entité.
    */
   public function getForm(Request $Request, $entity_type_id, $view_mode = 'default', $bundle = null, $entity = null) {
-    //
     $EntityStorage = $this->entityTypeManager()->getStorage($entity_type_id);
     if (!$entity) {
       if ($bundle && $bundle != $entity_type_id)
@@ -620,7 +619,8 @@ class FormEntityController extends ControllerBase {
       }
       if ($entity) {
         $bundle = !empty($entity->bundle()) ? $entity->bundle() : $param['entity_type_id'];
-        return $this->getForm($Request, $param['entity_type_id'], 'default', $bundle, $entity);
+        $res = \Drupal::service('apivuejs.getform')->getForm($param['entity_type_id'], $bundle, 'default', $entity);
+        return HttpResponse::response($res);
       }
       throw new ExceptionDebug(" L'entité n'existe plus ");
     }
