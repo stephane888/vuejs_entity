@@ -45,6 +45,7 @@ class DuplicateEntityReference extends ControllerBase {
     'commerce_product_type',
     'node_type',
     'commerce_product_variation'
+    // on retire en vue d'effectuer les tests.
   ];
   
   /**
@@ -75,6 +76,8 @@ class DuplicateEntityReference extends ControllerBase {
   
   /**
    * Duplique les entites existantes et changent de domain.
+   * La creation est devenu hyper lente.
+   * On retire : event =>
    */
   public function duplicateExistantReference(ContentEntityBase &$entity) {
     //
@@ -94,7 +97,7 @@ class DuplicateEntityReference extends ControllerBase {
     }
     $values = $entity->toArray();
     // Get the event_dispatcher service and dispatch the event.
-    $event_dispatcher = \Drupal::service('event_dispatcher');
+    // $event_dispatcher = \Drupal::service('event_dispatcher');
     foreach ($values as $k => $vals) {
       if (!empty($vals[0]['target_id'])) {
         $setings = $entity->get($k)->getSettings();
@@ -139,8 +142,9 @@ class DuplicateEntityReference extends ControllerBase {
                 'target_id' => $cloneNode->id()
               ];
               // send event :
-              $event = new DuplicateEntityEvent($cloneNode, $node, $entity);
-              $event_dispatcher->dispatch($event, DuplicateEntityEvent::EVENT_NAME);
+              // $event = new DuplicateEntityEvent($cloneNode, $node, $entity);
+              // $event_dispatcher->dispatch($event,
+              // DuplicateEntityEvent::EVENT_NAME);
             }
           }
           //
