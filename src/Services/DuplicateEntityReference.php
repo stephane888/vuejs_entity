@@ -10,6 +10,7 @@ use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\commerce_product\Entity\ProductVariation;
 use Drupal\vuejs_entity\Event\DuplicateEntityEvent;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 class DuplicateEntityReference extends ControllerBase {
   protected static $field_domain_access = \Drupal\domain_access\DomainAccessManagerInterface::DOMAIN_ACCESS_FIELD;
@@ -46,6 +47,11 @@ class DuplicateEntityReference extends ControllerBase {
     'node_type',
     'commerce_product_variation'
     // on retire en vue d'effectuer les tests.
+    // 'paragraph'
+    // 'node'
+    // 'webform'
+    // 'block_content'
+    // 'commerce_product'
   ];
   
   /**
@@ -80,6 +86,8 @@ class DuplicateEntityReference extends ControllerBase {
    * On retire : event =>
    */
   public function duplicateExistantReference(ContentEntityBase &$entity) {
+    $stopwatch = new Stopwatch();
+    // $stopwatch->openSection();
     //
     $uid = $this->currentUser()->id();
     if (method_exists($entity, 'setCreatedTime'))
@@ -98,28 +106,51 @@ class DuplicateEntityReference extends ControllerBase {
     $values = $entity->toArray();
     // Get the event_dispatcher service and dispatch the event.
     // $event_dispatcher = \Drupal::service('event_dispatcher');
+    
     foreach ($values as $k => $vals) {
       if (!empty($vals[0]['target_id'])) {
+        // temps de creation du champs.
+        $stopwatch->start($k);
+        //
         $setings = $entity->get($k)->getSettings();
         if (empty($setings['target_type']) || in_array($setings['target_type'], $this->ignorEntity))
           continue;
         // Duplication des paragraph
         elseif (!empty($setings['target_type']) && $setings['target_type'] == 'paragraph') {
           $NewParagraphIds = [];
+          
           foreach ($vals as $value) {
+            // on determine le temps de creation de chaque paragraph.
+            $stopwatch->start("target_id--" . $value['target_id']);
+            $subDebugs = [];
             $Paragraph = Paragraph::load($value['target_id']);
             if ($Paragraph) {
               $CloneParagraph = $Paragraph->createDuplicate();
               if ($CloneParagraph->hasField(self::$field_domain_access) && $entity->hasField(self::$field_domain_access)) {
                 $CloneParagraph->set(self::$field_domain_access, $entity->get(self::$field_domain_access)->getValue());
               }
-              // On verifie pour les sous entites.
-              $this->duplicateExistantReference($CloneParagraph);
               $CloneParagraph->save();
+              // On verifie pour les sous entites.
+              // $this->duplicateExistantReference($CloneParagraph);
+              // $CloneParagraph->save();
+              $subDebugs[$value['target_id']] = $CloneParagraph->toArray();
               $NewParagraphIds[] = [
                 'target_id' => $CloneParagraph->id()
               ];
             }
+            /**
+             *
+             * @var \Symfony\Component\Stopwatch\StopwatchEvent $event
+             */
+            $event = $stopwatch->stop("target_id--" . $value['target_id']);
+            $ts = $event->getDuration() / 1000;
+            $subDebugs[$value['target_id'] . 'event'] = [
+              'time' => $event->getDuration(),
+              'time s' => $ts,
+              'Mo' => $event->getMemory()
+            ];
+            \Stephane888\Debug\debugLog::$max_depth = 5;
+            \Stephane888\Debug\debugLog::kintDebugDrupal($subDebugs, $ts . '__' . $CloneParagraph->bundle() . '__duplicateExistantReference_paragraph', true);
           }
           $entity->set($k, $NewParagraphIds);
         }
@@ -127,6 +158,10 @@ class DuplicateEntityReference extends ControllerBase {
         elseif (!empty($setings['target_type']) && $setings['target_type'] == 'node') {
           $newNodesIds = [];
           foreach ($vals as $value) {
+            // on determine le temps de creation de chaque paragraph.
+            $stopwatch->start("target_id--" . $value['target_id']);
+            $subDebugs = [];
+            
             $node = Node::load($value['target_id']);
             if ($node) {
               $cloneNode = $node->createDuplicate();
@@ -134,10 +169,12 @@ class DuplicateEntityReference extends ControllerBase {
               if ($cloneNode->hasField(self::$field_domain_access) && $entity->hasField(self::$field_domain_access)) {
                 $cloneNode->set(self::$field_domain_access, $entity->get(self::$field_domain_access)->getValue());
               }
+              $cloneNode->save();
               // On verifie pour les sous entites.
               $this->duplicateExistantReference($cloneNode);
               //
               $cloneNode->save();
+              $subDebugs[$value['target_id']] = $cloneNode->toArray();
               $newNodesIds[] = [
                 'target_id' => $cloneNode->id()
               ];
@@ -146,6 +183,15 @@ class DuplicateEntityReference extends ControllerBase {
               // $event_dispatcher->dispatch($event,
               // DuplicateEntityEvent::EVENT_NAME);
             }
+            $event = $stopwatch->stop("target_id--" . $value['target_id']);
+            $ts = $event->getDuration() / 1000;
+            $subDebugs[$value['target_id'] . 'event'] = [
+              'time' => $event->getDuration(),
+              'time s' => $ts,
+              'Mo' => $event->getMemory()
+            ];
+            \Stephane888\Debug\debugLog::$max_depth = 5;
+            \Stephane888\Debug\debugLog::kintDebugDrupal($subDebugs, $ts . '__' . $cloneNode->bundle() . '__duplicateExistantReference_node', true);
           }
           //
           $entity->set($k, $newNodesIds);
@@ -176,6 +222,10 @@ class DuplicateEntityReference extends ControllerBase {
         elseif (!empty($setings['target_type']) && $setings['target_type'] == 'block_content') {
           $newBlockIds = [];
           foreach ($vals as $value) {
+            // on determine le temps de creation de chaque paragraph.
+            $stopwatch->start("target_id--" . $value['target_id']);
+            $subDebugs = [];
+            
             $BlockContent = BlockContent::load($value['target_id']);
             if ($BlockContent) {
               $CloneBlockContent = $BlockContent->createDuplicate();
@@ -210,10 +260,20 @@ class DuplicateEntityReference extends ControllerBase {
               }
               //
               $CloneBlockContent->save();
+              $subDebugs[$value['target_id']] = $CloneBlockContent->toArray();
               $newBlockIds[] = [
                 'target_id' => $CloneBlockContent->id()
               ];
             }
+            $event = $stopwatch->stop("target_id--" . $value['target_id']);
+            $ts = $event->getDuration() / 1000;
+            $subDebugs[$value['target_id'] . 'event'] = [
+              'time' => $event->getDuration(),
+              'time s' => $ts,
+              'Mo' => $event->getMemory()
+            ];
+            \Stephane888\Debug\debugLog::$max_depth = 5;
+            \Stephane888\Debug\debugLog::kintDebugDrupal($subDebugs, $ts . '__' . $CloneBlockContent->bundle() . '__duplicateExistantReference_block_content', true);
           }
           $entity->set($k, $newBlockIds);
         }
@@ -309,6 +369,15 @@ class DuplicateEntityReference extends ControllerBase {
         else {
           \Drupal::logger('vuejs_entity')->alert(" Entité non traitée, field :" . $k . ', type : ' . $setings['target_type']);
         }
+        
+        $event = $stopwatch->stop($k);
+        $ts = $event->getDuration() / 1000;
+        \Stephane888\Debug\debugLog::kintDebugDrupal([
+          'time_s' => $event->getDuration() / 1000,
+          'Mo' => $event->getMemory(),
+          'vals' => $vals,
+          'entity' => $values
+        ], $ts . '__' . $k . '__duplicateExistantReference__', true);
       }
     }
   }
