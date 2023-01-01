@@ -186,9 +186,14 @@ class FormEntityController extends ControllerBase {
         $pageWeb = $this->entityTypeManager()->getStorage("site_internet_entity")->create($values);
         $pageWeb->set('layout_paragraphs', $entityModel->get('layout_paragraphs')->getValue());
         // $this->duplicateExistantReference($pageWeb);
-        $this->DuplicateEntityReference->duplicateExistantReference($pageWeb);
-        $pageWeb->save();
-        return $this->reponse($pageWeb->toArray());
+        $entities = [];
+        $this->DuplicateEntityReference->duplicateExistantReference($pageWeb, $entities);
+        // $pageWeb->save();
+        $datasJson[] = [
+          'entity' => $pageWeb->toArray(),
+          'entities' => $entities
+        ];
+        return HttpResponse::response($datasJson, 200, 'test');
       }
       catch (\Exception $e) {
         $errors = ExceptionExtractMessage::errorAllToString($e);

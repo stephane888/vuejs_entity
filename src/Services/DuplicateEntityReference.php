@@ -16,6 +16,13 @@ class DuplicateEntityReference extends ControllerBase {
   protected static $field_source = \Drupal\domain_source\DomainSourceElementManagerInterface::DOMAIN_SOURCE_FIELD;
   protected static $field_domain_all_affiliates = 'field_domain_all_affiliates';
   /**
+   * Contient les données en JSON
+   *
+   * @var array
+   */
+  protected $datasJson = [];
+  
+  /**
    * Entite valide pour la suppresion.
    * Afin d'eviter de supprimer certaines données utile.
    *
@@ -76,7 +83,7 @@ class DuplicateEntityReference extends ControllerBase {
   /**
    * Duplique les entites existantes et changent de domain.
    */
-  public function duplicateExistantReference(ContentEntityBase &$entity) {
+  public function duplicateExistantReference(ContentEntityBase &$entity, array &$datasJson = []) {
     //
     $uid = $this->currentUser()->id();
     if (method_exists($entity, 'setCreatedTime'))
@@ -110,15 +117,20 @@ class DuplicateEntityReference extends ControllerBase {
               if ($CloneParagraph->hasField(self::$field_domain_access) && $entity->hasField(self::$field_domain_access)) {
                 $CloneParagraph->set(self::$field_domain_access, $entity->get(self::$field_domain_access)->getValue());
               }
+              $subDatas = $setings;
+              $subDatas['target_id'] = $value['target_id'];
+              $subDatas['entity'] = $CloneParagraph->toArray();
+              $subDatas['entities'] = [];
               // On verifie pour les sous entites.
-              $this->duplicateExistantReference($CloneParagraph);
-              $CloneParagraph->save();
-              $NewParagraphIds[] = [
-                'target_id' => $CloneParagraph->id()
-              ];
+              $this->duplicateExistantReference($CloneParagraph, $subDatas['entities']);
+              $datasJson[$k][] = $subDatas;
+              // $CloneParagraph->save();
+              // $NewParagraphIds[] = [
+              // 'target_id' => $CloneParagraph->id()
+              // ];
             }
           }
-          $entity->set($k, $NewParagraphIds);
+          // $entity->set($k, $NewParagraphIds);
         }
         // Duplication des sous nodes.
         elseif (!empty($setings['target_type']) && $setings['target_type'] == 'node') {
@@ -131,20 +143,26 @@ class DuplicateEntityReference extends ControllerBase {
               if ($cloneNode->hasField(self::$field_domain_access) && $entity->hasField(self::$field_domain_access)) {
                 $cloneNode->set(self::$field_domain_access, $entity->get(self::$field_domain_access)->getValue());
               }
+              $subDatas = $setings;
+              $subDatas['target_id'] = $value['target_id'];
+              $subDatas['entity'] = $cloneNode->toArray();
+              $subDatas['entities'] = [];
               // On verifie pour les sous entites.
-              $this->duplicateExistantReference($cloneNode);
+              $this->duplicateExistantReference($cloneNode, $subDatas['entities']);
+              $datasJson[$k][] = $subDatas;
               //
-              $cloneNode->save();
-              $newNodesIds[] = [
-                'target_id' => $cloneNode->id()
-              ];
+              // $cloneNode->save();
+              // $newNodesIds[] = [
+              // 'target_id' => $cloneNode->id()
+              // ];
               // send event :
-              $event = new DuplicateEntityEvent($cloneNode, $node, $entity);
-              $event_dispatcher->dispatch($event, DuplicateEntityEvent::EVENT_NAME);
+              // $event = new DuplicateEntityEvent($cloneNode, $node, $entity);
+              // $event_dispatcher->dispatch($event,
+              // DuplicateEntityEvent::EVENT_NAME);
             }
           }
           //
-          $entity->set($k, $newNodesIds);
+          // $entity->set($k, $newNodesIds);
         }
         // Duplications des formulaires.
         elseif (!empty($setings['target_type']) && $setings['target_type'] == 'webform') {
@@ -159,14 +177,19 @@ class DuplicateEntityReference extends ControllerBase {
               $CloneWebform->set('title', $domaine . ' : ' . $CloneWebform->get('title'));
               $CloneWebform->set('id', substr($Webform->id(), 0, 10) . date('YMdi') . rand(0, 9999));
               //
-              $CloneWebform->save();
+              $subDatas = $setings;
+              $subDatas['target_id'] = $value['target_id'];
+              $subDatas['entity'] = $CloneWebform->toArray();
+              $subDatas['entities'] = [];
+              // $CloneWebform->save();
+              $datasJson[$k][] = $subDatas;
             }
-            $newWebforms[] = [
-              'target_id' => $CloneWebform->id()
-            ];
+            // $newWebforms[] = [
+            // 'target_id' => $CloneWebform->id()
+            // ];
           }
           //
-          $entity->set($k, $newWebforms);
+          // $entity->set($k, $newWebforms);
         }
         // Duplication des sous blocs.
         elseif (!empty($setings['target_type']) && $setings['target_type'] == 'block_content') {
@@ -205,16 +228,22 @@ class DuplicateEntityReference extends ControllerBase {
                 ]);
               }
               //
-              $CloneBlockContent->save();
-              $newBlockIds[] = [
-                'target_id' => $CloneBlockContent->id()
-              ];
+              $subDatas = $setings;
+              $subDatas['target_id'] = $value['target_id'];
+              $subDatas['entity'] = $CloneBlockContent->toArray();
+              $subDatas['entities'] = [];
+              
+              // $CloneBlockContent->save();
+              $datasJson[$k][] = $subDatas;
+              // $newBlockIds[] = [
+              // 'target_id' => $CloneBlockContent->id()
+              // ];
             }
           }
-          $entity->set($k, $newBlockIds);
+          // $entity->set($k, $newBlockIds);
         }
         // Dupliquer les produits.
-        elseif (!empty($setings['target_type']) && $setings['target_type'] == 'commerce_product') {
+        elseif (!empty($setings['target_type']) && $setings['target_type'] == 'commerce_product00') {
           // Pour le type prodit, on doit Ajouter le role à l'utilisateur.
           if (!empty($this->currentUser()->id()) && !in_array('manage_ecommerce', $this->currentUser()->getRoles())) {
             $user = \Drupal\user\Entity\User::load($this->currentUser->id());
@@ -243,9 +272,14 @@ class DuplicateEntityReference extends ControllerBase {
               $CloneProduct->setCreatedTime(time());
               $CloneProduct->setChangedTime(time());
               $CloneProduct->setOwnerId($uid);
+              $subDatas = $setings;
+              $subDatas['target_id'] = $value['target_id'];
+              $subDatas['entity'] = $CloneProduct->toArray();
+              $subDatas['entities'] = [];
               // On verifie pour les sous entites.
               $this->duplicateExistantReference($CloneProduct);
-              // on supprime les variations dans le clone
+              $datasJson[$k][] = $subDatas;
+              // on supprime les variations dans le clone.
               $CloneProduct->setVariations([]);
               
               $CloneProduct->save();
@@ -279,29 +313,6 @@ class DuplicateEntityReference extends ControllerBase {
           }
           $entity->set($k, $newProducts);
         }
-        // La duplication de variation de produit suivant cette approche ne
-        // fonctionne pas.
-        elseif (!empty($setings['target_type']) && $setings['target_type'] == 'commerce_product_variationOO' && $k == 'variations') {
-          $newCommerceProductVariationIds = [];
-          foreach ($vals as $value) {
-            $ProductVariation = ProductVariation::load($value['target_id']);
-            if ($ProductVariation) {
-              $CloneProductVariation = $ProductVariation->createDuplicate();
-              // On met jour la date de MAJ
-              $CloneProductVariation->setCreatedTime(time());
-              $CloneProductVariation->setChangedTime(time());
-              $CloneProductVariation->setOwnerId($uid);
-              //
-              $CloneProductVariation->save();
-              $newCommerceProductVariationIds[] = [
-                'target_id' => $CloneProductVariation->id()
-              ];
-            }
-          }
-          //
-          $entity->set($k, $newCommerceProductVariationIds);
-        }
-        
         else {
           \Drupal::logger('vuejs_entity')->alert(" Entité non traitée, field :" . $k . ', type : ' . $setings['target_type']);
         }
