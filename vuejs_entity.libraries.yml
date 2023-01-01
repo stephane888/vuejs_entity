@@ -1,7 +1,7 @@
 # Custom module library for general purposes.
 vuejs_entity:
   js:
-    files/EntityDrupal.umd.min.js: {weight: -5}
+    files/EntityDrupal.umd.min.js: {weight: -5, preprocess: false, minified: false}
   css:
     component:
       files/EntityDrupal.css: {weight: 10}
