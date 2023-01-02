@@ -16522,7 +16522,7 @@ var index = {
 
 "use strict";
 /* harmony import */ var _siteweb_AppVuejs_create_website_node_modules_babel_runtime_helpers_esm_objectSpread2_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4367);
-/* harmony import */ var wbuutilities__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(98845);
+/* harmony import */ var wbuutilities__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(68151);
 
  //
 
@@ -16534,17 +16534,111 @@ var index = {
 
 /***/ }),
 
-/***/ 3649:
+/***/ 1681:
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var _siteweb_AppVuejs_create_website_node_modules_babel_runtime_helpers_esm_objectSpread2_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4367);
-/* harmony import */ var _rootConfig__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(76924);
-/* harmony import */ var drupal_vuejs_src_App_users_user_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(76261);
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  "Z": function() { return /* binding */ users; }
+});
+
+// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/objectSpread2.js
+var objectSpread2 = __webpack_require__(4367);
+// EXTERNAL MODULE: ./src/rootConfig.js
+var rootConfig = __webpack_require__(76924);
+// EXTERNAL MODULE: ../drupal-vuejs/node_modules/core-js/modules/es.object.to-string.js
+var es_object_to_string = __webpack_require__(97330);
+// EXTERNAL MODULE: ../drupal-vuejs/node_modules/core-js/modules/es.promise.js
+var es_promise = __webpack_require__(12220);
+// EXTERNAL MODULE: ../drupal-vuejs/node_modules/core-js/modules/es.function.name.js
+var es_function_name = __webpack_require__(87330);
+// EXTERNAL MODULE: ../drupal-vuejs/src/App/utilities.js + 1 modules
+var utilities = __webpack_require__(80257);
+;// CONCATENATED MODULE: ../drupal-vuejs/src/App/users/user.js
 
 
 
-/* harmony default export */ __webpack_exports__["Z"] = ((0,_siteweb_AppVuejs_create_website_node_modules_babel_runtime_helpers_esm_objectSpread2_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z)((0,_siteweb_AppVuejs_create_website_node_modules_babel_runtime_helpers_esm_objectSpread2_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z)({}, drupal_vuejs_src_App_users_user_js__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .Z), _rootConfig__WEBPACK_IMPORTED_MODULE_1__/* ["default"] */ .Z));
+
+
+/* harmony default export */ var user = ((0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({}, utilities/* default */.Z), {}, {
+  getCurrentUser: function getCurrentUser() {
+    var _this = this;
+
+    return new Promise(function (resolv) {
+      _this.get("/login-rx-vuejs/current-user").then(function (resp) {
+        resolv(resp.data);
+      });
+    });
+  },
+  getUser: function getUser(uid) {
+    var _this2 = this;
+
+    return new Promise(function (resolv) {
+      _this2.get("/user/" + uid + "?_format=json").then(function (resp) {
+        resolv(resp.data);
+      });
+    });
+  },
+
+  /**
+   * Utilise le module login-vuejs
+   * values ={
+        name: [{ value: user }],
+        password: [{ value: pass }],
+      }
+   * @param {*} values 
+   * @returns 
+   */
+  loginRxVuejs: function loginRxVuejs(values) {
+    if (values.name && values.name[0] && values.password && values.password[0]) {
+      return this.post("/login-rx-vuejs/user-connexion", values);
+    }
+
+    throw "Format de connexion non valide";
+  },
+
+  /**
+   * Semble fonctionner par defaut.
+   * values ={
+   *     name: '',
+   *     pass: '',
+   * }
+   * @param {*} values
+   * @returns
+   */
+  login: function login(values) {
+    var _this3 = this;
+
+    return new Promise(function (resolv, reject) {
+      if (values.name && values.pass) {
+        _this3.post("/user/login?_format=json", values).then(function (resp) {
+          _this3.getToken().then(function (r) {
+            _this3.testAuthentificaton();
+
+            resolv({
+              user: resp,
+              token: r
+            });
+          }).catch(function (error) {
+            return reject(error);
+          });
+        }).catch(function (error) {
+          return reject(error);
+        });
+      } else throw "Format de connexion non valide";
+    });
+  },
+  testAuthentificaton: function testAuthentificaton() {
+    this.dGet("/gestion-project-v2/test");
+  }
+}));
+;// CONCATENATED MODULE: ./src/users.js
+
+
+
+/* harmony default export */ var users = ((0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({}, user), rootConfig/* default */.Z));
 
 /***/ }),
 
@@ -17333,54 +17427,34 @@ try {
 
 /***/ }),
 
-/***/ 76261:
+/***/ 80257:
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
-  "Z": function() { return /* binding */ user; }
+  "Z": function() { return /* binding */ App_utilities; }
 });
 
+// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js
+var asyncToGenerator = __webpack_require__(16198);
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/objectSpread2.js
 var objectSpread2 = __webpack_require__(4367);
+// EXTERNAL MODULE: ../drupal-vuejs/node_modules/regenerator-runtime/runtime.js
+var runtime = __webpack_require__(64694);
 // EXTERNAL MODULE: ../drupal-vuejs/node_modules/core-js/modules/es.object.to-string.js
 var es_object_to_string = __webpack_require__(97330);
 // EXTERNAL MODULE: ../drupal-vuejs/node_modules/core-js/modules/es.promise.js
 var es_promise = __webpack_require__(12220);
-// EXTERNAL MODULE: ../drupal-vuejs/node_modules/core-js/modules/es.function.name.js
-var es_function_name = __webpack_require__(87330);
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js
-var asyncToGenerator = __webpack_require__(16198);
-// EXTERNAL MODULE: ../drupal-vuejs/node_modules/regenerator-runtime/runtime.js
-var runtime = __webpack_require__(64694);
-// EXTERNAL MODULE: ../wbuutilities/index.js + 83 modules
-var wbuutilities = __webpack_require__(98845);
-;// CONCATENATED MODULE: ../drupal-vuejs/src/config.js
-
-
-
-var config = (0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({}, wbuutilities/* AjaxBasic */.EC), {}, {
-  /**
-   * Retoune un entier arleatoire entre [99-999]
-   */
-  getRandomIntInclusive: function getRandomIntInclusive() {
-    var min = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 99;
-    var max = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 999;
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
-});
-
-/* harmony default export */ var src_config = (config);
+// EXTERNAL MODULE: ../drupal-vuejs/src/config.js
+var config = __webpack_require__(29536);
 ;// CONCATENATED MODULE: ../drupal-vuejs/src/App/session.js
 
 
 
 
-/* harmony default export */ var session = ((0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({}, src_config), {}, {
+/* harmony default export */ var session = ((0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({}, config/* default */.Z), {}, {
   url_session: "/session/token",
   token: null,
 
@@ -17409,7 +17483,7 @@ var config = (0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({
 
 
 
-var utilities = (0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({}, session), src_config), {}, {
+var utilities = (0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({}, session), config/* default */.Z), {}, {
   /**
    * configCustom[{name:"",value:""}]
    */
@@ -17507,88 +17581,36 @@ var utilities = (0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z
 });
 
 /* harmony default export */ var App_utilities = (utilities);
-;// CONCATENATED MODULE: ../drupal-vuejs/src/App/users/user.js
-
-
-
-
-
-/* harmony default export */ var user = ((0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({}, App_utilities), {}, {
-  getCurrentUser: function getCurrentUser() {
-    var _this = this;
-
-    return new Promise(function (resolv) {
-      _this.get("/login-rx-vuejs/current-user").then(function (resp) {
-        resolv(resp.data);
-      });
-    });
-  },
-  getUser: function getUser(uid) {
-    var _this2 = this;
-
-    return new Promise(function (resolv) {
-      _this2.get("/user/" + uid + "?_format=json").then(function (resp) {
-        resolv(resp.data);
-      });
-    });
-  },
-
-  /**
-   * Utilise le module login-vuejs
-   * values ={
-        name: [{ value: user }],
-        password: [{ value: pass }],
-      }
-   * @param {*} values 
-   * @returns 
-   */
-  loginRxVuejs: function loginRxVuejs(values) {
-    if (values.name && values.name[0] && values.password && values.password[0]) {
-      return this.post("/login-rx-vuejs/user-connexion", values);
-    }
-
-    throw "Format de connexion non valide";
-  },
-
-  /**
-   * Semble fonctionner par defaut.
-   * values ={
-   *     name: '',
-   *     pass: '',
-   * }
-   * @param {*} values
-   * @returns
-   */
-  login: function login(values) {
-    var _this3 = this;
-
-    return new Promise(function (resolv, reject) {
-      if (values.name && values.pass) {
-        _this3.post("/user/login?_format=json", values).then(function (resp) {
-          _this3.getToken().then(function (r) {
-            _this3.testAuthentificaton();
-
-            resolv({
-              user: resp,
-              token: r
-            });
-          }).catch(function (error) {
-            return reject(error);
-          });
-        }).catch(function (error) {
-          return reject(error);
-        });
-      } else throw "Format de connexion non valide";
-    });
-  },
-  testAuthentificaton: function testAuthentificaton() {
-    this.dGet("/gestion-project-v2/test");
-  }
-}));
 
 /***/ }),
 
-/***/ 98845:
+/***/ 29536:
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var _siteweb_AppVuejs_create_website_node_modules_babel_runtime_helpers_esm_objectSpread2_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4367);
+/* harmony import */ var wbuutilities__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(68151);
+
+
+
+var config = (0,_siteweb_AppVuejs_create_website_node_modules_babel_runtime_helpers_esm_objectSpread2_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z)((0,_siteweb_AppVuejs_create_website_node_modules_babel_runtime_helpers_esm_objectSpread2_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z)({}, wbuutilities__WEBPACK_IMPORTED_MODULE_1__/* .AjaxBasic */ .EC), {}, {
+  /**
+   * Retoune un entier arleatoire entre [99-999]
+   */
+  getRandomIntInclusive: function getRandomIntInclusive() {
+    var min = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 99;
+    var max = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 999;
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+});
+
+/* harmony default export */ __webpack_exports__["Z"] = (config);
+
+/***/ }),
+
+/***/ 68151:
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -25628,32 +25650,10 @@ var AjaxToastBootStrap = (0,objectSpread2/* default */.Z)((0,objectSpread2/* def
 
 
 /* harmony default export */ var BootStrap = (AjaxToastBootStrap);
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/classCallCheck.js
-
-function classCallCheck_classCallCheck(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/createClass.js
-function createClass_defineProperties(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor) descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-
-function createClass_createClass(Constructor, protoProps, staticProps) {
-  if (protoProps) createClass_defineProperties(Constructor.prototype, protoProps);
-  if (staticProps) createClass_defineProperties(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {
-    writable: false
-  });
-  return Constructor;
-}
+// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/classCallCheck.js
+var classCallCheck = __webpack_require__(76133);
+// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/createClass.js
+var createClass = __webpack_require__(92751);
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es.object.to-string.js
 var modules_es_object_to_string = __webpack_require__(41539);
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es.reflect.to-string-tag.js
@@ -25808,10 +25808,10 @@ var baseUrl = "/jsonapi";
 
 var entityFormat = /*#__PURE__*/function () {
   function entityFormat() {
-    classCallCheck_classCallCheck(this, entityFormat);
+    (0,classCallCheck/* default */.Z)(this, entityFormat);
   }
 
-  createClass_createClass(entityFormat, [{
+  (0,createClass/* default */.Z)(entityFormat, [{
     key: "buildLink",
     value: function buildLink(entityType, bundle) {
       return baseUrl + "/" + entityType + "/" + bundle;
@@ -25856,7 +25856,7 @@ var entityLoad = /*#__PURE__*/function (_entityFormat) {
   function entityLoad(entityType, bundle) {
     var _this;
 
-    classCallCheck_classCallCheck(this, entityLoad);
+    (0,classCallCheck/* default */.Z)(this, entityLoad);
 
     /**
      * Le mot clé 'super' est utilisé afin d'appeler ou d'accéder à des fonctions définies sur l'objet parent
@@ -25889,7 +25889,7 @@ var entityLoad = /*#__PURE__*/function (_entityFormat) {
    */
 
 
-  createClass_createClass(entityLoad, [{
+  (0,createClass/* default */.Z)(entityLoad, [{
     key: "load",
     value: function load() {
       var _this2 = this;
@@ -40316,6 +40316,51 @@ function _asyncToGenerator(fn) {
 
 /***/ }),
 
+/***/ 76133:
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Z": function() { return /* binding */ _classCallCheck; }
+/* harmony export */ });
+/* harmony import */ var core_js_modules_es_error_cause_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(21703);
+
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+/***/ }),
+
+/***/ 92751:
+/***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Z": function() { return /* binding */ _createClass; }
+/* harmony export */ });
+function _defineProperties(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor) descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+
+function _createClass(Constructor, protoProps, staticProps) {
+  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+  if (staticProps) _defineProperties(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {
+    writable: false
+  });
+  return Constructor;
+}
+
+/***/ }),
+
 /***/ 23796:
 /***/ (function(__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) {
 
@@ -40509,7 +40554,7 @@ function _typeof(obj) {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.miniCssF = function(chunkId) {
 /******/ 			// return url for filenames based on template
-/******/ 			return "css/" + chunkId + "." + {"325":"58213ea5","972":"40693ac0"}[chunkId] + ".css";
+/******/ 			return "css/" + chunkId + "." + {"254":"43e16dd8","325":"58213ea5","520":"5f5196f1","972":"40693ac0"}[chunkId] + ".css";
 /******/ 		};
 /******/ 	}();
 /******/ 	
@@ -40658,7 +40703,7 @@ function _typeof(obj) {
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.f.miniCss = function(chunkId, promises) {
-/******/ 			var cssChunks = {"325":1,"972":1};
+/******/ 			var cssChunks = {"254":1,"325":1,"520":1,"972":1};
 /******/ 			if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);
 /******/ 			else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {
 /******/ 				promises.push(installedCssChunks[chunkId] = loadStylesheet(chunkId).then(function() {
@@ -85948,7 +85993,8 @@ var dist = __webpack_require__(63489);
 
 
 
- //
+ // ?XDEBUG_TRIGGER=run
+//
 
 /* harmony default export */ var saveEntity = ((0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({}, rootConfig/* default */.Z), {}, {
   currentBuildStep: 0,
@@ -86438,7 +86484,7 @@ var dist = __webpack_require__(63489);
       }];
       state.storeFormRenderHeader.model.field_domain_source = [{
         target_id: _this6.domainRegister.id
-      }]; // Pas necesssaire
+      }]; //
 
       _this6.addDefaultBlockInRegion();
 
@@ -89285,34 +89331,38 @@ var FormRenderFooter_component = (0,componentNormalizer/* default */.Z)(
 )
 
 /* harmony default export */ var FormRenderFooter = (FormRenderFooter_component.exports);
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/sections/page-register.vue?vue&type=template&id=305da904&
-var page_registervue_type_template_id_305da904_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',[_c('label',{domProps:{"innerHTML":_vm._s(_vm.strings.ask_to_login)}}),_c('loginRegister',{attrs:{"action_after_login":"emit_even","model_register_form":"generate_password"}})],1)}
-var page_registervue_type_template_id_305da904_staticRenderFns = []
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/sections/page-register.vue?vue&type=template&id=b995526a&
+var page_registervue_type_template_id_b995526a_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',[_c('label',{domProps:{"innerHTML":_vm._s(_vm.strings.ask_to_login)}}),_c('loginRegister',{attrs:{"actionAfterLogin":"emit_even","modelRegisterForm":"generate_password"}})],1)}
+var page_registervue_type_template_id_b995526a_staticRenderFns = []
 
 
-// EXTERNAL MODULE: ../drupal-vuejs/src/App/users/user.js + 3 modules
-var user = __webpack_require__(76261);
-// EXTERNAL MODULE: ./src/users.js
-var users = __webpack_require__(3649);
+// EXTERNAL MODULE: ./src/users.js + 1 modules
+var users = __webpack_require__(1681);
 ;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-40[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/sections/page-register.vue?vue&type=script&lang=js&
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
+
+
+
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ var page_registervue_type_script_lang_js_ = ({
   name: "page-register",
   components: {
-    loginRegister: user/* default */.Z
+    loginRegister: function loginRegister() {
+      return Promise.all(/* import() */[__webpack_require__.e(392), __webpack_require__.e(254)]).then(__webpack_require__.bind(__webpack_require__, 45254));
+    }
   },
   mounted: function mounted() {
     this.check_if_user_connected();
@@ -89352,8 +89402,8 @@ var users = __webpack_require__(3649);
 ;
 var page_register_component = (0,componentNormalizer/* default */.Z)(
   sections_page_registervue_type_script_lang_js_,
-  page_registervue_type_template_id_305da904_render,
-  page_registervue_type_template_id_305da904_staticRenderFns,
+  page_registervue_type_template_id_b995526a_render,
+  page_registervue_type_template_id_b995526a_staticRenderFns,
   false,
   null,
   null,
@@ -90006,8 +90056,17 @@ external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vuex_esm/* default */
       errors: [],
       warnings: []
     },
-    //Array contenant les données a sauvegarder.
-    entityDuplicate: []
+    // Array contenant les données a sauvegarder.
+    entityDuplicate: [],
+    // use by module login
+    form: {
+      name: [{
+        value: ""
+      }],
+      mail: [{
+        value: ""
+      }]
+    }
   },
   getters: {
     numbersEntities: function numbersEntities(state) {
