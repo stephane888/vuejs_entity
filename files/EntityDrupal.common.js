@@ -19900,7 +19900,7 @@ __webpack_require__(87888);
 
 /***/ }),
 
-/***/ 68666:
+/***/ 75878:
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -23130,19 +23130,23 @@ var DrupalEmail_component = (0,componentNormalizer/* default */.Z)(
 )
 
 /* harmony default export */ var DrupalEmail = (DrupalEmail_component.exports);
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalCheckbox.vue?vue&type=template&id=5828e905&scoped=true&
-var DrupalCheckboxvue_type_template_id_5828e905_scoped_true_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.classCss,attrs:{"field":"drupal_boolean"}},[_c('div',{staticClass:"field-item-value"},[_c('ValidationProvider',{attrs:{"name":_vm.field.name,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [(_vm.field.type == 'boolean_checkbox')?_c('b-form-group',{attrs:{"label":_vm.field.label,"description":_vm.field.description}},[_c('b-form-checkbox',{attrs:{"name":_vm.field.name,"switch":""},on:{"change":_vm.input},model:{value:(_vm.selected),callback:function ($$v) {_vm.selected=$$v},expression:"selected"}},[_vm._v(" "+_vm._s(_vm.field.label)+" ")])],1):(_vm.field.type == 'options_buttons')?_c('b-form-group',{attrs:{"label":_vm.field.label,"description":_vm.field.description},scopedSlots:_vm._u([{key:"default",fn:function(ref){
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalCheckbox.vue?vue&type=template&id=12fde05e&scoped=true&
+var DrupalCheckboxvue_type_template_id_12fde05e_scoped_true_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.classCss,attrs:{"field":"drupal_boolean"}},[_c('div',{staticClass:"field-item-value"},[_c('ValidationProvider',{attrs:{"name":_vm.field.name,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [(_vm.field.type == 'boolean_checkbox')?_c('b-form-group',{attrs:{"label":_vm.field.label,"description":_vm.field.description}},[_c('b-form-checkbox',{attrs:{"name":_vm.field.name,"switch":""},on:{"change":_vm.input},model:{value:(_vm.selected),callback:function ($$v) {_vm.selected=$$v},expression:"selected"}},[_vm._v(" "+_vm._s(_vm.field.label)+" ")])],1):(_vm.field.type == 'options_buttons')?_c('b-form-group',{attrs:{"label":_vm.field.label,"description":_vm.field.description},scopedSlots:_vm._u([{key:"default",fn:function(ref){
 var ariaDescribedby = ref.ariaDescribedby;
-return [_c('b-form-checkbox-group',{attrs:{"options":_vm.options_allowed_values,"aria-describedby":ariaDescribedby,"name":_vm.field.name},model:{value:(_vm.multi_selected),callback:function ($$v) {_vm.multi_selected=$$v},expression:"multi_selected"}})]}}])}):_c('b-form-group',{attrs:{"label":_vm.field.label,"name":_vm.field.name}},[_c('div',{staticClass:"fieldset-wrapper"},[(_vm.field.settings && _vm.field.settings.list_options)?_c('div',{staticClass:"checkbox"},_vm._l((_vm.field.settings.list_options),function(option,o){return _c('b-form-radio',{key:o,staticClass:"form-check",attrs:{"name":_vm.field.name,"value":option.value,"state":_vm.getValidationState(v)},model:{value:(_vm.selected),callback:function ($$v) {_vm.selected=$$v},expression:"selected"}},[_c('transition',{attrs:{"name":"fade","mode":"out-in"}},[_c('div',[(option.image_url)?_c('b-img',{attrs:{"thumbnail":"","fluid":"","src":option.image_url,"alt":"Image 1"}}):_vm._e(),(!option.image_url)?_c('svgLoader'):_vm._e()],1)]),_c('div',{staticClass:"mt-5"},[_vm._v(_vm._s(option.label))]),(
+return [_c('b-form-checkbox-group',{attrs:{"options":_vm.options_allowed_values,"aria-describedby":ariaDescribedby,"name":_vm.field.name},on:{"change":_vm.input_multi},model:{value:(_vm.multi_selected),callback:function ($$v) {_vm.multi_selected=$$v},expression:"multi_selected"}})]}}])}):_c('b-form-group',{attrs:{"label":_vm.field.label,"name":_vm.field.name}},[_c('div',{staticClass:"fieldset-wrapper"},[(_vm.field.settings && _vm.field.settings.list_options)?_c('div',{staticClass:"checkbox"},_vm._l((_vm.field.settings.list_options),function(option,o){return _c('b-form-radio',{key:o,staticClass:"form-check",attrs:{"name":_vm.field.name,"value":option.value,"state":_vm.getValidationState(v)},model:{value:(_vm.selected),callback:function ($$v) {_vm.selected=$$v},expression:"selected"}},[_c('transition',{attrs:{"name":"fade","mode":"out-in"}},[_c('div',[(option.image_url)?_c('b-img',{attrs:{"thumbnail":"","fluid":"","src":option.image_url,"alt":"Image 1"}}):_vm._e(),(!option.image_url)?_c('svgLoader'):_vm._e()],1)]),_c('div',{staticClass:"mt-5"},[_vm._v(_vm._s(option.label))]),(
                   option.description.value && option.description.value !== ''
                 )?_c('div',{staticClass:"mt-5 text-hover",domProps:{"innerHTML":_vm._s(option.description.value)}}):_vm._e()],1)}),1):_vm._e(),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()])])]}}])})],1)])}
-var DrupalCheckboxvue_type_template_id_5828e905_scoped_true_staticRenderFns = []
+var DrupalCheckboxvue_type_template_id_12fde05e_scoped_true_staticRenderFns = []
 
 
+// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/defineProperty.js
+var defineProperty = __webpack_require__(23796);
 ;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-40[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalCheckbox.vue?vue&type=script&lang=js&
 
 
 
+
+//
 //
 //
 //
@@ -23259,7 +23263,8 @@ var DrupalCheckboxvue_type_template_id_5828e905_scoped_true_staticRenderFns = []
   data: function data() {
     return {
       selected: null,
-      multi_selected: []
+      multi_selected: [],
+      key_value: "value"
     };
   },
   computed: {
@@ -23294,6 +23299,10 @@ var DrupalCheckboxvue_type_template_id_5828e905_scoped_true_staticRenderFns = []
     this.getImage();
     this.selected = this.getValue();
     this.multi_selected = this.getValues();
+
+    if (this.field.definition_settings && this.field.definition_settings.target_type) {
+      this.key_value = "target_id";
+    } else this.key_value = "value";
   },
   methods: {
     getImage: function getImage() {
@@ -23339,8 +23348,15 @@ var DrupalCheckboxvue_type_template_id_5828e905_scoped_true_staticRenderFns = []
     },
     input: function input(val) {
       var vals = [];
-      vals.push({
-        value: val
+      vals.push((0,defineProperty/* default */.Z)({}, this.key_value, val));
+      this.setValue(vals);
+    },
+    input_multi: function input_multi(val) {
+      var _this2 = this;
+
+      var vals = [];
+      val.forEach(function (value) {
+        vals.push((0,defineProperty/* default */.Z)({}, _this2.key_value, value));
       });
       this.setValue(vals);
     },
@@ -23358,10 +23374,10 @@ var DrupalCheckboxvue_type_template_id_5828e905_scoped_true_staticRenderFns = []
 });
 ;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalCheckbox.vue?vue&type=script&lang=js&
  /* harmony default export */ var fieldsDrupal_DrupalCheckboxvue_type_script_lang_js_ = (DrupalCheckboxvue_type_script_lang_js_); 
-;// CONCATENATED MODULE: ./node_modules/mini-css-extract-plugin/dist/loader.js??clonedRuleSet-12[0].rules[0].use[0]!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-12[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12[0].rules[0].use[2]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalCheckbox.vue?vue&type=style&index=0&id=5828e905&scoped=true&lang=css&
+;// CONCATENATED MODULE: ./node_modules/mini-css-extract-plugin/dist/loader.js??clonedRuleSet-12[0].rules[0].use[0]!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-12[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12[0].rules[0].use[2]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalCheckbox.vue?vue&type=style&index=0&id=12fde05e&scoped=true&lang=css&
 // extracted by mini-css-extract-plugin
 
-;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalCheckbox.vue?vue&type=style&index=0&id=5828e905&scoped=true&lang=css&
+;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalCheckbox.vue?vue&type=style&index=0&id=12fde05e&scoped=true&lang=css&
 
 ;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalCheckbox.vue
 
@@ -23374,33 +23390,34 @@ var DrupalCheckboxvue_type_template_id_5828e905_scoped_true_staticRenderFns = []
 
 var DrupalCheckbox_component = (0,componentNormalizer/* default */.Z)(
   fieldsDrupal_DrupalCheckboxvue_type_script_lang_js_,
-  DrupalCheckboxvue_type_template_id_5828e905_scoped_true_render,
-  DrupalCheckboxvue_type_template_id_5828e905_scoped_true_staticRenderFns,
+  DrupalCheckboxvue_type_template_id_12fde05e_scoped_true_render,
+  DrupalCheckboxvue_type_template_id_12fde05e_scoped_true_staticRenderFns,
   false,
   null,
-  "5828e905",
+  "12fde05e",
   null
   
 )
 
 /* harmony default export */ var DrupalCheckbox = (DrupalCheckbox_component.exports);
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DateRange.vue?vue&type=template&id=04d27672&scoped=true&
-var DateRangevue_type_template_id_04d27672_scoped_true_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.classCss},[_c('ValidationProvider',{attrs:{"name":_vm.field.name,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('label',{attrs:{"for":"input-date-fin"}},[_vm._v(" "+_vm._s(_vm.field.label)+" ")]),_c('b-row',[_c('b-col',{attrs:{"md":"6"}},[_c('b-input-group',[_c('b-form-datepicker',{attrs:{"type":"text","placeholder":"Date de début","required":"","locale":"fr","date-format-options":{
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DateRange.vue?vue&type=template&id=aa66068a&scoped=true&
+var DateRangevue_type_template_id_aa66068a_scoped_true_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.classCss},[_c('ValidationProvider',{attrs:{"name":_vm.field.name,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('label',{attrs:{"for":"input-date-fin"}},[_vm._v(" "+_vm._s(_vm.field.label)+" ")]),_c('b-row',[_c('b-col',{attrs:{"md":"6"}},[_c('b-input-group',[_c('b-form-datepicker',{attrs:{"type":"text","placeholder":"Date de début","required":"","locale":"fr","date-format-options":{
               year: 'numeric',
               month: 'short',
               day: '2-digit',
-            }},model:{value:(_vm.date.value),callback:function ($$v) {_vm.$set(_vm.date, "value", $$v)},expression:"date.value"}}),_c('b-form-input',{staticClass:"input-time",attrs:{"id":'b-' + _vm.idHtml,"type":"text","placeholder":"HH:mm:ss"},model:{value:(_vm.date.hour_begin),callback:function ($$v) {_vm.$set(_vm.date, "hour_begin", $$v)},expression:"date.hour_begin"}}),_c('b-input-group-append',[_c('b-form-timepicker',{attrs:{"button-only":"","right":"","show-seconds":"","locale":"fr","aria-controls":'b-' + _vm.idHtml},model:{value:(_vm.date.hour_begin),callback:function ($$v) {_vm.$set(_vm.date, "hour_begin", $$v)},expression:"date.hour_begin"}})],1)],1)],1),_c('b-col',{attrs:{"md":"6"}},[_c('b-input-group',[_c('b-form-datepicker',{attrs:{"type":"text","placeholder":"Date de fin","required":"","locale":"fr","date-format-options":{
+            }},on:{"input":_vm.date_change_debut},model:{value:(_vm.date.value),callback:function ($$v) {_vm.$set(_vm.date, "value", $$v)},expression:"date.value"}}),_c('b-form-input',{staticClass:"input-time",attrs:{"id":'b-' + _vm.idHtml,"type":"text","placeholder":"HH:mm:ss"},model:{value:(_vm.date.hour_begin),callback:function ($$v) {_vm.$set(_vm.date, "hour_begin", $$v)},expression:"date.hour_begin"}}),_c('b-input-group-append',[_c('b-form-timepicker',{attrs:{"button-only":"","right":"","show-seconds":"","locale":"fr","aria-controls":'b-' + _vm.idHtml},model:{value:(_vm.date.hour_begin),callback:function ($$v) {_vm.$set(_vm.date, "hour_begin", $$v)},expression:"date.hour_begin"}})],1)],1)],1),_c('b-col',{attrs:{"md":"6"}},[_c('b-input-group',[_c('b-form-datepicker',{attrs:{"type":"text","placeholder":"Date de fin","required":"","locale":"fr","date-format-options":{
               year: 'numeric',
               month: 'short',
               day: '2-digit',
             }},model:{value:(_vm.date.end_value),callback:function ($$v) {_vm.$set(_vm.date, "end_value", $$v)},expression:"date.end_value"}}),_c('b-form-input',{staticClass:"input-time",attrs:{"id":'e-' + _vm.idHtml,"type":"text","placeholder":"HH:mm:ss"},model:{value:(_vm.date.hour_end),callback:function ($$v) {_vm.$set(_vm.date, "hour_end", $$v)},expression:"date.hour_end"}}),_c('b-input-group-append',[_c('b-form-timepicker',{attrs:{"button-only":"","right":"","show-seconds":"","locale":"fr","aria-controls":'e-' + _vm.idHtml},model:{value:(_vm.date.hour_end),callback:function ($$v) {_vm.$set(_vm.date, "hour_end", $$v)},expression:"date.hour_end"}})],1)],1)],1)],1),_c('small',{staticClass:"form-text text-muted"},[_vm._v(_vm._s(_vm.field.description))]),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()]}}])})],1)}
-var DateRangevue_type_template_id_04d27672_scoped_true_staticRenderFns = []
+var DateRangevue_type_template_id_aa66068a_scoped_true_staticRenderFns = []
 
 
 ;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-40[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DateRange.vue?vue&type=script&lang=js&
 
 
 
+//
 //
 //
 //
@@ -23580,21 +23597,35 @@ var DateRangevue_type_template_id_04d27672_scoped_true_staticRenderFns = []
         hour_end: date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
       };
     },
-    input: function input(v) {
+    date_change_debut: function date_change_debut() {
+      console.log("date_change_debut : ", this.date);
       var vals = [];
-      vals.push({
-        value: v
-      });
+
+      if (this.date.value) {
+        var dateDebut = new Date(this.date.value + " " + this.date.hour_begin);
+        vals.push({
+          value: dateDebut.getTime() / 1000
+        });
+      } //
+
+
+      if (this.date.end_value) {
+        var dateFin = new Date(this.date.end_value + " " + this.date.hour_end);
+        vals.push({
+          end_value: dateFin.getTime() / 1000
+        });
+      }
+
       this.setValue(vals);
     }
   }
 });
 ;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/DateRange.vue?vue&type=script&lang=js&
  /* harmony default export */ var fieldsDrupal_DateRangevue_type_script_lang_js_ = (DateRangevue_type_script_lang_js_); 
-;// CONCATENATED MODULE: ./node_modules/mini-css-extract-plugin/dist/loader.js??clonedRuleSet-22[0].rules[0].use[0]!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-22[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-22[0].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-22[0].rules[0].use[3]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DateRange.vue?vue&type=style&index=0&id=04d27672&lang=scss&scoped=true&
+;// CONCATENATED MODULE: ./node_modules/mini-css-extract-plugin/dist/loader.js??clonedRuleSet-22[0].rules[0].use[0]!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-22[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-22[0].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-22[0].rules[0].use[3]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DateRange.vue?vue&type=style&index=0&id=aa66068a&lang=scss&scoped=true&
 // extracted by mini-css-extract-plugin
 
-;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/DateRange.vue?vue&type=style&index=0&id=04d27672&lang=scss&scoped=true&
+;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/DateRange.vue?vue&type=style&index=0&id=aa66068a&lang=scss&scoped=true&
 
 ;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/DateRange.vue
 
@@ -23607,11 +23638,11 @@ var DateRangevue_type_template_id_04d27672_scoped_true_staticRenderFns = []
 
 var DateRange_component = (0,componentNormalizer/* default */.Z)(
   fieldsDrupal_DateRangevue_type_script_lang_js_,
-  DateRangevue_type_template_id_04d27672_scoped_true_render,
-  DateRangevue_type_template_id_04d27672_scoped_true_staticRenderFns,
+  DateRangevue_type_template_id_aa66068a_scoped_true_render,
+  DateRangevue_type_template_id_aa66068a_scoped_true_staticRenderFns,
   false,
   null,
-  "04d27672",
+  "aa66068a",
   null
   
 )
@@ -101292,6 +101323,7 @@ var dist = __webpack_require__(63489);
           region: region,
           plugin: "entity_block:" + entity_type_id,
           provider: "entity_block",
+          status: true,
           visibility: {
             domain: {
               id: "domain",
@@ -103160,7 +103192,7 @@ var formRenderHeadervue_type_template_id_153ce1ee_staticRenderFns = [function ()
 ;// CONCATENATED MODULE: ./src/components/FormRenderHeader/formRenderHeader.vue?vue&type=template&id=153ce1ee&
 
 // EXTERNAL MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/loadField.js + 85 modules
-var fieldsDrupal_loadField = __webpack_require__(68666);
+var fieldsDrupal_loadField = __webpack_require__(75878);
 ;// CONCATENATED MODULE: ./src/components/FormRenderHeader/config.js
 
 
