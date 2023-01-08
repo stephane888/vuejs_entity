@@ -81,7 +81,10 @@ class DuplicateEntityReference extends ControllerBase {
   }
   
   /**
-   * Duplique les entites existantes et changent de domain.
+   * Permet de generer une matrice des entites dupliquées et MAJ les domaines.
+   *
+   * @param ContentEntityBase $entity
+   * @param array $datasJson
    */
   public function duplicateExistantReference(ContentEntityBase &$entity, array &$datasJson = []) {
     //
@@ -101,7 +104,7 @@ class DuplicateEntityReference extends ControllerBase {
     }
     $values = $entity->toArray();
     // Get the event_dispatcher service and dispatch the event.
-    $event_dispatcher = \Drupal::service('event_dispatcher');
+    // $event_dispatcher = \Drupal::service('event_dispatcher');
     foreach ($values as $k => $vals) {
       if (!empty($vals[0]['target_id'])) {
         $setings = $entity->get($k)->getSettings();

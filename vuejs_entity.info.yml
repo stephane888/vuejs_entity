@@ -8,3 +8,4 @@ dependencies:
   - filesmanager
   - login_rx_vuejs
   - creation_site_virtuel
+  - entity_block
