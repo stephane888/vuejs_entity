@@ -101255,7 +101255,7 @@ var dist = __webpack_require__(63489);
           page: ""
         };
 
-        _this7.prepareSaveEntities(headers, vals).then(function (entities) {
+        _this7.prepareSaveEntities(headers, vals, true).then(function (entities) {
           // car on doit avoir un seul niveau de données.
           if (entities[0] && entities[0].id) {
             resolv(entities[0]);
@@ -101287,7 +101287,7 @@ var dist = __webpack_require__(63489);
           page: ""
         };
 
-        _this8.prepareSaveEntities(footers, vals).then(function (entities) {
+        _this8.prepareSaveEntities(footers, vals, true).then(function (entities) {
           // car on doit avoir un seul niveau de données.
           if (entities[0] && entities[0].id) {
             resolv(entities[0]);
@@ -101348,61 +101348,15 @@ var dist = __webpack_require__(63489);
       } else reject(" ID du paragraph non definit ");
     });
   },
-
-  /**
-   * Permet d'ajouter block_content aux blocks.
-   * @param {*} blockContent
-   */
-  addEntityBlockContentToBlock: function addEntityBlockContentToBlock(blockContent, region) {
-    var _this10 = this;
-
-    return new Promise(function (resolv, reject) {
-      if (blockContent["uuid"]) {
-        var type = blockContent["type"][0]["target_id"];
-        var uuid = blockContent["uuid"][0]["value"];
-        var label = blockContent["info"][0]["value"];
-        var id_domaine = (0,dist.limit)(_this10.domainRegister.id, 20, "");
-        var id_system = (0,dist.limit)(id_domaine + type, 30, "");
-        var values = {
-          id: id_system,
-          theme: _this10.domainRegister.id,
-          region: region,
-          plugin: "block_content:" + uuid,
-          status: true,
-          visibility: {
-            domain: {
-              id: "domain",
-              negate: false,
-              context_mapping: {
-                domain: "@domain.current_domain_context:domain"
-              },
-              domains: (0,esm_defineProperty/* default */.Z)({}, _this10.domainRegister.id, _this10.domainRegister.id)
-            }
-          },
-          settings: {
-            id: id_system,
-            label: label,
-            label_display: false,
-            provider: "block_content"
-          }
-        };
-        resolv(_this10.bPost("/vuejs-entity/entity/add-block-in-region", values));
-      } else {
-        _this10.messages.warnings.push(" Impossible d'ajouter le bloc, region : " + region);
-
-        reject();
-      }
-    });
-  },
   generateStyleTheme: function generateStyleTheme() {
-    var _this11 = this;
+    var _this10 = this;
 
     return new Promise(function (resolv, reject) {
       var idHome = window.location.pathname.split("/").pop();
 
-      _this11.bGet("/generate_style_theme/set_default_style/" + idHome + "/" + _this11.domainRegister.id).then(function () {
-        _this11.bGet("/layoutgenentitystyles/manuel/api-generate/" + _this11.domainRegister.id).then(function () {
-          resolv(_this11.bGet("/generate-style-theme/update-style-theme/" + _this11.domainRegister.id));
+      _this10.bGet("/generate_style_theme/set_default_style/" + idHome + "/" + _this10.domainRegister.id).then(function () {
+        _this10.bGet("/layoutgenentitystyles/manuel/api-generate/" + _this10.domainRegister.id).then(function () {
+          resolv(_this10.bGet("/generate-style-theme/update-style-theme/" + _this10.domainRegister.id));
         }).catch(function () {
           reject();
         });
@@ -101413,21 +101367,21 @@ var dist = __webpack_require__(63489);
   },
   //
   ApplieColor: function ApplieColor(values) {
-    var _this12 = this;
+    var _this11 = this;
 
     return new Promise(function (resolv) {
       var newValue = {};
-      var type = _this12.donneeInternetEntity.type_color_theme.length ? _this12.donneeInternetEntity.type_color_theme[0].value : "0"; // l'utilisateur a choisie les couleurs.
+      var type = _this11.donneeInternetEntity.type_color_theme.length ? _this11.donneeInternetEntity.type_color_theme[0].value : "0"; // l'utilisateur a choisie les couleurs.
 
       if (type == "0") {
         newValue = (0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({}, values), {}, {
-          wbubackground: _this12.donneeInternetEntity.background && _this12.donneeInternetEntity.background.length ? _this12.donneeInternetEntity.background : [],
-          color_link_hover: _this12.donneeInternetEntity.color_linkhover && _this12.donneeInternetEntity.color_linkhover.length ? _this12.donneeInternetEntity.color_linkhover : [],
-          color_primary: _this12.donneeInternetEntity.color_primary && _this12.donneeInternetEntity.color_primary.length ? _this12.donneeInternetEntity.color_primary : [],
-          color_secondaire: _this12.donneeInternetEntity.color_secondary && _this12.donneeInternetEntity.color_secondary.length ? _this12.donneeInternetEntity.color_secondary : []
+          wbubackground: _this11.donneeInternetEntity.background && _this11.donneeInternetEntity.background.length ? _this11.donneeInternetEntity.background : [],
+          color_link_hover: _this11.donneeInternetEntity.color_linkhover && _this11.donneeInternetEntity.color_linkhover.length ? _this11.donneeInternetEntity.color_linkhover : [],
+          color_primary: _this11.donneeInternetEntity.color_primary && _this11.donneeInternetEntity.color_primary.length ? _this11.donneeInternetEntity.color_primary : [],
+          color_secondaire: _this11.donneeInternetEntity.color_secondary && _this11.donneeInternetEntity.color_secondary.length ? _this11.donneeInternetEntity.color_secondary : []
         });
       } else {
-        newValue = (0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({}, values), _this12.themeColors());
+        newValue = (0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({}, values), _this11.themeColors());
       }
 
       resolv(newValue);
@@ -101664,13 +101618,27 @@ var dist = __webpack_require__(63489);
    * @return {Array} un tableau d'entité de drupal.
    */
   prepareSaveEntities: function prepareSaveEntities(response, suivers) {
+    var _this12 = this;
+
+    var ActionDomainId = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
     return new Promise(function (resolu, rejecte) {
+      var updateDomainId = function updateDomainId(entity) {
+        if (ActionDomainId && _this12.domainRegister.id && entity.field_domain_access) {
+          entity.field_domain_access = [{
+            target_id: _this12.domainRegister.id
+          }];
+        }
+
+        return entity;
+      };
       /**
        * Permet de creer les sous contenus et return les target_ids.
        * @param {Array} items
        * @param {Integer} i
        * @param {Array} values
        */
+
+
       var loopItem = function loopItem(items, i) {
         var values = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
         return new Promise(function (resolv, reject) {
@@ -101684,7 +101652,7 @@ var dist = __webpack_require__(63489);
               loopFieldEntity(items[i].entities, keys[0], items[i].entity, keys, 0).then(function (entity) {
                 store.dispatch("saveEntity", {
                   entity_type_id: items[i].target_type,
-                  value: entity,
+                  value: updateDomainId(entity),
                   index: i
                 }).then(function (resp) {
                   suivers.creates++;
@@ -101707,7 +101675,7 @@ var dist = __webpack_require__(63489);
             } else {
               store.dispatch("saveEntity", {
                 entity_type_id: item.target_type,
-                value: item.entity,
+                value: updateDomainId(item.entity),
                 index: i
               }).then(function (resp) {
                 suivers.creates++;
@@ -101790,7 +101758,7 @@ var dist = __webpack_require__(63489);
                 console.log(" loopEntityPromise SEND with override entity : ", entity);
                 store.dispatch("saveEntity", {
                   entity_type_id: datas[i].target_type,
-                  value: entity,
+                  value: updateDomainId(entity),
                   index: i
                 }).then(function (resp) {
                   suivers.creates++;
@@ -101810,7 +101778,7 @@ var dist = __webpack_require__(63489);
             else {
               store.dispatch("saveEntity", {
                 entity_type_id: datas[i].target_type,
-                value: datas[i].entity,
+                value: updateDomainId(datas[i].entity),
                 index: i
               }).then(function (resp) {
                 suivers.creates++;
