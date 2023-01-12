@@ -617,8 +617,18 @@ class FormEntityController extends ControllerBase {
       }
       if ($entity) {
         $bundle = !empty($entity->bundle()) ? $entity->bundle() : $param['entity_type_id'];
-        $res = \Drupal::service('apivuejs.getform')->getForm($param['entity_type_id'], $bundle, 'default', $entity);
-        return HttpResponse::response($res);
+        /**
+         *
+         * @var \Drupal\apivuejs\Services\GenerateForm $apivuejs
+         */
+        $apivuejs = \Drupal::service('apivuejs.getform');
+        $form = $apivuejs->getForm($param['entity_type_id'], $bundle, 'default', $entity);
+        $entities = [];
+        $this->DuplicateEntityReference->duplicateExistantReference($entity, $entities, $param['duplicate'], true);
+        $form['entities'] = $entities;
+        return HttpResponse::response([
+          $form
+        ]);
       }
       throw new ExceptionDebug(" L'entité n'existe plus ");
     }

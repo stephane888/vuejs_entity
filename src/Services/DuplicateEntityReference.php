@@ -10,11 +10,24 @@ use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\commerce_product\Entity\ProductVariation;
 use Drupal\vuejs_entity\Event\DuplicateEntityEvent;
+use Drupal\apivuejs\Services\GenerateForm;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\blockscontent\Entity\BlocksContents;
 
 class DuplicateEntityReference extends ControllerBase {
   protected static $field_domain_access = \Drupal\domain_access\DomainAccessManagerInterface::DOMAIN_ACCESS_FIELD;
   protected static $field_source = \Drupal\domain_source\DomainSourceElementManagerInterface::DOMAIN_SOURCE_FIELD;
   protected static $field_domain_all_affiliates = 'field_domain_all_affiliates';
+  /**
+   *
+   * @var \Drupal\apivuejs\Services\GenerateForm
+   */
+  protected $GenerateForm;
+  
+  function __construct(GenerateForm $GenerateForm) {
+    $this->GenerateForm = $GenerateForm;
+  }
+  
   /**
    * Contient les données en JSON
    *
@@ -86,7 +99,7 @@ class DuplicateEntityReference extends ControllerBase {
    * @param ContentEntityBase $entity
    * @param array $datasJson
    */
-  public function duplicateExistantReference(ContentEntityBase &$entity, array &$datasJson = []) {
+  public function duplicateExistantReference(ContentEntityBase &$entity, array &$datasJson = [], $duplicate = true, $add_form = false) {
     //
     $uid = $this->currentUser()->id();
     if (method_exists($entity, 'setCreatedTime'))
@@ -112,64 +125,90 @@ class DuplicateEntityReference extends ControllerBase {
           continue;
         // Duplication des paragraph
         elseif (!empty($setings['target_type']) && $setings['target_type'] == 'paragraph') {
-          $NewParagraphIds = [];
           foreach ($vals as $value) {
             $Paragraph = Paragraph::load($value['target_id']);
             if ($Paragraph) {
-              $CloneParagraph = $Paragraph->createDuplicate();
-              if ($CloneParagraph->hasField(self::$field_domain_access) && $entity->hasField(self::$field_domain_access)) {
-                $CloneParagraph->set(self::$field_domain_access, $entity->get(self::$field_domain_access)->getValue());
+              if ($duplicate) {
+                $CloneParagraph = $Paragraph->createDuplicate();
+                if ($CloneParagraph->hasField(self::$field_domain_access) && $entity->hasField(self::$field_domain_access)) {
+                  $CloneParagraph->set(self::$field_domain_access, $entity->get(self::$field_domain_access)->getValue());
+                }
               }
+              else
+                $CloneParagraph = $Paragraph;
+              
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
               $subDatas['entity'] = $CloneParagraph->toArray();
               $subDatas['entities'] = [];
+              // On ajoute le formulaire si necessaire :
+              if ($add_form) {
+                $subDatas += $this->GenerateForm->getForm($setings['target_type'], $CloneParagraph->bundle(), 'default', $CloneParagraph);
+              }
               // On verifie pour les sous entites.
-              $this->duplicateExistantReference($CloneParagraph, $subDatas['entities']);
+              $this->duplicateExistantReference($CloneParagraph, $subDatas['entities'], $duplicate, $add_form);
               $datasJson[$k][] = $subDatas;
-              // $CloneParagraph->save();
-              // $NewParagraphIds[] = [
-              // 'target_id' => $CloneParagraph->id()
-              // ];
             }
           }
-          // $entity->set($k, $NewParagraphIds);
         }
         // Duplication des sous nodes.
         elseif (!empty($setings['target_type']) && $setings['target_type'] == 'node') {
-          $newNodesIds = [];
           foreach ($vals as $value) {
             $node = Node::load($value['target_id']);
             if ($node) {
-              $cloneNode = $node->createDuplicate();
-              // On ajoute le champs field_domain_access; ci-possible.
-              if ($cloneNode->hasField(self::$field_domain_access) && $entity->hasField(self::$field_domain_access)) {
-                $cloneNode->set(self::$field_domain_access, $entity->get(self::$field_domain_access)->getValue());
+              if ($duplicate) {
+                $cloneNode = $node->createDuplicate();
+                // On ajoute le champs field_domain_access; ci-possible.
+                if ($cloneNode->hasField(self::$field_domain_access) && $entity->hasField(self::$field_domain_access)) {
+                  $cloneNode->set(self::$field_domain_access, $entity->get(self::$field_domain_access)->getValue());
+                }
               }
+              else
+                $cloneNode = $node;
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
               $subDatas['entity'] = $cloneNode->toArray();
               $subDatas['entities'] = [];
+              // On ajoute le formulaire si necessaire :
+              if ($add_form) {
+                $subDatas += $this->GenerateForm->getForm($setings['target_type'], $cloneNode->bundle(), 'default', $cloneNode);
+              }
               // On verifie pour les sous entites.
-              $this->duplicateExistantReference($cloneNode, $subDatas['entities']);
+              $this->duplicateExistantReference($cloneNode, $subDatas['entities'], $duplicate, $add_form);
               $datasJson[$k][] = $subDatas;
-              //
-              // $cloneNode->save();
-              // $newNodesIds[] = [
-              // 'target_id' => $cloneNode->id()
-              // ];
-              // send event :
-              // $event = new DuplicateEntityEvent($cloneNode, $node, $entity);
-              // $event_dispatcher->dispatch($event,
-              // DuplicateEntityEvent::EVENT_NAME);
             }
           }
-          //
-          // $entity->set($k, $newNodesIds);
+        }
+        // Duplication des sous nodes.
+        elseif (!empty($setings['target_type']) && $setings['target_type'] == 'blocks_contents') {
+          foreach ($vals as $value) {
+            $BlocksContents = BlocksContents::load($value['target_id']);
+            if ($BlocksContents) {
+              if ($duplicate) {
+                $cloneBlocksContents = $BlocksContents->createDuplicate();
+                // On ajoute le champs field_domain_access; ci-possible.
+                if ($cloneBlocksContents->hasField(self::$field_domain_access) && $entity->hasField(self::$field_domain_access)) {
+                  $cloneBlocksContents->set(self::$field_domain_access, $entity->get(self::$field_domain_access)->getValue());
+                }
+              }
+              else
+                $cloneBlocksContents = $BlocksContents;
+              $subDatas = $setings;
+              $subDatas['target_id'] = $value['target_id'];
+              $subDatas['entity'] = $cloneBlocksContents->toArray();
+              $subDatas['entities'] = [];
+              // On ajoute le formulaire si necessaire :
+              if ($add_form) {
+                $subDatas += $this->GenerateForm->getForm($setings['target_type'], $cloneBlocksContents->bundle(), 'default', $cloneBlocksContents);
+              }
+              // On verifie pour les sous entites.
+              $this->duplicateExistantReference($cloneBlocksContents, $subDatas['entities'], $duplicate, $add_form);
+              $datasJson[$k][] = $subDatas;
+            }
+          }
         }
         // Duplications des formulaires.
         elseif (!empty($setings['target_type']) && $setings['target_type'] == 'webform') {
-          $newWebforms = [];
           foreach ($vals as $value) {
             $Webform = \Drupal\webform\Entity\Webform::load($value['target_id']);
             if ($Webform) {
@@ -187,12 +226,7 @@ class DuplicateEntityReference extends ControllerBase {
               // $CloneWebform->save();
               $datasJson[$k][] = $subDatas;
             }
-            // $newWebforms[] = [
-            // 'target_id' => $CloneWebform->id()
-            // ];
           }
-          //
-          // $entity->set($k, $newWebforms);
         }
         // Duplication des sous blocs.
         elseif (!empty($setings['target_type']) && $setings['target_type'] == 'block_content') {
@@ -200,50 +234,54 @@ class DuplicateEntityReference extends ControllerBase {
           foreach ($vals as $value) {
             $BlockContent = BlockContent::load($value['target_id']);
             if ($BlockContent) {
-              $CloneBlockContent = $BlockContent->createDuplicate();
-              // On ajoute le champs field_domain_access; ci-possible.
-              if ($CloneBlockContent->hasField(self::$field_domain_access) && $entity->hasField(self::$field_domain_access)) {
-                $dmn = $entity->get(self::$field_domain_access)->first()->getValue();
-                if ($dmn)
-                  $CloneBlockContent->get(self::$field_domain_access)->setValue($dmn);
-              }
-              // On ajoute l'utilisateur courant:
-              if ($CloneBlockContent->hasField('user_id') && $uid) {
-                $CloneBlockContent->set('user_id', $uid);
-              }
-              // On met jour la date de MAJ
-              if ($CloneBlockContent->hasField('changed')) {
-                $CloneBlockContent->set('changed', time());
-              }
-              //
-              // On met à jour le champs info (car sa valeur doit etre unique).
-              if ($CloneBlockContent->hasField("info")) {
-                $val = $CloneBlockContent->get('info')->first()->getValue();
-                $dmn = '';
-                if ($entity->hasField(self::$field_domain_access)) {
+              if ($duplicate) {
+                $CloneBlockContent = $BlockContent->createDuplicate();
+                // On ajoute le champs field_domain_access; ci-possible.
+                if ($CloneBlockContent->hasField(self::$field_domain_access) && $entity->hasField(self::$field_domain_access)) {
                   $dmn = $entity->get(self::$field_domain_access)->first()->getValue();
-                  $dmn = empty($dmn['target_id']) ? 'domaine.test' : $dmn['target_id'];
-                  $dmn = $dmn . ' : ';
+                  if ($dmn)
+                    $CloneBlockContent->get(self::$field_domain_access)->setValue($dmn);
                 }
-                $val = $dmn . $CloneBlockContent->get('type')->target_id;
-                $CloneBlockContent->get('info')->setValue([
-                  'value' => $val . ' : ' . count($newBlockIds)
-                ]);
+                // On ajoute l'utilisateur courant:
+                if ($CloneBlockContent->hasField('user_id') && $uid) {
+                  $CloneBlockContent->set('user_id', $uid);
+                }
+                // On met jour la date de MAJ
+                if ($CloneBlockContent->hasField('changed')) {
+                  $CloneBlockContent->set('changed', time());
+                }
+                //
+                // On met à jour le champs info (car sa valeur doit etre
+                // unique).
+                if ($CloneBlockContent->hasField("info")) {
+                  $val = $CloneBlockContent->get('info')->first()->getValue();
+                  $dmn = '';
+                  if ($entity->hasField(self::$field_domain_access)) {
+                    $dmn = $entity->get(self::$field_domain_access)->first()->getValue();
+                    $dmn = empty($dmn['target_id']) ? 'domaine.test' : $dmn['target_id'];
+                    $dmn = $dmn . ' : ';
+                  }
+                  $val = $dmn . $CloneBlockContent->get('type')->target_id;
+                  $CloneBlockContent->get('info')->setValue([
+                    'value' => $val . ' : ' . count($newBlockIds)
+                  ]);
+                }
               }
+              else
+                $CloneBlockContent = $BlockContent;
               //
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
               $subDatas['entity'] = $CloneBlockContent->toArray();
               $subDatas['entities'] = [];
-              
+              // On ajoute le formulaire si necessaire :
+              if ($add_form) {
+                $subDatas += $this->GenerateForm->getForm($setings['target_type'], $CloneBlockContent->bundle(), 'default', $CloneBlockContent);
+              }
               // $CloneBlockContent->save();
               $datasJson[$k][] = $subDatas;
-              // $newBlockIds[] = [
-              // 'target_id' => $CloneBlockContent->id()
-              // ];
             }
           }
-          // $entity->set($k, $newBlockIds);
         }
         // Dupliquer les produits.
         elseif (!empty($setings['target_type']) && $setings['target_type'] == 'commerce_product00') {
@@ -280,7 +318,7 @@ class DuplicateEntityReference extends ControllerBase {
               $subDatas['entity'] = $CloneProduct->toArray();
               $subDatas['entities'] = [];
               // On verifie pour les sous entites.
-              $this->duplicateExistantReference($CloneProduct);
+              $this->duplicateExistantReference($CloneProduct, $subDatas['entities'], $duplicate, $add_form);
               $datasJson[$k][] = $subDatas;
               // on supprime les variations dans le clone.
               $CloneProduct->setVariations([]);

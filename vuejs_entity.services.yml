@@ -1,4 +1,4 @@
 services:
   vuejs_entity.duplicate.entity:
     class: Drupal\vuejs_entity\Services\DuplicateEntityReference
-    arguments: []
+    arguments: ['@apivuejs.getform']
