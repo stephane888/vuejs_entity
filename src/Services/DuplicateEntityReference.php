@@ -64,7 +64,8 @@ class DuplicateEntityReference extends ControllerBase {
     'commerce_store',
     'commerce_product_type',
     'node_type',
-    'commerce_product_variation'
+    'commerce_product_variation',
+    'blocks_contents_type'
   ];
   
   /**
