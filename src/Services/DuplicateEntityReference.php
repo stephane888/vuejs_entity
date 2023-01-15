@@ -82,7 +82,8 @@ class DuplicateEntityReference extends ControllerBase {
           $entityType = $this->entityTypeManager()->getStorage($setings['target_type']);
           foreach ($vals as $value) {
             $entityValue = $entityType->load($value['target_id']);
-            // On verifie si ce dernier contient des references, si c'est le cas
+            // On verifie si ce dernier contient des references, si c'est le
+            // cas,
             // on les supprime.
             if ($entityValue) {
               $this->deleteExistantReference($entityValue);
@@ -285,15 +286,14 @@ class DuplicateEntityReference extends ControllerBase {
           }
         }
         // Dupliquer les produits.
-        elseif (!empty($setings['target_type']) && $setings['target_type'] == 'commerce_product00') {
-          // Pour le type prodit, on doit Ajouter le role à l'utilisateur.
+        elseif (!empty($setings['target_type']) && $setings['target_type'] == 'commerce_product') {
+          // Pour le type produit, on doit Ajouter le role à l'utilisateur.
           if (!empty($this->currentUser()->id()) && !in_array('manage_ecommerce', $this->currentUser()->getRoles())) {
             $user = \Drupal\user\Entity\User::load($this->currentUser->id());
             $user->addRole('manage_ecommerce');
             $user->save();
-            $this->messenger()->addMessage(' Vous avez le role de vendeur ');
+            $this->messenger()->addMessage(' Le role vendor a été automatiquement ajouté ');
           }
-          $newProducts = [];
           foreach ($vals as $value) {
             /**
              *
@@ -314,15 +314,12 @@ class DuplicateEntityReference extends ControllerBase {
               $CloneProduct->setCreatedTime(time());
               $CloneProduct->setChangedTime(time());
               $CloneProduct->setOwnerId($uid);
+              // On supprime les variations dans le clone.
+              $CloneProduct->setVariations([]);
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
               $subDatas['entity'] = $CloneProduct->toArray();
               $subDatas['entities'] = [];
-              // On verifie pour les sous entites.
-              $this->duplicateExistantReference($CloneProduct, $subDatas['entities'], $duplicate, $add_form);
-              $datasJson[$k][] = $subDatas;
-              // on supprime les variations dans le clone.
-              $CloneProduct->setVariations([]);
               
               $CloneProduct->save();
               $cloneProducdId = $CloneProduct->id();
@@ -347,13 +344,15 @@ class DuplicateEntityReference extends ControllerBase {
               // $Product->getVariationIds()
               // ], 'newVariations_' . $Product->id() . '__', true);
               $CloneProduct->save();
+              // On verifie pour les sous entites.
+              $this->duplicateExistantReference($CloneProduct, $subDatas['entities'], $duplicate, $add_form);
+              $datasJson[$k][] = $subDatas;
               //
-              $newProducts[] = [
-                'target_id' => $cloneProducdId
-              ];
+              // $newProducts[] = [
+              // 'target_id' => $cloneProducdId
+              // ];
             }
           }
-          $entity->set($k, $newProducts);
         }
         else {
           \Drupal::logger('vuejs_entity')->alert(" Entité non traitée, field :" . $k . ', type : ' . $setings['target_type']);
