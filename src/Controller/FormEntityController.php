@@ -625,6 +625,8 @@ class FormEntityController extends ControllerBase {
         $form = $apivuejs->getForm($param['entity_type_id'], $bundle, 'default', $entity);
         $entities = [];
         $this->DuplicateEntityReference->duplicateExistantReference($entity, $entities, $param['duplicate'], true);
+        // \Stephane888\Debug\debugLog::kintDebugDrupal($entities,
+        // 'duplicateExistantReference', true);
         $form['entities'] = $entities;
         return HttpResponse::response([
           $form

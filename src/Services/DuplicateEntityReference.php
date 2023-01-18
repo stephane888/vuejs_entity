@@ -64,7 +64,6 @@ class DuplicateEntityReference extends ControllerBase {
     'commerce_store',
     'commerce_product_type',
     'node_type',
-    'commerce_product_variation',
     'blocks_contents_type'
   ];
   
@@ -118,11 +117,14 @@ class DuplicateEntityReference extends ControllerBase {
       $entity->set(self::$field_domain_all_affiliates, false);
     }
     $values = $entity->toArray();
+    // \Stephane888\Debug\debugLog::kintDebugDrupal($values,
+    // 'duplicateExistantReference', true);
     // Get the event_dispatcher service and dispatch the event.
     // $event_dispatcher = \Drupal::service('event_dispatcher');
     foreach ($values as $k => $vals) {
       if (!empty($vals[0]['target_id'])) {
         $setings = $entity->get($k)->getSettings();
+        
         if (empty($setings['target_type']) || in_array($setings['target_type'], $this->ignorEntity))
           continue;
         // Duplication des paragraph
@@ -326,16 +328,22 @@ class DuplicateEntityReference extends ControllerBase {
               // On duplique les variations à partir du produit.
               $variationsIds = $Product->getVariationIds();
               $newVariations = [];
-              foreach ($variationsIds as $variationId) {
-                $variation = \Drupal\commerce_product\Entity\ProductVariation::load($variationId);
-                if ($variation) {
-                  $cloneVariation = $variation->createDuplicate();
-                  $cloneVariation->set('product_id', $cloneProducdId);
-                  $cloneVariation->save();
-                  $newVariations[] = $cloneVariation->id();
+              if (!empty($variationsIds)) {
+                $subDatas['entities']['variations'] = [];
+                foreach ($variationsIds as $variationId) {
+                  $variation = ProductVariation::load($variationId);
+                  if ($variation) {
+                    $cloneVariation = $variation->createDuplicate();
+                    $cloneVariation->set('product_id', $cloneProducdId);
+                    // on met à jour le SKU
+                    $cloneVariation->set('sku', $cloneVariation->getSku() . '-' . $cloneVariation->id());
+                    $cloneVariation->save();
+                    $newVariations[] = $cloneVariation->id();
+                    // Ajout de la variations dans le formulaire
+                  }
                 }
+                $CloneProduct->setVariations($newVariations);
               }
-              $CloneProduct->setVariations($newVariations);
               // \Stephane888\Debug\debugLog::$max_depth = 5;
               // \Stephane888\Debug\debugLog::kintDebugDrupal([
               // $newVariations,
@@ -351,6 +359,41 @@ class DuplicateEntityReference extends ControllerBase {
               // $newProducts[] = [
               // 'target_id' => $cloneProducdId
               // ];
+            }
+          }
+        }
+        /**
+         * Duplication des variations de produits.
+         * On ne peut verifier lancer les verifications des entites de
+         * variation, il faudra les traites au cas par cas. ( sinon cela
+         * entrainne une boucle infinie en produit et variations).
+         */
+        elseif (!empty($setings['target_type']) && $setings['target_type'] == 'commerce_product_variation' && $k != 'default_variation') {
+          foreach ($vals as $value) {
+            $ProductVariation = ProductVariation::load($value['target_id']);
+            if ($ProductVariation) {
+              if ($duplicate) {
+                $CloneProductVariation = $ProductVariation->createDuplicate();
+                if ($CloneProductVariation->hasField(self::$field_domain_access) && $entity->hasField(self::$field_domain_access)) {
+                  $CloneProductVariation->set(self::$field_domain_access, $entity->get(self::$field_domain_access)->getValue());
+                }
+              }
+              else
+                $CloneProductVariation = $ProductVariation;
+              $subDatas = $setings;
+              $subDatas['target_id'] = $value['target_id'];
+              $subDatas['entity'] = $CloneProductVariation->toArray();
+              $subDatas['entities'] = [];
+              // On ajoute le formulaire si necessaire :
+              if ($add_form) {
+                $subDatas += $this->GenerateForm->getForm($setings['target_type'], $CloneProductVariation->bundle(), 'default', $CloneProductVariation);
+              }
+              /**
+               * On duplique ou ajoute le formulaire pour les entites
+               * importantes.
+               */
+              //
+              $datasJson[$k][] = $subDatas;
             }
           }
         }
