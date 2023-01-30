@@ -97,8 +97,10 @@ class DuplicateEntityReference extends ControllerBase {
   /**
    * Permet de generer une matrice des entites avec des actions au choix tels
    * que : la duplication, un formulaire d'edition des entites.
+   * ( NB: il ne fait aucune sauvegarde ).
    *
    * @param ContentEntityBase $entity
+   *        // si l'$entity doit etre dupliquer ? on le fait en amont:''
    * @param array $datasJson
    */
   public function duplicateExistantReference(ContentEntityBase &$entity, array &$datasJson = [], $duplicate = true, $add_form = false) {
@@ -304,6 +306,7 @@ class DuplicateEntityReference extends ControllerBase {
              */
             $Product = Product::load($value['target_id']);
             if ($Product) {
+              // ///
               if ($duplicate) {
                 $CloneProduct = $Product->createDuplicate();
                 // On ajoute le champs field_domain_access; ci-possible.
@@ -313,59 +316,12 @@ class DuplicateEntityReference extends ControllerBase {
                   if ($dmn)
                     $CloneProduct->set(self::$field_domain_access, $dmn);
                 }
-                // On met jour la date de MAJ
-                $CloneProduct->setCreatedTime(time());
-                $CloneProduct->setChangedTime(time());
-                $CloneProduct->setOwnerId($uid);
-                // On supprime les variations dans le clone, car il
-                // appartiennent
-                // au produit precedent.
-                $CloneProduct->setVariations([]);
-                $CloneProduct->save();
               }
               else
                 $CloneProduct = $Product;
-              
-              //
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
-              $subDatas['entity'] = $CloneProduct->toArray();
-              $subDatas['entities'] = [];
-              
-              /**
-               * Cette etape n'a de sens que si on duplique un produit.
-               * ( Si non, pas necessaire ).
-               */
-              if ($duplicate) {
-                $cloneProducdId = $CloneProduct->id();
-                // On duplique les variations à partir du produit d'origine.
-                $variationsIds = $Product->getVariationIds();
-                $newVariations = [];
-                if (!empty($variationsIds)) {
-                  $subDatas['entities']['variations'] = [];
-                  foreach ($variationsIds as $variationId) {
-                    $variation = ProductVariation::load($variationId);
-                    if ($variation) {
-                      $cloneVariation = $variation->createDuplicate();
-                      $cloneVariation->set('product_id', $cloneProducdId);
-                      // on met à jour le SKU
-                      $cloneVariation->set('sku', $CloneProduct->id() . '-' . $cloneVariation->getSku());
-                      // on met à jour le domain si necessaire
-                      if ($cloneVariation->hasField(self::$field_domain_access) && $entity->hasField(self::$field_domain_access)) {
-                        $cloneVariation->set(self::$field_domain_access, $entity->get(self::$field_domain_access)->getValue());
-                      }
-                      $cloneVariation->save();
-                      $newVariations[] = $cloneVariation->id();
-                      // Ajout de la variations dans le formulaire
-                    }
-                  }
-                  $CloneProduct->setVariations($newVariations);
-                }
-                $CloneProduct->save();
-                // On met à jour la valeur de entity car on a ajouté les
-                // variations dupliquées dans $CloneProduct.
-                $subDatas['entity'] = $CloneProduct->toArray();
-              }
+              $this->duplicateProduct($Product, $CloneProduct, $duplicate, $uid, $subDatas);
               // On ajoute le formulaire si necessaire :
               if ($add_form) {
                 $subDatas += $this->GenerateForm->getForm($setings['target_type'], $CloneProduct->bundle(), 'default', $CloneProduct);
@@ -419,6 +375,81 @@ class DuplicateEntityReference extends ControllerBase {
         }
       }
     }
+  }
+  
+  /**
+   * Permet de cloner un produit avec ses variations.
+   * (NB: le clone du produit est sauvegarder car les variations ont besoin de
+   * l'id ).s
+   *
+   * @param ContentEntityBase $Product
+   * @param ContentEntityBase $CloneProduct
+   * @param Boolean $duplicate
+   * @param int $uid
+   * @param array $value
+   * @param array $subDatas
+   */
+  function duplicateProduct(ContentEntityBase $Product, ContentEntityBase $CloneProduct, bool $duplicate, int $uid, array &$subDatas = []) {
+    if ($duplicate) {
+      // On met jour la date de MAJ
+      $CloneProduct->setCreatedTime(time());
+      $CloneProduct->setChangedTime(time());
+      $CloneProduct->setOwnerId($uid);
+      // On supprime les variations dans le clone, car il
+      // appartiennent
+      // au produit precedent.
+      $CloneProduct->setVariations([]);
+      $CloneProduct->save();
+    }
+    
+    //
+    
+    $subDatas['entity'] = $CloneProduct->toArray();
+    $subDatas['entities'] = [];
+    
+    /**
+     * Cette etape n'a de sens que si on duplique un produit.
+     * ( Si non, pas necessaire ).
+     */
+    if ($duplicate) {
+      $cloneProducdId = $CloneProduct->id();
+      // On duplique les variations à partir du produit d'origine.
+      $variationsIds = $Product->getVariationIds();
+      $newVariations = [];
+      if (!empty($variationsIds)) {
+        $subDatas['entities']['variations'] = [];
+        foreach ($variationsIds as $variationId) {
+          $variation = ProductVariation::load($variationId);
+          if ($variation) {
+            $cloneVariation = $variation->createDuplicate();
+            $cloneVariation->set('product_id', $cloneProducdId);
+            // on met à jour le SKU
+            $cloneVariation->set('sku', $CloneProduct->id() . '-' . $cloneVariation->getSku());
+            // on met à jour le domain si necessaire
+            if ($cloneVariation->hasField(self::$field_domain_access) && $CloneProduct->hasField(self::$field_domain_access)) {
+              $cloneVariation->set(self::$field_domain_access, $CloneProduct->get(self::$field_domain_access)->getValue());
+            }
+            $cloneVariation->save();
+            $newVariations[] = $cloneVariation->id();
+            // Ajout de la variations dans le formulaire
+          }
+        }
+        $CloneProduct->setVariations($newVariations);
+      }
+      $CloneProduct->save();
+      // On met à jour la valeur de entity car on a ajouté les
+      // variations dupliquées dans $CloneProduct.
+      $subDatas['entity'] = $CloneProduct->toArray();
+    }
+  }
+  
+  /**
+   *
+   * @param ContentEntityBase $entity
+   * @param array $datasJson
+   */
+  function saveDuplicateEntities(ContentEntityBase &$entity, array &$datasJson = []) {
+    //
   }
   
 }

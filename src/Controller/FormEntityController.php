@@ -612,8 +612,10 @@ class FormEntityController extends ControllerBase {
       //
       
       $entity = $this->entityTypeManager()->getStorage($param['entity_type_id'])->load($param['id']);
+      $duplicate = false;
       if (!empty($param['duplicate'])) {
         $entity = $entity->createDuplicate();
+        $duplicate = true;
       }
       if ($entity) {
         $bundle = !empty($entity->bundle()) ? $entity->bundle() : $param['entity_type_id'];
@@ -624,7 +626,7 @@ class FormEntityController extends ControllerBase {
         $apivuejs = \Drupal::service('apivuejs.getform');
         $form = $apivuejs->getForm($param['entity_type_id'], $bundle, 'default', $entity);
         $entities = [];
-        $this->DuplicateEntityReference->duplicateExistantReference($entity, $entities, $param['duplicate'], true);
+        $this->DuplicateEntityReference->duplicateExistantReference($entity, $entities, $duplicate, true);
         // \Stephane888\Debug\debugLog::kintDebugDrupal($entities,
         // 'duplicateExistantReference', true);
         $form['entities'] = $entities;
