@@ -120,6 +120,11 @@ class DuplicateEntityReference extends ControllerBase {
       $entity->set(self::$field_domain_all_affiliates, false);
     }
     $values = $entity->toArray();
+    // if (!empty($values['layout_builder__layout'])) {
+    // \Stephane888\Debug\debugLog::$max_depth = 10;
+    // \Stephane888\Debug\debugLog::kintDebugDrupal($values['layout_builder__layout'],
+    // 'layout_builder__layout', true);
+    // }
     // \Stephane888\Debug\debugLog::kintDebugDrupal($values,
     // 'duplicateExistantReference', true);
     // Get the event_dispatcher service and dispatch the event.
@@ -146,7 +151,7 @@ class DuplicateEntityReference extends ControllerBase {
               
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
-              $subDatas['entity'] = $CloneParagraph->toArray();
+              $subDatas['entity'] = $this->toArrayLayoutBuilderField($CloneParagraph->toArray());
               $subDatas['entities'] = [];
               // On ajoute le formulaire si necessaire :
               if ($add_form) {
@@ -174,7 +179,7 @@ class DuplicateEntityReference extends ControllerBase {
                 $cloneNode = $node;
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
-              $subDatas['entity'] = $cloneNode->toArray();
+              $subDatas['entity'] = $this->toArrayLayoutBuilderField($cloneNode->toArray());
               $subDatas['entities'] = [];
               // On ajoute le formulaire si necessaire :
               if ($add_form) {
@@ -202,7 +207,7 @@ class DuplicateEntityReference extends ControllerBase {
                 $cloneBlocksContents = $BlocksContents;
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
-              $subDatas['entity'] = $cloneBlocksContents->toArray();
+              $subDatas['entity'] = $this->toArrayLayoutBuilderField($cloneBlocksContents->toArray());
               $subDatas['entities'] = [];
               // On ajoute le formulaire si necessaire :
               if ($add_form) {
@@ -218,7 +223,7 @@ class DuplicateEntityReference extends ControllerBase {
         elseif (!empty($setings['target_type']) && $setings['target_type'] == 'webform') {
           foreach ($vals as $value) {
             $Webform = \Drupal\webform\Entity\Webform::load($value['target_id']);
-            if ($Webform) {
+            if ($Webform && $duplicate) {
               $CloneWebform = $Webform->createDuplicate();
               // Pour les webforms, on doit ajouter le ThirdParty.
               $domaine = $entity->get(self::$field_domain_access)->target_id;
@@ -279,7 +284,7 @@ class DuplicateEntityReference extends ControllerBase {
               //
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
-              $subDatas['entity'] = $CloneBlockContent->toArray();
+              $subDatas['entity'] = $this->toArrayLayoutBuilderField($CloneBlockContent->toArray());
               $subDatas['entities'] = [];
               // On ajoute le formulaire si necessaire :
               if ($add_form) {
@@ -355,7 +360,7 @@ class DuplicateEntityReference extends ControllerBase {
               
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
-              $subDatas['entity'] = $CloneProductVariation->toArray();
+              $subDatas['entity'] = $this->toArrayLayoutBuilderField($CloneProductVariation->toArray());
               $subDatas['entities'] = [];
               // On ajoute le formulaire si necessaire :
               if ($add_form) {
@@ -374,7 +379,18 @@ class DuplicateEntityReference extends ControllerBase {
           \Drupal::logger('vuejs_entity')->alert(" Entité non traitée, field :" . $k . ', type : ' . $setings['target_type']);
         }
       }
+      /**
+       * Error 1: Le champs layout_builder__layout ne se duplique pas le contenu
+       * est ["section": {}].
+       * Error 2: La modification via le crayon supprime egalement cette
+       * configuration.
+       * Correstion :
+       */
+      elseif ($k == 'layout_builder__layout' && !empty($vals)) {
+        // dump($vals);
+      }
     }
+    // dump($datasJson);
   }
   
   /**
@@ -439,8 +455,28 @@ class DuplicateEntityReference extends ControllerBase {
       $CloneProduct->save();
       // On met à jour la valeur de entity car on a ajouté les
       // variations dupliquées dans $CloneProduct.
-      $subDatas['entity'] = $CloneProduct->toArray();
+      $subDatas['entity'] = $this->toArrayLayoutBuilderField($CloneProduct->toArray());
     }
+  }
+  
+  /**
+   * La fonction toArray ne transmet pas pour le moment les bonnes valeurs (en
+   * fait c'est vide),
+   * Cette fonction a pour objectif de recuperer le json du layout_builder.
+   */
+  function toArrayLayoutBuilderField(array &$entity) {
+    if (!empty($entity['layout_builder__layout'])) {
+      foreach ($entity['layout_builder__layout'] as $i => $sections) {
+        foreach ($sections as $s => $section) {
+          /**
+           *
+           * @var \Drupal\layout_builder\Section $section
+           */
+          $entity['layout_builder__layout'][$i][$s] = $section->toArray();
+        }
+      }
+    }
+    return $entity;
   }
   
   /**

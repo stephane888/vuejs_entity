@@ -625,6 +625,8 @@ class FormEntityController extends ControllerBase {
          */
         $apivuejs = \Drupal::service('apivuejs.getform');
         $form = $apivuejs->getForm($param['entity_type_id'], $bundle, 'default', $entity);
+        // traitement des champs layout_builder__layout.
+        $this->DuplicateEntityReference->toArrayLayoutBuilderField($form['entity']);
         $entities = [];
         $this->DuplicateEntityReference->duplicateExistantReference($entity, $entities, $duplicate, true);
         // \Stephane888\Debug\debugLog::kintDebugDrupal($entities,
