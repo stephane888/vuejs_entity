@@ -151,7 +151,8 @@ class DuplicateEntityReference extends ControllerBase {
               
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
-              $subDatas['entity'] = $this->toArrayLayoutBuilderField($CloneParagraph->toArray());
+              $ar = $CloneParagraph->toArray();
+              $subDatas['entity'] = $this->toArrayLayoutBuilderField($ar);
               $subDatas['entities'] = [];
               // On ajoute le formulaire si necessaire :
               if ($add_form) {
@@ -179,7 +180,8 @@ class DuplicateEntityReference extends ControllerBase {
                 $cloneNode = $node;
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
-              $subDatas['entity'] = $this->toArrayLayoutBuilderField($cloneNode->toArray());
+              $ar = $cloneNode->toArray();
+              $subDatas['entity'] = $this->toArrayLayoutBuilderField($ar);
               $subDatas['entities'] = [];
               // On ajoute le formulaire si necessaire :
               if ($add_form) {
@@ -207,7 +209,8 @@ class DuplicateEntityReference extends ControllerBase {
                 $cloneBlocksContents = $BlocksContents;
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
-              $subDatas['entity'] = $this->toArrayLayoutBuilderField($cloneBlocksContents->toArray());
+              $ar = $cloneBlocksContents->toArray();
+              $subDatas['entity'] = $this->toArrayLayoutBuilderField($ar);
               $subDatas['entities'] = [];
               // On ajoute le formulaire si necessaire :
               if ($add_form) {
@@ -284,7 +287,8 @@ class DuplicateEntityReference extends ControllerBase {
               //
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
-              $subDatas['entity'] = $this->toArrayLayoutBuilderField($CloneBlockContent->toArray());
+              $ar = $CloneBlockContent->toArray();
+              $subDatas['entity'] = $this->toArrayLayoutBuilderField($ar);
               $subDatas['entities'] = [];
               // On ajoute le formulaire si necessaire :
               if ($add_form) {
@@ -360,7 +364,8 @@ class DuplicateEntityReference extends ControllerBase {
               
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
-              $subDatas['entity'] = $this->toArrayLayoutBuilderField($CloneProductVariation->toArray());
+              $ar = $CloneProductVariation->toArray();
+              $subDatas['entity'] = $this->toArrayLayoutBuilderField($ar);
               $subDatas['entities'] = [];
               // On ajoute le formulaire si necessaire :
               if ($add_form) {
@@ -455,7 +460,8 @@ class DuplicateEntityReference extends ControllerBase {
       $CloneProduct->save();
       // On met à jour la valeur de entity car on a ajouté les
       // variations dupliquées dans $CloneProduct.
-      $subDatas['entity'] = $this->toArrayLayoutBuilderField($CloneProduct->toArray());
+      $ar = $CloneProduct->toArray();
+      $subDatas['entity'] = $this->toArrayLayoutBuilderField($ar);
     }
   }
   
