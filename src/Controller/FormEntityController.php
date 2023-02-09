@@ -176,6 +176,13 @@ class FormEntityController extends ControllerBase {
     $entityModel = $this->entityTypeManager()->getStorage("site_type_datas")->load($id);
     if ($entityModel) {
       try {
+        // On doit charger les données en fonction de la langue encours.
+        $lang_code = \Drupal::languageManager()->getCurrentLanguage()->getId();
+        // on charge la traduction du contenu
+        if ($entityModel->hasTranslation($lang_code)) {
+          $entityModel = $entityModel->getTranslation($lang_code);
+        }
+        
         $values = Json::decode($Request->getContent(), true);
         $values['type'] = $entityModel->getType();
         // On generate la page web.
@@ -184,11 +191,17 @@ class FormEntityController extends ControllerBase {
          * @var \Drupal\creation_site_virtuel\Entity\SiteInternetEntity $pageWeb
          */
         $pageWeb = $this->entityTypeManager()->getStorage("site_internet_entity")->create($values);
+        // On ajoute la langue à la nouvelle page.
+        if (!$pageWeb->hasTranslation($lang_code)) {
+          $pageWeb->addTranslation($lang_code);
+        }
+        // On met à jours les champs.
+        $pageWeb->set('name', $entityModel->getName());
         $pageWeb->set('layout_paragraphs', $entityModel->get('layout_paragraphs')->getValue());
         
         $entities = [];
         $this->DuplicateEntityReference->duplicateExistantReference($pageWeb, $entities);
-        // $pageWeb->save();
+        //
         $datasJson[] = [
           'entity' => $pageWeb->toArray(),
           'entities' => $entities,
@@ -377,11 +390,12 @@ class FormEntityController extends ControllerBase {
   }
   
   /**
-   * Builds the response.
-   * Recupere les champs pour un entité.
+   * Permet de construire le champs au niveau de vuejs.
    */
   public function getForm(Request $Request, $entity_type_id, $view_mode = 'default', $bundle = null, $entity = null) {
     $EntityStorage = $this->entityTypeManager()->getStorage($entity_type_id);
+    // on doit charger les données en fonction de la langue encours.
+    $lang_code = \Drupal::languageManager()->getCurrentLanguage()->getId();
     if (!$entity) {
       if ($bundle && $bundle != $entity_type_id)
         $entity = $EntityStorage->create([
@@ -391,9 +405,29 @@ class FormEntityController extends ControllerBase {
         $bundle = $entity_type_id;
         $entity = $EntityStorage->create();
       }
+      /**
+       * Certains type de contenu ne sont pas traduissible, il faudra mettre en
+       * place un update.
+       *
+       * @var \Drupal\lesroidelareno\Entity\DonneeSiteInternetEntity $entity
+       */
+      // on constuit le formulaire pour une langue.
+      if (!$entity->hasTranslation($lang_code)) {
+        $entity->addTranslation($lang_code);
+      }
+      $fields = $entity->getTranslation($lang_code)->toArray();
     }
-    $fields = $entity->toArray();
+    else {
+      // dans le cas ou on a deja une entité, on charge la valeur de la langue
+      // encours.
+      if ($entity->hasTranslation($lang_code)) {
+        $fields = $entity->getTranslation($lang_code)->toArray();
+      }
+      else
+        $fields = $entity->toArray();
+    }
     
+    $fields = $entity->toArray();
     /**
      *
      * @var EntityFieldManager $entityManager

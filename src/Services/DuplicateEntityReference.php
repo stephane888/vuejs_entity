@@ -66,6 +66,7 @@ class DuplicateEntityReference extends ControllerBase {
     'node_type',
     'blocks_contents_type'
   ];
+  protected $lang_code;
   
   /**
    * Permet de supprimier les references dans l'entité.
@@ -148,6 +149,8 @@ class DuplicateEntityReference extends ControllerBase {
               }
               else
                 $CloneParagraph = $Paragraph;
+              //
+              $this->getEntityTranslate($CloneParagraph);
               
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
@@ -178,6 +181,7 @@ class DuplicateEntityReference extends ControllerBase {
               }
               else
                 $cloneNode = $node;
+              $this->getEntityTranslate($cloneNode);
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
               $ar = $cloneNode->toArray();
@@ -403,6 +407,9 @@ class DuplicateEntityReference extends ControllerBase {
    * (NB: le clone du produit est sauvegarder car les variations ont besoin de
    * l'id ).s
    *
+   * @see https://git.drupalcode.org/project/quick_node_clone/-/tree/8.x-1.x/
+   *      c'est un module interressant pour cloner un node. (on doit essayer de
+   *      comprendre l'approche ).
    * @param ContentEntityBase $Product
    * @param ContentEntityBase $CloneProduct
    * @param Boolean $duplicate
@@ -483,6 +490,18 @@ class DuplicateEntityReference extends ControllerBase {
       }
     }
     return $entity;
+  }
+  
+  function getEntityTranslate(ContentEntityBase &$entity) {
+    $this->getLangCode();
+    if ($entity->hasTranslation($this->lang_code)) {
+      $entity = $entity->getTranslation($this->lang_code);
+    }
+  }
+  
+  protected function getLangCode() {
+    if (!$this->lang_code)
+      $this->lang_code = \Drupal::languageManager()->getCurrentLanguage()->getId();
   }
   
   /**
