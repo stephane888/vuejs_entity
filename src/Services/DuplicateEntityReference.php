@@ -204,6 +204,7 @@ class DuplicateEntityReference extends ControllerBase {
             $BlocksContents = BlocksContents::load($value['target_id']);
             if ($BlocksContents) {
               if ($duplicate) {
+                $BlocksContents = $this->getEntityTranslate($BlocksContents);
                 $cloneBlocksContents = $BlocksContents->createDuplicate();
                 // On ajoute le champs field_domain_access; ci-possible.
                 if ($cloneBlocksContents->hasField(self::$field_domain_access) && $entity->hasField(self::$field_domain_access)) {
@@ -254,6 +255,7 @@ class DuplicateEntityReference extends ControllerBase {
           foreach ($vals as $value) {
             $BlockContent = BlockContent::load($value['target_id']);
             if ($BlockContent) {
+              $BlockContent = $this->getEntityTranslate($BlockContent);
               if ($duplicate) {
                 $CloneBlockContent = $BlockContent->createDuplicate();
                 // On ajoute le champs field_domain_access; ci-possible.
@@ -320,6 +322,7 @@ class DuplicateEntityReference extends ControllerBase {
              */
             $Product = Product::load($value['target_id']);
             if ($Product) {
+              $Product = $this->getEntityTranslate($Product);
               // ///
               if ($duplicate) {
                 $CloneProduct = $Product->createDuplicate();
@@ -360,6 +363,7 @@ class DuplicateEntityReference extends ControllerBase {
           foreach ($vals as $value) {
             $ProductVariation = ProductVariation::load($value['target_id']);
             if ($ProductVariation) {
+              $ProductVariation = $this->getEntityTranslate($ProductVariation);
               /**
                * On ne duplique pas les variations à ce niveau,
                * Elle permet principalement d'inclure la variation dans le
