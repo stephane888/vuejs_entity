@@ -141,6 +141,7 @@ class DuplicateEntityReference extends ControllerBase {
           foreach ($vals as $value) {
             $Paragraph = Paragraph::load($value['target_id']);
             if ($Paragraph) {
+              $Paragraph = $this->getEntityTranslate($Paragraph);
               if ($duplicate) {
                 $CloneParagraph = $Paragraph->createDuplicate();
                 if ($CloneParagraph->hasField(self::$field_domain_access) && $entity->hasField(self::$field_domain_access)) {
@@ -150,7 +151,6 @@ class DuplicateEntityReference extends ControllerBase {
               else
                 $CloneParagraph = $Paragraph;
               //
-              $this->getEntityTranslate($CloneParagraph);
               
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
@@ -172,6 +172,7 @@ class DuplicateEntityReference extends ControllerBase {
           foreach ($vals as $value) {
             $node = Node::load($value['target_id']);
             if ($node) {
+              $node = $this->getEntityTranslate($node);
               if ($duplicate) {
                 $cloneNode = $node->createDuplicate();
                 // On ajoute le champs field_domain_access; ci-possible.
@@ -181,7 +182,7 @@ class DuplicateEntityReference extends ControllerBase {
               }
               else
                 $cloneNode = $node;
-              $this->getEntityTranslate($cloneNode);
+              
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
               $ar = $cloneNode->toArray();
@@ -492,11 +493,13 @@ class DuplicateEntityReference extends ControllerBase {
     return $entity;
   }
   
-  function getEntityTranslate(ContentEntityBase &$entity) {
+  function getEntityTranslate(ContentEntityBase $entity) {
     $this->getLangCode();
     if ($entity->hasTranslation($this->lang_code)) {
-      $entity = $entity->getTranslation($this->lang_code);
+      return $entity->getTranslation($this->lang_code);
     }
+    else
+      return $entity;
   }
   
   protected function getLangCode() {

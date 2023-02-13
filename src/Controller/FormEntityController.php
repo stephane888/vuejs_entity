@@ -191,21 +191,42 @@ class FormEntityController extends ControllerBase {
          * @var \Drupal\creation_site_virtuel\Entity\SiteInternetEntity $pageWeb
          */
         $pageWeb = $this->entityTypeManager()->getStorage("site_internet_entity")->create($values);
-        // On ajoute la langue à la nouvelle page.
+        // On ajoute la langue encours si c'est pas le cas. ( le contenu vient
+        // d'etre initier donc il a une seule langue, si elle n'est pas celle
+        // encours, alors on l'ajoute ).
         if (!$pageWeb->hasTranslation($lang_code)) {
-          $pageWeb->addTranslation($lang_code);
+          $pageWeb = $pageWeb->addTranslation($lang_code);
         }
         // On met à jours les champs.
-        $pageWeb->set('name', $entityModel->getName());
+        $pageWeb->set('name', $entityModel->getNameToMenu());
         $pageWeb->set('layout_paragraphs', $entityModel->get('layout_paragraphs')->getValue());
         
         $entities = [];
         $this->DuplicateEntityReference->duplicateExistantReference($pageWeb, $entities);
-        //
+        // On charge les autres traductions.
+        $translations = [];
+        if ($entityModel->isTranslatable()) {
+          $langues = $entityModel->getTranslationLanguages();
+          // on s'assure qu'on a plus d'une langue.
+          if (count($langues) > 1) {
+            $lang_codes = array_keys($langues);
+            foreach ($lang_codes as $langcode) {
+              if ($langcode == $lang_code)
+                continue;
+              $entityModelTanslate = $entityModel->getTranslation($langcode);
+              if (!$pageWeb->hasTranslation($langcode)) {
+                $newPageWeb = $pageWeb->addTranslation($langcode);
+                $newPageWeb->set('name', $entityModelTanslate->getNameToMenu());
+                $translations[$langcode] = $newPageWeb->toArray();
+              }
+            }
+          }
+        }
         $datasJson[] = [
           'entity' => $pageWeb->toArray(),
           'entities' => $entities,
-          'target_type' => "site_internet_entity"
+          'target_type' => "site_internet_entity",
+          'translations' => $translations
         ];
         return HttpResponse::response($datasJson, 200, 'test');
       }
@@ -312,6 +333,8 @@ class FormEntityController extends ControllerBase {
       $datas = Json::decode($Request->getContent());
       // Creation du menu
       if (!empty($datas['menu'])) {
+        // On doit charger les données en fonction de la langue encours.
+        $lang_code = \Drupal::languageManager()->getCurrentLanguage()->getId();
         // Les id des blocks doivent etre maj afin d'avoir des id unique.
         // $id = mb_substr($datas['menu']['id'], 0, 10, 'UTF-8');
         // $datas['menu']['id'] = $id . uniqid();
@@ -332,6 +355,11 @@ class FormEntityController extends ControllerBase {
             $item['menu_name'] = [
               [
                 'value' => $menu->id()
+              ]
+            ];
+            $item['langcode'] = [
+              [
+                'value' => $lang_code
               ]
             ];
             /**

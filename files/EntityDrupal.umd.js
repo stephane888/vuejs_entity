@@ -102565,8 +102565,10 @@ var dist = __webpack_require__(40473);
             if (resp.data && resp.data.domain_ovh_entity) _this.domainOvhEntity = resp.data.domain_ovh_entity;
 
             if (_this.domainRegister.hostname) {
+              var languageId = "/";
+              languageId += rootConfig/* default.languageId */.Z.languageId && rootConfig/* default.languageId */.Z.languageId != null ? rootConfig/* default.languageId */.Z.languageId : "";
               store.commit("SET_HOSTNAME", {
-                domain: _this.domainRegister.hostname,
+                domain: _this.domainRegister.hostname + languageId,
                 scheme: _this.domainRegister.scheme
               });
             }
@@ -102768,7 +102770,7 @@ var dist = __webpack_require__(40473);
           name: [{
             value: title
           }],
-          // ce titre va etre surcharger par celui de la version model. Ensuite on devrait le supprimer.(meme pour auther page)
+          // Ce titre va etre surcharger par celui de la version model. Ensuite on devrait le supprimer.(meme pour auther page)
           field_domain_access: [{
             target_id: _this3.domainRegister.id
           }],
