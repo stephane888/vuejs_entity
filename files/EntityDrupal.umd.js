@@ -57055,7 +57055,7 @@ function _typeof(obj) {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.miniCssF = function(chunkId) {
 /******/ 			// return url for filenames based on template
-/******/ 			return "css/" + chunkId + "." + {"332":"5f5196f1","454":"40693ac0","528":"58213ea5","536":"93eeba88"}[chunkId] + ".css";
+/******/ 			return "css/" + chunkId + "." + {"332":"5f5196f1","454":"40693ac0","528":"58213ea5","729":"93eeba88"}[chunkId] + ".css";
 /******/ 		};
 /******/ 	}();
 /******/ 	
@@ -57204,7 +57204,7 @@ function _typeof(obj) {
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.f.miniCss = function(chunkId, promises) {
-/******/ 			var cssChunks = {"332":1,"454":1,"528":1,"536":1};
+/******/ 			var cssChunks = {"332":1,"454":1,"528":1,"729":1};
 /******/ 			if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);
 /******/ 			else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {
 /******/ 				promises.push(installedCssChunks[chunkId] = loadStylesheet(chunkId).then(function() {
@@ -105257,7 +105257,7 @@ var users = __webpack_require__(32504);
   name: "page-register",
   components: {
     loginRegister: function loginRegister() {
-      return Promise.all(/* import() */[__webpack_require__.e(407), __webpack_require__.e(536)]).then(__webpack_require__.bind(__webpack_require__, 59536));
+      return Promise.all(/* import() */[__webpack_require__.e(407), __webpack_require__.e(729)]).then(__webpack_require__.bind(__webpack_require__, 47729));
     }
   },
   mounted: function mounted() {
