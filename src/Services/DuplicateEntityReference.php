@@ -13,6 +13,8 @@ use Drupal\vuejs_entity\Event\DuplicateEntityEvent;
 use Drupal\apivuejs\Services\GenerateForm;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\blockscontent\Entity\BlocksContents;
+use Drupal\Core\Entity\EntityBase;
+use Drupal\Component\Utility\NestedArray;
 
 class DuplicateEntityReference extends ControllerBase {
   protected static $field_domain_access = \Drupal\domain_access\DomainAccessManagerInterface::DOMAIN_ACCESS_FIELD;
@@ -232,7 +234,69 @@ class DuplicateEntityReference extends ControllerBase {
         elseif (!empty($setings['target_type']) && $setings['target_type'] == 'webform') {
           foreach ($vals as $value) {
             $Webform = \Drupal\webform\Entity\Webform::load($value['target_id']);
+            // dump($value['target_id']);
+            // /**
+            // *
+            // * @var \Drupal\locale\LocaleConfigManager $local_config_manager
+            // */
+            // $local_config_manager =
+            // \Drupal::service('locale.config_manager');
+            // // dump($local_config_manager->get
+            // /**
+            // *
+            // * @var \Drupal\language\ConfigurableLanguageManagerInterface
+            // $language_manager
+            // */
+            // $language_manager = \Drupal::service('language_manager');
+            // /**
+            // *
+            // * @var \Drupal\language\Config\LanguageConfigOverride $config
+            // */
+            // $config =
+            // $language_manager->getLanguageConfigOverride($this->getLangCode(),
+            // $Webform->getConfigDependencyName());
+            // dump($config->get('elements'));
+            // dump($Webform->getElementsRaw());
+            // dump($Webform->getElementsDecoded());
+            // // NestedArray::mergeDeepArray([]);
+            // /**
+            // *
+            // * @var \Drupal\webform\WebformTranslationManager $wftm
+            // */
+            // $wftm = \Drupal::service('webform.translation_manager');
+            // $elementsTranslate = $wftm->getTranslationElements($Webform,
+            // $this->getLangCode());
+            // $elementsMerge = NestedArray::mergeDeepArray([
+            // $Webform->getElementsDecoded(),
+            // $elementsTranslate
+            // ]);
+            // $Webform->setElements($elementsMerge);
+            // dump($Webform->toArray());
+            
+            //
             if ($Webform && $duplicate) {
+              /**
+               * Les webforms ont un comportement assez differents des autres
+               * entitées.
+               * il faut globalement construire le tableau avant de renvoyer.
+               * RQ1 : Certaines données (titre, description ...) sont
+               * automatquement traduit en function de la langue.
+               */
+              if ($Webform->getLangcode() != $this->getLangCode()) {
+                /**
+                 * On recupere les elements non traduit et on injecte dans la
+                 * conf.
+                 *
+                 * @var \Drupal\webform\WebformTranslationManager $wftm
+                 */
+                $wftm = \Drupal::service('webform.translation_manager');
+                $elementsTranslate = $wftm->getTranslationElements($Webform, $this->getLangCode());
+                $elementsMerge = NestedArray::mergeDeepArray([
+                  $Webform->getElementsDecoded(),
+                  $elementsTranslate
+                ]);
+                $Webform->setElements($elementsMerge);
+              }
               $CloneWebform = $Webform->createDuplicate();
               // Pour les webforms, on doit ajouter le ThirdParty.
               $domaine = $entity->get(self::$field_domain_access)->target_id;
@@ -243,6 +307,10 @@ class DuplicateEntityReference extends ControllerBase {
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
               $subDatas['entity'] = $CloneWebform->toArray();
+              //
+              if ($subDatas['entity']['langcode'] != $this->getLangCode()) {
+                $subDatas['entity']['langcode'] = $this->getLangCode();
+              }
               $subDatas['entities'] = [];
               // $CloneWebform->save();
               $datasJson[$k][] = $subDatas;
@@ -509,6 +577,7 @@ class DuplicateEntityReference extends ControllerBase {
   protected function getLangCode() {
     if (!$this->lang_code)
       $this->lang_code = \Drupal::languageManager()->getCurrentLanguage()->getId();
+    return $this->lang_code;
   }
   
   /**
