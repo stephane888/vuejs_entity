@@ -21,7 +21,10 @@ vuejs_entity.settings_form:
     _form: 'Drupal\vuejs_entity\Form\SettingsForm'
   requirements:
     _permission: 'administer vuejs_entity configuration'
-    
+
+# Permet de recuperer un formulaire.    
+# Example
+# /en/vuejs-entity/form/paragraph/default/presentation_cv
 vuejs_entity.form_entity:
   path: '/vuejs-entity/form/{entity_type_id}/{view_mode}/{bundle}'
   defaults:

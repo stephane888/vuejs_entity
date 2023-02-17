@@ -257,6 +257,12 @@ class FormEntityController extends ControllerBase {
        * @var \Drupal\Core\Entity\EntityStorageInterface $entity_type
        */
       $entity_type = $this->entityTypeManager()->getStorage($entity_type_id);
+      // on selectionne la langue encours :
+      $valuesEntity['langcode'] = [
+        [
+          'value' => \Drupal::languageManager()->getCurrentLanguage()->getId()
+        ]
+      ];
       if ($bundle == $entity_type_id) {
         $entity = $entity_type->create($valuesEntity);
       }
