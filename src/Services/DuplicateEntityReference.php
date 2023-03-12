@@ -546,9 +546,11 @@ class DuplicateEntityReference extends ControllerBase {
   }
   
   /**
-   * La fonction toArray ne transmet pas pour le moment les bonnes valeurs (en
-   * fait c'est vide),
    * Cette fonction a pour objectif de recuperer le json du layout_builder.
+   * La fonction toArray de l'entité ne transmet pas pour le moment les bonnes
+   * valeurs (en fait c'est vide),
+   *
+   * @see https://www.drupal.org/project/drupal/issues/2942975
    */
   function toArrayLayoutBuilderField(array &$entity) {
     if (!empty($entity['layout_builder__layout'])) {

@@ -12,6 +12,7 @@
   "require": {
     "stephane888/login_rx_vuejs": "dev-2x|^2.0",
     "stephane888/creation_site_virtuel": "dev-1x|^1.0",
-    "stephane888/filesmanager": "dev-1x|^1.0.1"
+    "stephane888/filesmanager": "dev-1x|^1.0.1",
+    "stephane888/apivuejs": "dev-1x|^1.0.0"
   }
 }

@@ -671,6 +671,10 @@ class FormEntityController extends ControllerBase {
    * @param Request $Request
    * @param String $entity_type
    * @param String|integer $id
+   *
+   * @deprecated utiliser
+   *             Drupal\apivuejs\Controller\ApivuejsController::getFormByEntityId
+   *             et à supprimer avant la version 2x.
    */
   function getFormByEntityId(Request $Request) {
     try {
