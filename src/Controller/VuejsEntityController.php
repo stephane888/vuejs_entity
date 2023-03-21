@@ -15,6 +15,9 @@ class VuejsEntityController extends ControllerBase {
   
   /**
    * Builds the response.
+   *
+   * @deprecated use
+   *             Drupal\filesmanager\Controller\FilesmanagerController::getImage
    */
   public function getImage($fid, $style) {
     $file = File::load($fid);
