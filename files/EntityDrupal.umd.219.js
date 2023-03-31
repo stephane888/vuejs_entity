@@ -32,8 +32,8 @@ var vue_multiselect_min = __webpack_require__(20177);
 var vue_multiselect_min_default = /*#__PURE__*/__webpack_require__.n(vue_multiselect_min);
 // EXTERNAL MODULE: ../drupal-vuejs/src/App/jsonApi/itemsEntity.js
 var itemsEntity = __webpack_require__(21208);
-// EXTERNAL MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/loadField.js + 112 modules
-var loadField = __webpack_require__(68733);
+// EXTERNAL MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/loadField.js + 128 modules
+var loadField = __webpack_require__(72507);
 ;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-80[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/Ressouces/MultiSelectEntities.vue?vue&type=script&lang=js&
 
 
@@ -364,7 +364,8 @@ var itemsEntity = /*#__PURE__*/function () {
     }
 
     this.url = _Confs_js__WEBPACK_IMPORTED_MODULE_5__/* ["default"].baseURl */ .Z.baseURl + "/" + this.entity_type_id + "/" + bundle;
-    this.items = []; // en function de l'environement on doit ajouter les paramettres de bases.( notament baseUrl, TestDomain, les methodes surchargées ).
+    this.items = [];
+    this.newConfig = config; // En function de l'environement on doit ajouter les paramettres de bases.( notament baseUrl, TestDomain, les methodes surchargées ).
 
     if (config) {
       // à ce state la surcharge total pose probleme, donc on doit surcharger par necessite.
@@ -372,11 +373,12 @@ var itemsEntity = /*#__PURE__*/function () {
       //   ...utilities,
       //   ...config,
       // };
-      if (config.TestDomain) _utilities_js__WEBPACK_IMPORTED_MODULE_4__/* ["default"].TestDomain */ .Z.TestDomain = config.TestDomain; //utilities.get = config.get;
+      if (config.TestDomain) _utilities_js__WEBPACK_IMPORTED_MODULE_4__/* ["default"].TestDomain */ .Z.TestDomain = config.TestDomain;
     }
   }
   /**
-   * Recupere les items
+   * Recupere les items en passant par le token.
+   * ( ce cas de figure correspond à une application qui est sur le meme domaine ).
    */
 
 
@@ -512,6 +514,23 @@ var itemsEntity = /*#__PURE__*/function () {
       }
 
       return options;
+    }
+    /**
+     * On a deux cas interne et externe au domaine, et en function de l'environnement
+     * on doit utiliser token ou basic authentification.
+     * ( On ajoute cette variable en attendant la validation des autres modules de plus
+     * il faudra que dans "config" la methode dGet existe, ce qui n'est pas le cas pour certains environnement.
+     * gestion-projet-v2 => OK (en mode serve)
+     * edit-entity => ??
+     * Creation-cv => ??
+     * Creation de site web => ??
+     * ).
+     */
+
+  }, {
+    key: "remplaceConfig",
+    value: function remplaceConfig() {
+      _utilities_js__WEBPACK_IMPORTED_MODULE_4__/* ["default"] */ .Z = this.newConfig;
     }
   }]);
 
