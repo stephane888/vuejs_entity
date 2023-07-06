@@ -107,7 +107,6 @@ class FormEntityController extends ControllerBase {
         if ($entity_type_id == 'node') {
           // $this->DuplicateEntityReference->duplicateExistantReference($entity);
         }
-        
         $entity->save();
         return HttpResponse::response($entity->toArray());
       }
@@ -183,7 +182,7 @@ class FormEntityController extends ControllerBase {
           $entityModel = $entityModel->getTranslation($lang_code);
         }
         
-        $values = Json::decode($Request->getContent(), true);
+        $values = Json::decode($Request->getContent());
         $values['type'] = $entityModel->getType();
         // On generate la page web.
         /**
@@ -673,6 +672,9 @@ class FormEntityController extends ControllerBase {
    * @param String|integer $id
    *
    * @deprecated utiliser
+   *            
+   *            
+   *            
    *             Drupal\apivuejs\Controller\ApivuejsController::getFormByEntityId
    *             et à supprimer avant la version 2x.
    */

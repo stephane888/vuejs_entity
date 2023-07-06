@@ -7,6 +7,10 @@ use Drupal\Component\Serialization\Json;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
+use Drupal\lesroidelareno\lesroidelareno;
+use Stephane888\DrupalUtility\HttpResponse;
+use Stephane888\Debug\ExceptionExtractMessage;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Returns responses for vuejs entity routes.
@@ -50,6 +54,32 @@ class VuejsEntityController extends ControllerBase {
       $options[$value->id()] = 0;
     }
     return $this->reponse($options);
+  }
+  
+  /**
+   * Permet d'appliquer un certains nombre d'action a la fin de la generation
+   * d'un domaine.
+   * Par example :
+   * - Ajouter le domaine dans field_domain_admin.
+   */
+  public function CheckApplyActions(Request $Request) {
+    try {
+      $datas = Json::decode($Request->getContent());
+      $newDomain = $datas['domain'];
+      //
+      $uid = lesroidelareno::getCurrentUserId();
+      $user = \Drupal\user\Entity\User::load($uid);
+      $domains = $user->get('field_domain_admin')->getValue();
+      $domains[] = [
+        'target_id' => $newDomain['id']
+      ];
+      $user->set("field_domain_admin", $domains);
+      $user->save();
+      return HttpResponse::response([]);
+    }
+    catch (\Exception $e) {
+      return HttpResponse::response(ExceptionExtractMessage::errorAll($e), 435, $e->getMessage());
+    }
   }
   
   /**

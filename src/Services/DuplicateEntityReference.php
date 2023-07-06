@@ -181,6 +181,8 @@ class DuplicateEntityReference extends ControllerBase {
                 if ($cloneNode->hasField(self::$field_domain_access) && $entity->hasField(self::$field_domain_access)) {
                   $cloneNode->set(self::$field_domain_access, $entity->get(self::$field_domain_access)->getValue());
                 }
+                // on met à jour l'id de lutilisateur.
+                $cloneNode->setOwnerId($uid);
               }
               else
                 $cloneNode = $node;
@@ -212,6 +214,8 @@ class DuplicateEntityReference extends ControllerBase {
                 if ($cloneBlocksContents->hasField(self::$field_domain_access) && $entity->hasField(self::$field_domain_access)) {
                   $cloneBlocksContents->set(self::$field_domain_access, $entity->get(self::$field_domain_access)->getValue());
                 }
+                // on met à jour l'id de lutilisateur.
+                $BlocksContents->setOwnerId($uid);
               }
               else
                 $cloneBlocksContents = $BlocksContents;
@@ -303,6 +307,8 @@ class DuplicateEntityReference extends ControllerBase {
               $CloneWebform->setThirdPartySetting('webform_domain_access', self::$field_domain_access, $domaine);
               $CloneWebform->set('title', $domaine . ' : ' . $CloneWebform->get('title'));
               $CloneWebform->set('id', substr($Webform->id(), 0, 10) . date('YMdi') . rand(0, 9999));
+              // on met à jour l'id de lutilisateur.
+              $CloneWebform->setOwnerId($uid);
               //
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
@@ -401,6 +407,8 @@ class DuplicateEntityReference extends ControllerBase {
                   if ($dmn)
                     $CloneProduct->set(self::$field_domain_access, $dmn);
                 }
+                // on met à jour l'id de lutilisateur.
+                $CloneProduct->setOwnerId($uid);
               }
               else
                 $CloneProduct = $Product;
@@ -530,6 +538,9 @@ class DuplicateEntityReference extends ControllerBase {
             if ($cloneVariation->hasField(self::$field_domain_access) && $CloneProduct->hasField(self::$field_domain_access)) {
               $cloneVariation->set(self::$field_domain_access, $CloneProduct->get(self::$field_domain_access)->getValue());
             }
+            // on met à jour l'id de lutilisateur.
+            $cloneVariation->setOwnerId($uid);
+            //
             $cloneVariation->save();
             $newVariations[] = $cloneVariation->id();
             // Ajout de la variations dans le formulaire

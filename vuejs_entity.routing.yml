@@ -159,7 +159,14 @@ vuejs_entity.default-string:
     _title: 'ModelChoisieForm'
   requirements:
     _access: 'TRUE' 
-    
+
+vuejs_entity.check_apply_actions:
+  path: '/vuejs-entity/check-apply-actions'
+  defaults:
+    _controller: '\Drupal\vuejs_entity\Controller\VuejsEntityController::CheckApplyActions'
+    _title: 'ModelChoisieForm'
+  requirements:
+    _access: 'TRUE'    
     
     
     

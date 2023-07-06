@@ -441,6 +441,57 @@ module.exports = uncurryThis([].slice);
 
 /***/ }),
 
+/***/ 62785:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var arraySlice = __webpack_require__(74725);
+
+var floor = Math.floor;
+
+var mergeSort = function (array, comparefn) {
+  var length = array.length;
+  var middle = floor(length / 2);
+  return length < 8 ? insertionSort(array, comparefn) : merge(
+    array,
+    mergeSort(arraySlice(array, 0, middle), comparefn),
+    mergeSort(arraySlice(array, middle), comparefn),
+    comparefn
+  );
+};
+
+var insertionSort = function (array, comparefn) {
+  var length = array.length;
+  var i = 1;
+  var element, j;
+
+  while (i < length) {
+    j = i;
+    element = array[i];
+    while (j && comparefn(array[j - 1], element) > 0) {
+      array[j] = array[--j];
+    }
+    if (j !== i++) array[j] = element;
+  } return array;
+};
+
+var merge = function (array, left, right, comparefn) {
+  var llength = left.length;
+  var rlength = right.length;
+  var lindex = 0;
+  var rindex = 0;
+
+  while (lindex < llength || rindex < rlength) {
+    array[lindex + rindex] = (lindex < llength && rindex < rlength)
+      ? comparefn(left[lindex], right[rindex]) <= 0 ? left[lindex++] : right[rindex++]
+      : lindex < llength ? left[lindex++] : right[rindex++];
+  } return array;
+};
+
+module.exports = mergeSort;
+
+
+/***/ }),
+
 /***/ 4096:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
@@ -621,6 +672,28 @@ module.exports = function (target, source, exceptions) {
 
 /***/ }),
 
+/***/ 15089:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var wellKnownSymbol = __webpack_require__(80263);
+
+var MATCH = wellKnownSymbol('match');
+
+module.exports = function (METHOD_NAME) {
+  var regexp = /./;
+  try {
+    '/./'[METHOD_NAME](regexp);
+  } catch (error1) {
+    try {
+      regexp[MATCH] = false;
+      return '/./'[METHOD_NAME](regexp);
+    } catch (error2) { /* empty */ }
+  } return false;
+};
+
+
+/***/ }),
+
 /***/ 42503:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
@@ -693,6 +766,28 @@ module.exports = function (object, key, value) {
   var propertyKey = toPropertyKey(key);
   if (propertyKey in object) definePropertyModule.f(object, propertyKey, createPropertyDescriptor(0, value));
   else object[propertyKey] = value;
+};
+
+
+/***/ }),
+
+/***/ 51276:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+var anObject = __webpack_require__(99001);
+var ordinaryToPrimitive = __webpack_require__(58559);
+
+var $TypeError = TypeError;
+
+// `Date.prototype[@@toPrimitive](hint)` method implementation
+// https://tc39.es/ecma262/#sec-date.prototype-@@toprimitive
+module.exports = function (hint) {
+  anObject(this);
+  if (hint === 'string' || hint === 'default') hint = 'string';
+  else if (hint !== 'number') throw $TypeError('Incorrect hint');
+  return ordinaryToPrimitive(this, hint);
 };
 
 
@@ -899,6 +994,18 @@ module.exports = DOMTokenListPrototype === Object.prototype ? undefined : DOMTok
 
 /***/ }),
 
+/***/ 69286:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var userAgent = __webpack_require__(47228);
+
+var firefox = userAgent.match(/firefox\/(\d+)/i);
+
+module.exports = !!firefox && +firefox[1];
+
+
+/***/ }),
+
 /***/ 45011:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
@@ -917,6 +1024,16 @@ module.exports = !IS_DENO && !IS_NODE
 
 /* global Deno -- Deno case */
 module.exports = typeof Deno == 'object' && Deno && typeof Deno.version == 'object';
+
+
+/***/ }),
+
+/***/ 94583:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var UA = __webpack_require__(47228);
+
+module.exports = /MSIE|Trident/.test(UA);
 
 
 /***/ }),
@@ -1003,6 +1120,18 @@ if (!version && userAgent) {
 }
 
 module.exports = version;
+
+
+/***/ }),
+
+/***/ 68423:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var userAgent = __webpack_require__(47228);
+
+var webkit = userAgent.match(/AppleWebKit\/(\d+)\./);
+
+module.exports = !!webkit && +webkit[1];
 
 
 /***/ }),
@@ -2449,6 +2578,22 @@ var toString = __webpack_require__(72990);
 
 module.exports = function (argument, $default) {
   return argument === undefined ? arguments.length < 2 ? '' : $default : toString(argument);
+};
+
+
+/***/ }),
+
+/***/ 81311:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var isRegExp = __webpack_require__(92333);
+
+var $TypeError = TypeError;
+
+module.exports = function (it) {
+  if (isRegExp(it)) {
+    throw $TypeError("The method doesn't accept regular expressions");
+  } return it;
 };
 
 
@@ -4575,6 +4720,120 @@ $({ target: 'Array', proto: true, forced: !HAS_SPECIES_SUPPORT }, {
 
 /***/ }),
 
+/***/ 90604:
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+var $ = __webpack_require__(19298);
+var uncurryThis = __webpack_require__(40200);
+var aCallable = __webpack_require__(82115);
+var toObject = __webpack_require__(98552);
+var lengthOfArrayLike = __webpack_require__(78833);
+var deletePropertyOrThrow = __webpack_require__(74018);
+var toString = __webpack_require__(72990);
+var fails = __webpack_require__(9320);
+var internalSort = __webpack_require__(62785);
+var arrayMethodIsStrict = __webpack_require__(50600);
+var FF = __webpack_require__(69286);
+var IE_OR_EDGE = __webpack_require__(94583);
+var V8 = __webpack_require__(5556);
+var WEBKIT = __webpack_require__(68423);
+
+var test = [];
+var nativeSort = uncurryThis(test.sort);
+var push = uncurryThis(test.push);
+
+// IE8-
+var FAILS_ON_UNDEFINED = fails(function () {
+  test.sort(undefined);
+});
+// V8 bug
+var FAILS_ON_NULL = fails(function () {
+  test.sort(null);
+});
+// Old WebKit
+var STRICT_METHOD = arrayMethodIsStrict('sort');
+
+var STABLE_SORT = !fails(function () {
+  // feature detection can be too slow, so check engines versions
+  if (V8) return V8 < 70;
+  if (FF && FF > 3) return;
+  if (IE_OR_EDGE) return true;
+  if (WEBKIT) return WEBKIT < 603;
+
+  var result = '';
+  var code, chr, value, index;
+
+  // generate an array with more 512 elements (Chakra and old V8 fails only in this case)
+  for (code = 65; code < 76; code++) {
+    chr = String.fromCharCode(code);
+
+    switch (code) {
+      case 66: case 69: case 70: case 72: value = 3; break;
+      case 68: case 71: value = 4; break;
+      default: value = 2;
+    }
+
+    for (index = 0; index < 47; index++) {
+      test.push({ k: chr + index, v: value });
+    }
+  }
+
+  test.sort(function (a, b) { return b.v - a.v; });
+
+  for (index = 0; index < test.length; index++) {
+    chr = test[index].k.charAt(0);
+    if (result.charAt(result.length - 1) !== chr) result += chr;
+  }
+
+  return result !== 'DGBEFHACIJK';
+});
+
+var FORCED = FAILS_ON_UNDEFINED || !FAILS_ON_NULL || !STRICT_METHOD || !STABLE_SORT;
+
+var getSortCompare = function (comparefn) {
+  return function (x, y) {
+    if (y === undefined) return -1;
+    if (x === undefined) return 1;
+    if (comparefn !== undefined) return +comparefn(x, y) || 0;
+    return toString(x) > toString(y) ? 1 : -1;
+  };
+};
+
+// `Array.prototype.sort` method
+// https://tc39.es/ecma262/#sec-array.prototype.sort
+$({ target: 'Array', proto: true, forced: FORCED }, {
+  sort: function sort(comparefn) {
+    if (comparefn !== undefined) aCallable(comparefn);
+
+    var array = toObject(this);
+
+    if (STABLE_SORT) return comparefn === undefined ? nativeSort(array) : nativeSort(array, comparefn);
+
+    var items = [];
+    var arrayLength = lengthOfArrayLike(array);
+    var itemsLength, index;
+
+    for (index = 0; index < arrayLength; index++) {
+      if (index in array) push(items, array[index]);
+    }
+
+    internalSort(items, getSortCompare(comparefn));
+
+    itemsLength = lengthOfArrayLike(items);
+    index = 0;
+
+    while (index < itemsLength) array[index] = items[index++];
+    while (index < arrayLength) deletePropertyOrThrow(array, index++);
+
+    return array;
+  }
+});
+
+
+/***/ }),
+
 /***/ 68168:
 /***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
 
@@ -4646,6 +4905,26 @@ $({ target: 'Array', proto: true, forced: !HAS_SPECIES_SUPPORT }, {
     return A;
   }
 });
+
+
+/***/ }),
+
+/***/ 61796:
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+
+var hasOwn = __webpack_require__(4990);
+var defineBuiltIn = __webpack_require__(19077);
+var dateToPrimitive = __webpack_require__(51276);
+var wellKnownSymbol = __webpack_require__(80263);
+
+var TO_PRIMITIVE = wellKnownSymbol('toPrimitive');
+var DatePrototype = Date.prototype;
+
+// `Date.prototype[@@toPrimitive]` method
+// https://tc39.es/ecma262/#sec-date.prototype-@@toprimitive
+if (!hasOwn(DatePrototype, TO_PRIMITIVE)) {
+  defineBuiltIn(DatePrototype, TO_PRIMITIVE, dateToPrimitive);
+}
 
 
 /***/ }),
@@ -6118,6 +6397,35 @@ if (NOT_GENERIC || INCORRECT_NAME) {
 
 /***/ }),
 
+/***/ 27829:
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+var $ = __webpack_require__(19298);
+var uncurryThis = __webpack_require__(40200);
+var notARegExp = __webpack_require__(81311);
+var requireObjectCoercible = __webpack_require__(14525);
+var toString = __webpack_require__(72990);
+var correctIsRegExpLogic = __webpack_require__(15089);
+
+var stringIndexOf = uncurryThis(''.indexOf);
+
+// `String.prototype.includes` method
+// https://tc39.es/ecma262/#sec-string.prototype.includes
+$({ target: 'String', proto: true, forced: !correctIsRegExpLogic('includes') }, {
+  includes: function includes(searchString /* , position = 0 */) {
+    return !!~stringIndexOf(
+      toString(requireObjectCoercible(this)),
+      toString(notARegExp(searchString)),
+      arguments.length > 1 ? arguments[1] : undefined
+    );
+  }
+});
+
+
+/***/ }),
+
 /***/ 36367:
 /***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
 
@@ -6934,6 +7242,23 @@ $({ target: 'Symbol', stat: true, forced: !NATIVE_SYMBOL_REGISTRY }, {
     if (hasOwn(SymbolToStringRegistry, sym)) return SymbolToStringRegistry[sym];
   }
 });
+
+
+/***/ }),
+
+/***/ 59512:
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+
+var defineWellKnownSymbol = __webpack_require__(65537);
+var defineSymbolToPrimitive = __webpack_require__(23893);
+
+// `Symbol.toPrimitive` well-known symbol
+// https://tc39.es/ecma262/#sec-symbol.toprimitive
+defineWellKnownSymbol('toPrimitive');
+
+// `Symbol.prototype[@@toPrimitive]` method
+// https://tc39.es/ecma262/#sec-symbol.prototype-@@toprimitive
+defineSymbolToPrimitive();
 
 
 /***/ }),
@@ -17677,6 +18002,1859 @@ __webpack_require__(53201);
 
 /***/ }),
 
+/***/ 26069:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+/* module decorator */ module = __webpack_require__.nmd(module);
+var _typeof = (__webpack_require__(25602)["default"]);
+
+__webpack_require__(91605);
+
+__webpack_require__(46038);
+
+__webpack_require__(97078);
+
+__webpack_require__(67399);
+
+__webpack_require__(58830);
+
+__webpack_require__(11566);
+
+__webpack_require__(58144);
+
+__webpack_require__(59512);
+
+__webpack_require__(61796);
+
+__webpack_require__(66066);
+
+__webpack_require__(65202);
+
+__webpack_require__(7058);
+
+__webpack_require__(74530);
+
+__webpack_require__(84413);
+
+__webpack_require__(79774);
+
+__webpack_require__(36367);
+
+__webpack_require__(93734);
+
+__webpack_require__(90604);
+
+__webpack_require__(28657);
+
+__webpack_require__(60343);
+
+__webpack_require__(53201);
+
+__webpack_require__(56414);
+
+__webpack_require__(48689);
+
+/*
+ * International Telephone Input v18.1.7
+ * https://github.com/jackocnr/intl-tel-input.git
+ * Licensed under the MIT license
+ */
+// wrap in UMD
+(function (factory) {
+  if (( false ? 0 : _typeof(module)) === "object" && module.exports) module.exports = factory();else window.intlTelInput = factory();
+})(function (undefined) {
+  "use strict";
+
+  return function () {
+    // Array of country objects for the flag dropdown.
+    // Here is the criteria for the plugin to support a given country/territory
+    // - It has an iso2 code: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
+    // - It has it's own country calling code (it is not a sub-region of another country): https://en.wikipedia.org/wiki/List_of_country_calling_codes
+    // - It has a flag in the region-flags project: https://github.com/behdad/region-flags/tree/gh-pages/png
+    // - It is supported by libphonenumber (it must be listed on this page): https://github.com/googlei18n/libphonenumber/blob/master/resources/ShortNumberMetadata.xml
+    // Each country array has the following information:
+    // [
+    //    Country name,
+    //    iso2 code,
+    //    International dial code,
+    //    Order (if >1 country with same dial code),
+    //    Area codes
+    // ]
+    var allCountries = [["Afghanistan (‫افغانستان‬‎)", "af", "93"], ["Albania (Shqipëri)", "al", "355"], ["Algeria (‫الجزائر‬‎)", "dz", "213"], ["American Samoa", "as", "1", 5, ["684"]], ["Andorra", "ad", "376"], ["Angola", "ao", "244"], ["Anguilla", "ai", "1", 6, ["264"]], ["Antigua and Barbuda", "ag", "1", 7, ["268"]], ["Argentina", "ar", "54"], ["Armenia (Հայաստան)", "am", "374"], ["Aruba", "aw", "297"], ["Ascension Island", "ac", "247"], ["Australia", "au", "61", 0], ["Austria (Österreich)", "at", "43"], ["Azerbaijan (Azərbaycan)", "az", "994"], ["Bahamas", "bs", "1", 8, ["242"]], ["Bahrain (‫البحرين‬‎)", "bh", "973"], ["Bangladesh (বাংলাদেশ)", "bd", "880"], ["Barbados", "bb", "1", 9, ["246"]], ["Belarus (Беларусь)", "by", "375"], ["Belgium (België)", "be", "32"], ["Belize", "bz", "501"], ["Benin (Bénin)", "bj", "229"], ["Bermuda", "bm", "1", 10, ["441"]], ["Bhutan (འབྲུག)", "bt", "975"], ["Bolivia", "bo", "591"], ["Bosnia and Herzegovina (Босна и Херцеговина)", "ba", "387"], ["Botswana", "bw", "267"], ["Brazil (Brasil)", "br", "55"], ["British Indian Ocean Territory", "io", "246"], ["British Virgin Islands", "vg", "1", 11, ["284"]], ["Brunei", "bn", "673"], ["Bulgaria (България)", "bg", "359"], ["Burkina Faso", "bf", "226"], ["Burundi (Uburundi)", "bi", "257"], ["Cambodia (កម្ពុជា)", "kh", "855"], ["Cameroon (Cameroun)", "cm", "237"], ["Canada", "ca", "1", 1, ["204", "226", "236", "249", "250", "263", "289", "306", "343", "354", "365", "367", "368", "382", "387", "403", "416", "418", "428", "431", "437", "438", "450", "584", "468", "474", "506", "514", "519", "548", "579", "581", "584", "587", "604", "613", "639", "647", "672", "683", "705", "709", "742", "753", "778", "780", "782", "807", "819", "825", "867", "873", "902", "905"]], ["Cape Verde (Kabu Verdi)", "cv", "238"], ["Caribbean Netherlands", "bq", "599", 1, ["3", "4", "7"]], ["Cayman Islands", "ky", "1", 12, ["345"]], ["Central African Republic (République centrafricaine)", "cf", "236"], ["Chad (Tchad)", "td", "235"], ["Chile", "cl", "56"], ["China (中国)", "cn", "86"], ["Christmas Island", "cx", "61", 2, ["89164"]], ["Cocos (Keeling) Islands", "cc", "61", 1, ["89162"]], ["Colombia", "co", "57"], ["Comoros (‫جزر القمر‬‎)", "km", "269"], ["Congo (DRC) (Jamhuri ya Kidemokrasia ya Kongo)", "cd", "243"], ["Congo (Republic) (Congo-Brazzaville)", "cg", "242"], ["Cook Islands", "ck", "682"], ["Costa Rica", "cr", "506"], ["Côte d’Ivoire", "ci", "225"], ["Croatia (Hrvatska)", "hr", "385"], ["Cuba", "cu", "53"], ["Curaçao", "cw", "599", 0], ["Cyprus (Κύπρος)", "cy", "357"], ["Czech Republic (Česká republika)", "cz", "420"], ["Denmark (Danmark)", "dk", "45"], ["Djibouti", "dj", "253"], ["Dominica", "dm", "1", 13, ["767"]], ["Dominican Republic (República Dominicana)", "do", "1", 2, ["809", "829", "849"]], ["Ecuador", "ec", "593"], ["Egypt (‫مصر‬‎)", "eg", "20"], ["El Salvador", "sv", "503"], ["Equatorial Guinea (Guinea Ecuatorial)", "gq", "240"], ["Eritrea", "er", "291"], ["Estonia (Eesti)", "ee", "372"], ["Eswatini", "sz", "268"], ["Ethiopia", "et", "251"], ["Falkland Islands (Islas Malvinas)", "fk", "500"], ["Faroe Islands (Føroyar)", "fo", "298"], ["Fiji", "fj", "679"], ["Finland (Suomi)", "fi", "358", 0], ["France", "fr", "33"], ["French Guiana (Guyane française)", "gf", "594"], ["French Polynesia (Polynésie française)", "pf", "689"], ["Gabon", "ga", "241"], ["Gambia", "gm", "220"], ["Georgia (საქართველო)", "ge", "995"], ["Germany (Deutschland)", "de", "49"], ["Ghana (Gaana)", "gh", "233"], ["Gibraltar", "gi", "350"], ["Greece (Ελλάδα)", "gr", "30"], ["Greenland (Kalaallit Nunaat)", "gl", "299"], ["Grenada", "gd", "1", 14, ["473"]], ["Guadeloupe", "gp", "590", 0], ["Guam", "gu", "1", 15, ["671"]], ["Guatemala", "gt", "502"], ["Guernsey", "gg", "44", 1, ["1481", "7781", "7839", "7911"]], ["Guinea (Guinée)", "gn", "224"], ["Guinea-Bissau (Guiné Bissau)", "gw", "245"], ["Guyana", "gy", "592"], ["Haiti", "ht", "509"], ["Honduras", "hn", "504"], ["Hong Kong (香港)", "hk", "852"], ["Hungary (Magyarország)", "hu", "36"], ["Iceland (Ísland)", "is", "354"], ["India (भारत)", "in", "91"], ["Indonesia", "id", "62"], ["Iran (‫ایران‬‎)", "ir", "98"], ["Iraq (‫العراق‬‎)", "iq", "964"], ["Ireland", "ie", "353"], ["Isle of Man", "im", "44", 2, ["1624", "74576", "7524", "7924", "7624"]], ["Israel (‫ישראל‬‎)", "il", "972"], ["Italy (Italia)", "it", "39", 0], ["Jamaica", "jm", "1", 4, ["876", "658"]], ["Japan (日本)", "jp", "81"], ["Jersey", "je", "44", 3, ["1534", "7509", "7700", "7797", "7829", "7937"]], ["Jordan (‫الأردن‬‎)", "jo", "962"], ["Kazakhstan (Казахстан)", "kz", "7", 1, ["33", "7"]], ["Kenya", "ke", "254"], ["Kiribati", "ki", "686"], ["Kosovo", "xk", "383"], ["Kuwait (‫الكويت‬‎)", "kw", "965"], ["Kyrgyzstan (Кыргызстан)", "kg", "996"], ["Laos (ລາວ)", "la", "856"], ["Latvia (Latvija)", "lv", "371"], ["Lebanon (‫لبنان‬‎)", "lb", "961"], ["Lesotho", "ls", "266"], ["Liberia", "lr", "231"], ["Libya (‫ليبيا‬‎)", "ly", "218"], ["Liechtenstein", "li", "423"], ["Lithuania (Lietuva)", "lt", "370"], ["Luxembourg", "lu", "352"], ["Macau (澳門)", "mo", "853"], ["Madagascar (Madagasikara)", "mg", "261"], ["Malawi", "mw", "265"], ["Malaysia", "my", "60"], ["Maldives", "mv", "960"], ["Mali", "ml", "223"], ["Malta", "mt", "356"], ["Marshall Islands", "mh", "692"], ["Martinique", "mq", "596"], ["Mauritania (‫موريتانيا‬‎)", "mr", "222"], ["Mauritius (Moris)", "mu", "230"], ["Mayotte", "yt", "262", 1, ["269", "639"]], ["Mexico (México)", "mx", "52"], ["Micronesia", "fm", "691"], ["Moldova (Republica Moldova)", "md", "373"], ["Monaco", "mc", "377"], ["Mongolia (Монгол)", "mn", "976"], ["Montenegro (Crna Gora)", "me", "382"], ["Montserrat", "ms", "1", 16, ["664"]], ["Morocco (‫المغرب‬‎)", "ma", "212", 0], ["Mozambique (Moçambique)", "mz", "258"], ["Myanmar (Burma) (မြန်မာ)", "mm", "95"], ["Namibia (Namibië)", "na", "264"], ["Nauru", "nr", "674"], ["Nepal (नेपाल)", "np", "977"], ["Netherlands (Nederland)", "nl", "31"], ["New Caledonia (Nouvelle-Calédonie)", "nc", "687"], ["New Zealand", "nz", "64"], ["Nicaragua", "ni", "505"], ["Niger (Nijar)", "ne", "227"], ["Nigeria", "ng", "234"], ["Niue", "nu", "683"], ["Norfolk Island", "nf", "672"], ["North Korea (조선 민주주의 인민 공화국)", "kp", "850"], ["North Macedonia (Северна Македонија)", "mk", "389"], ["Northern Mariana Islands", "mp", "1", 17, ["670"]], ["Norway (Norge)", "no", "47", 0], ["Oman (‫عُمان‬‎)", "om", "968"], ["Pakistan (‫پاکستان‬‎)", "pk", "92"], ["Palau", "pw", "680"], ["Palestine (‫فلسطين‬‎)", "ps", "970"], ["Panama (Panamá)", "pa", "507"], ["Papua New Guinea", "pg", "675"], ["Paraguay", "py", "595"], ["Peru (Perú)", "pe", "51"], ["Philippines", "ph", "63"], ["Poland (Polska)", "pl", "48"], ["Portugal", "pt", "351"], ["Puerto Rico", "pr", "1", 3, ["787", "939"]], ["Qatar (‫قطر‬‎)", "qa", "974"], ["Réunion (La Réunion)", "re", "262", 0], ["Romania (România)", "ro", "40"], ["Russia (Россия)", "ru", "7", 0], ["Rwanda", "rw", "250"], ["Saint Barthélemy", "bl", "590", 1], ["Saint Helena", "sh", "290"], ["Saint Kitts and Nevis", "kn", "1", 18, ["869"]], ["Saint Lucia", "lc", "1", 19, ["758"]], ["Saint Martin (Saint-Martin (partie française))", "mf", "590", 2], ["Saint Pierre and Miquelon (Saint-Pierre-et-Miquelon)", "pm", "508"], ["Saint Vincent and the Grenadines", "vc", "1", 20, ["784"]], ["Samoa", "ws", "685"], ["San Marino", "sm", "378"], ["São Tomé and Príncipe (São Tomé e Príncipe)", "st", "239"], ["Saudi Arabia (‫المملكة العربية السعودية‬‎)", "sa", "966"], ["Senegal (Sénégal)", "sn", "221"], ["Serbia (Србија)", "rs", "381"], ["Seychelles", "sc", "248"], ["Sierra Leone", "sl", "232"], ["Singapore", "sg", "65"], ["Sint Maarten", "sx", "1", 21, ["721"]], ["Slovakia (Slovensko)", "sk", "421"], ["Slovenia (Slovenija)", "si", "386"], ["Solomon Islands", "sb", "677"], ["Somalia (Soomaaliya)", "so", "252"], ["South Africa", "za", "27"], ["South Korea (대한민국)", "kr", "82"], ["South Sudan (‫جنوب السودان‬‎)", "ss", "211"], ["Spain (España)", "es", "34"], ["Sri Lanka (ශ්‍රී ලංකාව)", "lk", "94"], ["Sudan (‫السودان‬‎)", "sd", "249"], ["Suriname", "sr", "597"], ["Svalbard and Jan Mayen", "sj", "47", 1, ["79"]], ["Sweden (Sverige)", "se", "46"], ["Switzerland (Schweiz)", "ch", "41"], ["Syria (‫سوريا‬‎)", "sy", "963"], ["Taiwan (台灣)", "tw", "886"], ["Tajikistan", "tj", "992"], ["Tanzania", "tz", "255"], ["Thailand (ไทย)", "th", "66"], ["Timor-Leste", "tl", "670"], ["Togo", "tg", "228"], ["Tokelau", "tk", "690"], ["Tonga", "to", "676"], ["Trinidad and Tobago", "tt", "1", 22, ["868"]], ["Tunisia (‫تونس‬‎)", "tn", "216"], ["Turkey (Türkiye)", "tr", "90"], ["Turkmenistan", "tm", "993"], ["Turks and Caicos Islands", "tc", "1", 23, ["649"]], ["Tuvalu", "tv", "688"], ["U.S. Virgin Islands", "vi", "1", 24, ["340"]], ["Uganda", "ug", "256"], ["Ukraine (Україна)", "ua", "380"], ["United Arab Emirates (‫الإمارات العربية المتحدة‬‎)", "ae", "971"], ["United Kingdom", "gb", "44", 0], ["United States", "us", "1", 0], ["Uruguay", "uy", "598"], ["Uzbekistan (Oʻzbekiston)", "uz", "998"], ["Vanuatu", "vu", "678"], ["Vatican City (Città del Vaticano)", "va", "39", 1, ["06698"]], ["Venezuela", "ve", "58"], ["Vietnam (Việt Nam)", "vn", "84"], ["Wallis and Futuna (Wallis-et-Futuna)", "wf", "681"], ["Western Sahara (‫الصحراء الغربية‬‎)", "eh", "212", 1, ["5288", "5289"]], ["Yemen (‫اليمن‬‎)", "ye", "967"], ["Zambia", "zm", "260"], ["Zimbabwe", "zw", "263"], ["Åland Islands", "ax", "358", 1, ["18"]]]; // loop over all of the countries above, restructuring the data to be objects with named keys
+
+    for (var i = 0; i < allCountries.length; i++) {
+      var c = allCountries[i];
+      allCountries[i] = {
+        name: c[0],
+        iso2: c[1],
+        dialCode: c[2],
+        priority: c[3] || 0,
+        areaCodes: c[4] || null
+      };
+    }
+
+    "use strict";
+
+    function _objectSpread(target) {
+      for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i] != null ? Object(arguments[i]) : {};
+        var ownKeys = Object.keys(source);
+
+        if (typeof Object.getOwnPropertySymbols === "function") {
+          ownKeys.push.apply(ownKeys, Object.getOwnPropertySymbols(source).filter(function (sym) {
+            return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+          }));
+        }
+
+        ownKeys.forEach(function (key) {
+          _defineProperty(target, key, source[key]);
+        });
+      }
+
+      return target;
+    }
+
+    function _defineProperty(obj, key, value) {
+      key = _toPropertyKey(key);
+
+      if (key in obj) {
+        Object.defineProperty(obj, key, {
+          value: value,
+          enumerable: true,
+          configurable: true,
+          writable: true
+        });
+      } else {
+        obj[key] = value;
+      }
+
+      return obj;
+    }
+
+    function _classCallCheck(instance, Constructor) {
+      if (!(instance instanceof Constructor)) {
+        throw new TypeError("Cannot call a class as a function");
+      }
+    }
+
+    function _defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor);
+      }
+    }
+
+    function _createClass(Constructor, protoProps, staticProps) {
+      if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) _defineProperties(Constructor, staticProps);
+      Object.defineProperty(Constructor, "prototype", {
+        writable: false
+      });
+      return Constructor;
+    }
+
+    function _toPropertyKey(arg) {
+      var key = _toPrimitive(arg, "string");
+
+      return _typeof(key) === "symbol" ? key : String(key);
+    }
+
+    function _toPrimitive(input, hint) {
+      if (_typeof(input) !== "object" || input === null) return input;
+      var prim = input[Symbol.toPrimitive];
+
+      if (prim !== undefined) {
+        var res = prim.call(input, hint || "default");
+        if (_typeof(res) !== "object") return res;
+        throw new TypeError("@@toPrimitive must return a primitive value.");
+      }
+
+      return (hint === "string" ? String : Number)(input);
+    }
+
+    var intlTelInputGlobals = {
+      getInstance: function getInstance(input) {
+        var id = input.getAttribute("data-intl-tel-input-id");
+        return window.intlTelInputGlobals.instances[id];
+      },
+      instances: {},
+      // using a global like this allows us to mock it in the tests
+      documentReady: function documentReady() {
+        return document.readyState === "complete";
+      }
+    };
+
+    if ((typeof window === "undefined" ? "undefined" : _typeof(window)) === "object") {
+      window.intlTelInputGlobals = intlTelInputGlobals;
+    } // these vars persist through all instances of the plugin
+
+
+    var id = 0;
+    var defaults = {
+      // whether or not to allow the dropdown
+      allowDropdown: true,
+      // auto insert dial code (A) on init, (B) on user selecting a country, (C) on calling setCountry
+      // also listen for blur/submit and auto remove dial code if that's all there is
+      autoInsertDialCode: false,
+      // add a placeholder in the input with an example number for the selected country
+      autoPlaceholder: "polite",
+      // modify the parentClass
+      customContainer: "",
+      // modify the auto placeholder
+      customPlaceholder: null,
+      // append menu to specified element
+      dropdownContainer: null,
+      // don't display these countries
+      excludeCountries: [],
+      // format the input value during initialisation and on setNumber
+      formatOnDisplay: true,
+      // geoIp lookup function
+      geoIpLookup: null,
+      // inject a hidden input with this name, and on submit, populate it with the result of getNumber
+      hiddenInput: "",
+      // initial country
+      initialCountry: "",
+      // localized country names e.g. { 'de': 'Deutschland' }
+      localizedCountries: null,
+      // national vs international formatting for numbers e.g. placeholders and displaying existing numbers
+      nationalMode: true,
+      // display only these countries
+      onlyCountries: [],
+      // number type to use for placeholders
+      placeholderNumberType: "MOBILE",
+      // the countries at the top of the list. defaults to united states and united kingdom
+      preferredCountries: ["us", "gb"],
+      // display the country dial code next to the selected flag
+      separateDialCode: false,
+      // option to hide the flags - must be used with separateDialCode, or allowDropdown=false
+      showFlags: true,
+      // specify the path to the libphonenumber script to enable validation/formatting
+      utilsScript: ""
+    }; // https://en.wikipedia.org/wiki/List_of_North_American_Numbering_Plan_area_codes#Non-geographic_area_codes
+
+    var regionlessNanpNumbers = ["800", "822", "833", "844", "855", "866", "877", "880", "881", "882", "883", "884", "885", "886", "887", "888", "889"]; // utility function to iterate over an object. can't use Object.entries or native forEach because
+    // of IE11
+
+    var forEachProp = function forEachProp(obj, callback) {
+      var keys = Object.keys(obj);
+
+      for (var i = 0; i < keys.length; i++) {
+        callback(keys[i], obj[keys[i]]);
+      }
+    }; // run a method on each instance of the plugin
+
+
+    var forEachInstance = function forEachInstance(method) {
+      forEachProp(window.intlTelInputGlobals.instances, function (key) {
+        window.intlTelInputGlobals.instances[key][method]();
+      });
+    }; // this is our plugin class that we will create an instance of
+    // eslint-disable-next-line no-unused-vars
+
+
+    var Iti = /*#__PURE__*/function () {
+      function Iti(input, options) {
+        var _this = this;
+
+        _classCallCheck(this, Iti);
+
+        this.id = id++;
+        this.telInput = input;
+        this.activeItem = null;
+        this.highlightedItem = null; // process specified options / defaults
+        // alternative to Object.assign, which isn't supported by IE11
+
+        var customOptions = options || {};
+        this.options = {};
+        forEachProp(defaults, function (key, value) {
+          _this.options[key] = customOptions.hasOwnProperty(key) ? customOptions[key] : value;
+        });
+        this.hadInitialPlaceholder = Boolean(input.getAttribute("placeholder"));
+      }
+
+      _createClass(Iti, [{
+        key: "_init",
+        value: function _init() {
+          var _this2 = this; // if in nationalMode, do not insert dial codes
+
+
+          if (this.options.nationalMode) {
+            this.options.autoInsertDialCode = false;
+          } // if separateDialCode enabled, do not insert dial codes
+
+
+          if (this.options.separateDialCode) {
+            this.options.autoInsertDialCode = false;
+          } // force showFlags=true if there's a dropdown and we're not displaying the dial code,
+          // as otherwise you just have a down arrow on it's own which doesn't make sense
+
+
+          var forceShowFlags = this.options.allowDropdown && !this.options.separateDialCode;
+
+          if (!this.options.showFlags && forceShowFlags) {
+            this.options.showFlags = true;
+          } // we cannot just test screen size as some smartphones/website meta tags will report desktop
+          // resolutions
+          // Note: for some reason jasmine breaks if you put this in the main Plugin function with the
+          // rest of these declarations
+          // Note: to target Android Mobiles (and not Tablets), we must find 'Android' and 'Mobile'
+
+
+          this.isMobile = /Android.+Mobile|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+          if (this.isMobile) {
+            // trigger the mobile dropdown css
+            document.body.classList.add("iti-mobile"); // on mobile, we want a full screen dropdown, so we must append it to the body
+
+            if (!this.options.dropdownContainer) {
+              this.options.dropdownContainer = document.body;
+            }
+          } // these promises get resolved when their individual requests complete
+          // this way the dev can do something like iti.promise.then(...) to know when all requests are
+          // complete
+
+
+          if (typeof Promise !== "undefined") {
+            var autoCountryPromise = new Promise(function (resolve, reject) {
+              _this2.resolveAutoCountryPromise = resolve;
+              _this2.rejectAutoCountryPromise = reject;
+            });
+            var utilsScriptPromise = new Promise(function (resolve, reject) {
+              _this2.resolveUtilsScriptPromise = resolve;
+              _this2.rejectUtilsScriptPromise = reject;
+            });
+            this.promise = Promise.all([autoCountryPromise, utilsScriptPromise]);
+          } else {
+            // prevent errors when Promise doesn't exist
+            this.resolveAutoCountryPromise = this.rejectAutoCountryPromise = function () {};
+
+            this.resolveUtilsScriptPromise = this.rejectUtilsScriptPromise = function () {};
+          } // in various situations there could be no country selected initially, but we need to be able
+          // to assume this variable exists
+
+
+          this.selectedCountryData = {}; // process all the data: onlyCountries, excludeCountries, preferredCountries etc
+
+          this._processCountryData(); // generate the markup
+
+
+          this._generateMarkup(); // set the initial state of the input value and the selected flag
+
+
+          this._setInitialState(); // start all of the event listeners: autoInsertDialCode, input keydown, selectedFlag click
+
+
+          this._initListeners(); // utils script, and auto country
+
+
+          this._initRequests();
+        }
+      }, {
+        key: "_processCountryData",
+        value: function _processCountryData() {
+          // process onlyCountries or excludeCountries array if present
+          this._processAllCountries(); // process the countryCodes map
+
+
+          this._processCountryCodes(); // process the preferredCountries
+
+
+          this._processPreferredCountries(); // translate countries according to localizedCountries option
+
+
+          if (this.options.localizedCountries) {
+            this._translateCountriesByLocale();
+          } // sort countries by name
+
+
+          if (this.options.onlyCountries.length || this.options.localizedCountries) {
+            this.countries.sort(this._countryNameSort);
+          }
+        }
+      }, {
+        key: "_addCountryCode",
+        value: function _addCountryCode(iso2, countryCode, priority) {
+          if (countryCode.length > this.countryCodeMaxLen) {
+            this.countryCodeMaxLen = countryCode.length;
+          }
+
+          if (!this.countryCodes.hasOwnProperty(countryCode)) {
+            this.countryCodes[countryCode] = [];
+          } // bail if we already have this country for this countryCode
+
+
+          for (var i = 0; i < this.countryCodes[countryCode].length; i++) {
+            if (this.countryCodes[countryCode][i] === iso2) {
+              return;
+            }
+          } // check for undefined as 0 is falsy
+
+
+          var index = priority !== undefined ? priority : this.countryCodes[countryCode].length;
+          this.countryCodes[countryCode][index] = iso2;
+        }
+      }, {
+        key: "_processAllCountries",
+        value: function _processAllCountries() {
+          if (this.options.onlyCountries.length) {
+            var lowerCaseOnlyCountries = this.options.onlyCountries.map(function (country) {
+              return country.toLowerCase();
+            });
+            this.countries = allCountries.filter(function (country) {
+              return lowerCaseOnlyCountries.indexOf(country.iso2) > -1;
+            });
+          } else if (this.options.excludeCountries.length) {
+            var lowerCaseExcludeCountries = this.options.excludeCountries.map(function (country) {
+              return country.toLowerCase();
+            });
+            this.countries = allCountries.filter(function (country) {
+              return lowerCaseExcludeCountries.indexOf(country.iso2) === -1;
+            });
+          } else {
+            this.countries = allCountries;
+          }
+        }
+      }, {
+        key: "_translateCountriesByLocale",
+        value: function _translateCountriesByLocale() {
+          for (var i = 0; i < this.countries.length; i++) {
+            var iso = this.countries[i].iso2.toLowerCase();
+
+            if (this.options.localizedCountries.hasOwnProperty(iso)) {
+              this.countries[i].name = this.options.localizedCountries[iso];
+            }
+          }
+        }
+      }, {
+        key: "_countryNameSort",
+        value: function _countryNameSort(a, b) {
+          if (a.name < b.name) {
+            return -1;
+          }
+
+          if (a.name > b.name) {
+            return 1;
+          }
+
+          return 0;
+        }
+      }, {
+        key: "_processCountryCodes",
+        value: function _processCountryCodes() {
+          this.countryCodeMaxLen = 0; // here we store just dial codes
+
+          this.dialCodes = {}; // here we store "country codes" (both dial codes and their area codes)
+
+          this.countryCodes = {}; // first: add dial codes
+
+          for (var i = 0; i < this.countries.length; i++) {
+            var c = this.countries[i];
+
+            if (!this.dialCodes[c.dialCode]) {
+              this.dialCodes[c.dialCode] = true;
+            }
+
+            this._addCountryCode(c.iso2, c.dialCode, c.priority);
+          } // next: add area codes
+          // this is a second loop over countries, to make sure we have all of the "root" countries
+          // already in the map, so that we can access them, as each time we add an area code substring
+          // to the map, we also need to include the "root" country's code, as that also matches
+
+
+          for (var _i = 0; _i < this.countries.length; _i++) {
+            var _c = this.countries[_i]; // area codes
+
+            if (_c.areaCodes) {
+              var rootCountryCode = this.countryCodes[_c.dialCode][0]; // for each area code
+
+              for (var j = 0; j < _c.areaCodes.length; j++) {
+                var areaCode = _c.areaCodes[j]; // for each digit in the area code to add all partial matches as well
+
+                for (var k = 1; k < areaCode.length; k++) {
+                  var partialDialCode = _c.dialCode + areaCode.substr(0, k); // start with the root country, as that also matches this dial code
+
+                  this._addCountryCode(rootCountryCode, partialDialCode);
+
+                  this._addCountryCode(_c.iso2, partialDialCode);
+                } // add the full area code
+
+
+                this._addCountryCode(_c.iso2, _c.dialCode + areaCode);
+              }
+            }
+          }
+        }
+      }, {
+        key: "_processPreferredCountries",
+        value: function _processPreferredCountries() {
+          this.preferredCountries = [];
+
+          for (var i = 0; i < this.options.preferredCountries.length; i++) {
+            var countryCode = this.options.preferredCountries[i].toLowerCase();
+
+            var countryData = this._getCountryData(countryCode, false, true);
+
+            if (countryData) {
+              this.preferredCountries.push(countryData);
+            }
+          }
+        }
+      }, {
+        key: "_createEl",
+        value: function _createEl(name, attrs, container) {
+          var el = document.createElement(name);
+
+          if (attrs) {
+            forEachProp(attrs, function (key, value) {
+              return el.setAttribute(key, value);
+            });
+          }
+
+          if (container) {
+            container.appendChild(el);
+          }
+
+          return el;
+        }
+      }, {
+        key: "_generateMarkup",
+        value: function _generateMarkup() {
+          // if autocomplete does not exist on the element and its form, then
+          // prevent autocomplete as there's no safe, cross-browser event we can react to, so it can
+          // easily put the plugin in an inconsistent state e.g. the wrong flag selected for the
+          // autocompleted number, which on submit could mean wrong number is saved
+          if (!this.telInput.hasAttribute("autocomplete") && !(this.telInput.form && this.telInput.form.hasAttribute("autocomplete"))) {
+            this.telInput.setAttribute("autocomplete", "off");
+          }
+
+          var _this$options = this.options,
+              allowDropdown = _this$options.allowDropdown,
+              separateDialCode = _this$options.separateDialCode,
+              showFlags = _this$options.showFlags,
+              customContainer = _this$options.customContainer,
+              hiddenInput = _this$options.hiddenInput,
+              dropdownContainer = _this$options.dropdownContainer; // containers (mostly for positioning)
+
+          var parentClass = "iti";
+
+          if (allowDropdown) {
+            parentClass += " iti--allow-dropdown";
+          }
+
+          if (separateDialCode) {
+            parentClass += " iti--separate-dial-code";
+          }
+
+          if (showFlags) {
+            parentClass += " iti--show-flags";
+          }
+
+          if (customContainer) {
+            parentClass += " ".concat(customContainer);
+          }
+
+          var wrapper = this._createEl("div", {
+            "class": parentClass
+          });
+
+          this.telInput.parentNode.insertBefore(wrapper, this.telInput); // only hide the flagsContainer if allowDropdown, showFlags and separateDialCode are all false
+
+          var showFlagsContainer = allowDropdown || showFlags || separateDialCode;
+
+          if (showFlagsContainer) {
+            this.flagsContainer = this._createEl("div", {
+              "class": "iti__flag-container"
+            }, wrapper);
+          }
+
+          wrapper.appendChild(this.telInput); // selected flag (displayed to left of input)
+          // using Aria tags for "Select-Only Combobox Example"
+          // https://www.w3.org/WAI/ARIA/apg/patterns/combobox/examples/combobox-select-only/
+
+          if (showFlagsContainer) {
+            this.selectedFlag = this._createEl("div", _objectSpread({
+              "class": "iti__selected-flag"
+            }, allowDropdown && {
+              role: "combobox",
+              "aria-haspopup": "listbox",
+              "aria-controls": "iti-".concat(this.id, "__country-listbox"),
+              "aria-expanded": "false",
+              "aria-label": "Telephone country code"
+            }), this.flagsContainer);
+          }
+
+          if (showFlags) {
+            this.selectedFlagInner = this._createEl("div", {
+              "class": "iti__flag"
+            }, this.selectedFlag);
+          }
+
+          if (this.selectedFlag && this.telInput.disabled) {
+            this.selectedFlag.setAttribute("aria-disabled", "true");
+          }
+
+          if (separateDialCode) {
+            this.selectedDialCode = this._createEl("div", {
+              "class": "iti__selected-dial-code"
+            }, this.selectedFlag);
+          }
+
+          if (allowDropdown) {
+            if (!this.telInput.disabled) {
+              // make element focusable and tab navigable
+              this.selectedFlag.setAttribute("tabindex", "0");
+            }
+
+            this.dropdownArrow = this._createEl("div", {
+              "class": "iti__arrow"
+            }, this.selectedFlag); // country dropdown: preferred countries, then divider, then all countries
+
+            this.countryList = this._createEl("ul", {
+              "class": "iti__country-list iti__hide",
+              id: "iti-".concat(this.id, "__country-listbox"),
+              role: "listbox",
+              "aria-label": "List of countries"
+            });
+
+            if (this.preferredCountries.length) {
+              this._appendListItems(this.preferredCountries, "iti__preferred", true);
+
+              this._createEl("li", {
+                "class": "iti__divider",
+                role: "separator",
+                "aria-disabled": "true"
+              }, this.countryList);
+            }
+
+            this._appendListItems(this.countries, "iti__standard"); // create dropdownContainer markup
+
+
+            if (dropdownContainer) {
+              this.dropdown = this._createEl("div", {
+                "class": "iti iti--container"
+              });
+              this.dropdown.appendChild(this.countryList);
+            } else {
+              this.flagsContainer.appendChild(this.countryList);
+            }
+          }
+
+          if (hiddenInput) {
+            var hiddenInputName = hiddenInput;
+            var name = this.telInput.getAttribute("name");
+
+            if (name) {
+              var i = name.lastIndexOf("["); // if input name contains square brackets, then give the hidden input the same name,
+              // replacing the contents of the last set of brackets with the given hiddenInput name
+
+              if (i !== -1) {
+                hiddenInputName = "".concat(name.substr(0, i), "[").concat(hiddenInputName, "]");
+              }
+            }
+
+            this.hiddenInput = this._createEl("input", {
+              type: "hidden",
+              name: hiddenInputName
+            });
+            wrapper.appendChild(this.hiddenInput);
+          }
+        }
+      }, {
+        key: "_appendListItems",
+        value: function _appendListItems(countries, className, preferred) {
+          // we create so many DOM elements, it is faster to build a temp string
+          // and then add everything to the DOM in one go at the end
+          var tmp = ""; // for each country
+
+          for (var i = 0; i < countries.length; i++) {
+            var c = countries[i];
+            var idSuffix = preferred ? "-preferred" : ""; // open the list item
+
+            tmp += "<li class='iti__country ".concat(className, "' tabIndex='-1' id='iti-").concat(this.id, "__item-").concat(c.iso2).concat(idSuffix, "' role='option' data-dial-code='").concat(c.dialCode, "' data-country-code='").concat(c.iso2, "' aria-selected='false'>"); // add the flag
+
+            if (this.options.showFlags) {
+              tmp += "<div class='iti__flag-box'><div class='iti__flag iti__".concat(c.iso2, "'></div></div>");
+            } // and the country name and dial code
+
+
+            tmp += "<span class='iti__country-name'>".concat(c.name, "</span>");
+            tmp += "<span class='iti__dial-code'>+".concat(c.dialCode, "</span>"); // close the list item
+
+            tmp += "</li>";
+          }
+
+          this.countryList.insertAdjacentHTML("beforeend", tmp);
+        }
+      }, {
+        key: "_setInitialState",
+        value: function _setInitialState() {
+          // fix firefox bug: when first load page (with input with value set to number with intl dial
+          // code) and initialising plugin removes the dial code from the input, then refresh page,
+          // and we try to init plugin again but this time on number without dial code so get grey flag
+          var attributeValue = this.telInput.getAttribute("value");
+          var inputValue = this.telInput.value;
+          var useAttribute = attributeValue && attributeValue.charAt(0) === "+" && (!inputValue || inputValue.charAt(0) !== "+");
+          var val = useAttribute ? attributeValue : inputValue;
+
+          var dialCode = this._getDialCode(val);
+
+          var isRegionlessNanp = this._isRegionlessNanp(val);
+
+          var _this$options2 = this.options,
+              initialCountry = _this$options2.initialCountry,
+              autoInsertDialCode = _this$options2.autoInsertDialCode; // if we already have a dial code, and it's not a regionlessNanp, we can go ahead and set the
+          // flag, else fall back to the default country
+
+          if (dialCode && !isRegionlessNanp) {
+            this._updateFlagFromNumber(val);
+          } else if (initialCountry !== "auto") {
+            // see if we should select a flag
+            if (initialCountry) {
+              this._setFlag(initialCountry.toLowerCase());
+            } else {
+              if (dialCode && isRegionlessNanp) {
+                // has intl dial code, is regionless nanp, and no initialCountry, so default to US
+                this._setFlag("us");
+              } else {
+                // no dial code and no initialCountry, so default to first in list
+                this.defaultCountry = this.preferredCountries.length ? this.preferredCountries[0].iso2 : this.countries[0].iso2;
+
+                if (!val) {
+                  this._setFlag(this.defaultCountry);
+                }
+              }
+            } // if empty and autoInsertDialCode then insert the dial code
+
+
+            if (!val && autoInsertDialCode) {
+              this.telInput.value = "+".concat(this.selectedCountryData.dialCode);
+            }
+          } // NOTE: if initialCountry is set to auto, that will be handled separately
+          // format - note this wont be run after _updateDialCode as that's only called if no val
+
+
+          if (val) {
+            this._updateValFromNumber(val);
+          }
+        }
+      }, {
+        key: "_initListeners",
+        value: function _initListeners() {
+          this._initKeyListeners();
+
+          if (this.options.autoInsertDialCode) {
+            this._initBlurListeners();
+          }
+
+          if (this.options.allowDropdown) {
+            this._initDropdownListeners();
+          }
+
+          if (this.hiddenInput) {
+            this._initHiddenInputListener();
+          }
+        }
+      }, {
+        key: "_initHiddenInputListener",
+        value: function _initHiddenInputListener() {
+          var _this3 = this;
+
+          this._handleHiddenInputSubmit = function () {
+            _this3.hiddenInput.value = _this3.getNumber();
+          };
+
+          if (this.telInput.form) {
+            this.telInput.form.addEventListener("submit", this._handleHiddenInputSubmit);
+          }
+        }
+      }, {
+        key: "_getClosestLabel",
+        value: function _getClosestLabel() {
+          var el = this.telInput;
+
+          while (el && el.tagName !== "LABEL") {
+            el = el.parentNode;
+          }
+
+          return el;
+        }
+      }, {
+        key: "_initDropdownListeners",
+        value: function _initDropdownListeners() {
+          var _this4 = this; // hack for input nested inside label (which is valid markup): clicking the selected-flag to
+          // open the dropdown would then automatically trigger a 2nd click on the input which would
+          // close it again
+
+
+          this._handleLabelClick = function (e) {
+            // if the dropdown is closed, then focus the input, else ignore the click
+            if (_this4.countryList.classList.contains("iti__hide")) {
+              _this4.telInput.focus();
+            } else {
+              e.preventDefault();
+            }
+          };
+
+          var label = this._getClosestLabel();
+
+          if (label) {
+            label.addEventListener("click", this._handleLabelClick);
+          } // toggle country dropdown on click
+
+
+          this._handleClickSelectedFlag = function () {
+            // only intercept this event if we're opening the dropdown
+            // else let it bubble up to the top ("click-off-to-close" listener)
+            // we cannot just stopPropagation as it may be needed to close another instance
+            if (_this4.countryList.classList.contains("iti__hide") && !_this4.telInput.disabled && !_this4.telInput.readOnly) {
+              _this4._showDropdown();
+            }
+          };
+
+          this.selectedFlag.addEventListener("click", this._handleClickSelectedFlag); // open dropdown list if currently focused
+
+          this._handleFlagsContainerKeydown = function (e) {
+            var isDropdownHidden = _this4.countryList.classList.contains("iti__hide");
+
+            if (isDropdownHidden && ["ArrowUp", "Up", "ArrowDown", "Down", " ", "Enter"].indexOf(e.key) !== -1) {
+              // prevent form from being submitted if "ENTER" was pressed
+              e.preventDefault(); // prevent event from being handled again by document
+
+              e.stopPropagation();
+
+              _this4._showDropdown();
+            } // allow navigation from dropdown to input on TAB
+
+
+            if (e.key === "Tab") {
+              _this4._closeDropdown();
+            }
+          };
+
+          this.flagsContainer.addEventListener("keydown", this._handleFlagsContainerKeydown);
+        }
+      }, {
+        key: "_initRequests",
+        value: function _initRequests() {
+          var _this5 = this; // if the user has specified the path to the utils script, fetch it on window.load, else resolve
+
+
+          if (this.options.utilsScript && !window.intlTelInputUtils) {
+            // if the plugin is being initialised after the window.load event has already been fired
+            if (window.intlTelInputGlobals.documentReady()) {
+              window.intlTelInputGlobals.loadUtils(this.options.utilsScript);
+            } else {
+              // wait until the load event so we don't block any other requests e.g. the flags image
+              window.addEventListener("load", function () {
+                window.intlTelInputGlobals.loadUtils(_this5.options.utilsScript);
+              });
+            }
+          } else {
+            this.resolveUtilsScriptPromise();
+          }
+
+          if (this.options.initialCountry === "auto") {
+            this._loadAutoCountry();
+          } else {
+            this.resolveAutoCountryPromise();
+          }
+        }
+      }, {
+        key: "_loadAutoCountry",
+        value: function _loadAutoCountry() {
+          // 3 options:
+          // 1) already loaded (we're done)
+          // 2) not already started loading (start)
+          // 3) already started loading (do nothing - just wait for loading callback to fire)
+          if (window.intlTelInputGlobals.autoCountry) {
+            this.handleAutoCountry();
+          } else if (!window.intlTelInputGlobals.startedLoadingAutoCountry) {
+            // don't do this twice!
+            window.intlTelInputGlobals.startedLoadingAutoCountry = true;
+
+            if (typeof this.options.geoIpLookup === "function") {
+              this.options.geoIpLookup(function (countryCode) {
+                window.intlTelInputGlobals.autoCountry = countryCode.toLowerCase(); // tell all instances the auto country is ready
+                // TODO: this should just be the current instances
+                // UPDATE: use setTimeout in case their geoIpLookup function calls this callback straight
+                // away (e.g. if they have already done the geo ip lookup somewhere else). Using
+                // setTimeout means that the current thread of execution will finish before executing
+                // this, which allows the plugin to finish initialising.
+
+                setTimeout(function () {
+                  return forEachInstance("handleAutoCountry");
+                });
+              }, function () {
+                return forEachInstance("rejectAutoCountryPromise");
+              });
+            }
+          }
+        }
+      }, {
+        key: "_initKeyListeners",
+        value: function _initKeyListeners() {
+          var _this6 = this; // update flag on keyup
+
+
+          this._handleKeyupEvent = function () {
+            if (_this6._updateFlagFromNumber(_this6.telInput.value)) {
+              _this6._triggerCountryChange();
+            }
+          };
+
+          this.telInput.addEventListener("keyup", this._handleKeyupEvent); // update flag on cut/paste events (now supported in all major browsers)
+
+          this._handleClipboardEvent = function () {
+            // hack because "paste" event is fired before input is updated
+            setTimeout(_this6._handleKeyupEvent);
+          };
+
+          this.telInput.addEventListener("cut", this._handleClipboardEvent);
+          this.telInput.addEventListener("paste", this._handleClipboardEvent);
+        }
+      }, {
+        key: "_cap",
+        value: function _cap(number) {
+          var max = this.telInput.getAttribute("maxlength");
+          return max && number.length > max ? number.substr(0, max) : number;
+        }
+      }, {
+        key: "_initBlurListeners",
+        value: function _initBlurListeners() {
+          var _this7 = this; // on blur or form submit: if just a dial code then remove it
+
+
+          this._handleSubmitOrBlurEvent = function () {
+            _this7._removeEmptyDialCode();
+          };
+
+          if (this.telInput.form) {
+            this.telInput.form.addEventListener("submit", this._handleSubmitOrBlurEvent);
+          }
+
+          this.telInput.addEventListener("blur", this._handleSubmitOrBlurEvent);
+        }
+      }, {
+        key: "_removeEmptyDialCode",
+        value: function _removeEmptyDialCode() {
+          if (this.telInput.value.charAt(0) === "+") {
+            var numeric = this._getNumeric(this.telInput.value); // if just a plus, or if just a dial code
+
+
+            if (!numeric || this.selectedCountryData.dialCode === numeric) {
+              this.telInput.value = "";
+            }
+          }
+        }
+      }, {
+        key: "_getNumeric",
+        value: function _getNumeric(s) {
+          return s.replace(/\D/g, "");
+        }
+      }, {
+        key: "_trigger",
+        value: function _trigger(name) {
+          // have to use old school document.createEvent as IE11 doesn't support `new Event()` syntax
+          var e = document.createEvent("Event");
+          e.initEvent(name, true, true); // can bubble, and is cancellable
+
+          this.telInput.dispatchEvent(e);
+        }
+      }, {
+        key: "_showDropdown",
+        value: function _showDropdown() {
+          this.countryList.classList.remove("iti__hide");
+          this.selectedFlag.setAttribute("aria-expanded", "true");
+
+          this._setDropdownPosition(); // update highlighting and scroll to active list item
+
+
+          if (this.activeItem) {
+            this._highlightListItem(this.activeItem, false);
+
+            this._scrollTo(this.activeItem, true);
+          } // bind all the dropdown-related listeners: mouseover, click, click-off, keydown
+
+
+          this._bindDropdownListeners(); // update the arrow
+
+
+          this.dropdownArrow.classList.add("iti__arrow--up");
+
+          this._trigger("open:countrydropdown");
+        }
+      }, {
+        key: "_toggleClass",
+        value: function _toggleClass(el, className, shouldHaveClass) {
+          if (shouldHaveClass && !el.classList.contains(className)) {
+            el.classList.add(className);
+          } else if (!shouldHaveClass && el.classList.contains(className)) {
+            el.classList.remove(className);
+          }
+        }
+      }, {
+        key: "_setDropdownPosition",
+        value: function _setDropdownPosition() {
+          var _this8 = this;
+
+          if (this.options.dropdownContainer) {
+            this.options.dropdownContainer.appendChild(this.dropdown);
+          }
+
+          if (!this.isMobile) {
+            var pos = this.telInput.getBoundingClientRect(); // windowTop from https://stackoverflow.com/a/14384091/217866
+
+            var windowTop = window.pageYOffset || document.documentElement.scrollTop;
+            var inputTop = pos.top + windowTop;
+            var dropdownHeight = this.countryList.offsetHeight; // dropdownFitsBelow = (dropdownBottom < windowBottom)
+
+            var dropdownFitsBelow = inputTop + this.telInput.offsetHeight + dropdownHeight < windowTop + window.innerHeight;
+            var dropdownFitsAbove = inputTop - dropdownHeight > windowTop; // by default, the dropdown will be below the input. If we want to position it above the
+            // input, we add the dropup class.
+
+            this._toggleClass(this.countryList, "iti__country-list--dropup", !dropdownFitsBelow && dropdownFitsAbove); // if dropdownContainer is enabled, calculate postion
+
+
+            if (this.options.dropdownContainer) {
+              // by default the dropdown will be directly over the input because it's not in the flow.
+              // If we want to position it below, we need to add some extra top value.
+              var extraTop = !dropdownFitsBelow && dropdownFitsAbove ? 0 : this.telInput.offsetHeight; // calculate placement
+
+              this.dropdown.style.top = "".concat(inputTop + extraTop, "px");
+              this.dropdown.style.left = "".concat(pos.left + document.body.scrollLeft, "px"); // close menu on window scroll
+
+              this._handleWindowScroll = function () {
+                return _this8._closeDropdown();
+              };
+
+              window.addEventListener("scroll", this._handleWindowScroll);
+            }
+          }
+        }
+      }, {
+        key: "_getClosestListItem",
+        value: function _getClosestListItem(target) {
+          var el = target;
+
+          while (el && el !== this.countryList && !el.classList.contains("iti__country")) {
+            el = el.parentNode;
+          } // if we reached the countryList element, then return null
+
+
+          return el === this.countryList ? null : el;
+        }
+      }, {
+        key: "_bindDropdownListeners",
+        value: function _bindDropdownListeners() {
+          var _this9 = this; // when mouse over a list item, just highlight that one
+          // we add the class "highlight", so if they hit "enter" we know which one to select
+
+
+          this._handleMouseoverCountryList = function (e) {
+            // handle event delegation, as we're listening for this event on the countryList
+            var listItem = _this9._getClosestListItem(e.target);
+
+            if (listItem) {
+              _this9._highlightListItem(listItem, false);
+            }
+          };
+
+          this.countryList.addEventListener("mouseover", this._handleMouseoverCountryList); // listen for country selection
+
+          this._handleClickCountryList = function (e) {
+            var listItem = _this9._getClosestListItem(e.target);
+
+            if (listItem) {
+              _this9._selectListItem(listItem);
+            }
+          };
+
+          this.countryList.addEventListener("click", this._handleClickCountryList); // click off to close
+          // (except when this initial opening click is bubbling up)
+          // we cannot just stopPropagation as it may be needed to close another instance
+
+          var isOpening = true;
+
+          this._handleClickOffToClose = function () {
+            if (!isOpening) {
+              _this9._closeDropdown();
+            }
+
+            isOpening = false;
+          };
+
+          document.documentElement.addEventListener("click", this._handleClickOffToClose); // listen for up/down scrolling, enter to select, or letters to jump to country name.
+          // use keydown as keypress doesn't fire for non-char keys and we want to catch if they
+          // just hit down and hold it to scroll down (no keyup event).
+          // listen on the document because that's where key events are triggered if no input has focus
+
+          var query = "";
+          var queryTimer = null;
+
+          this._handleKeydownOnDropdown = function (e) {
+            // prevent down key from scrolling the whole page,
+            // and enter key from submitting a form etc
+            e.preventDefault(); // up and down to navigate
+
+            if (e.key === "ArrowUp" || e.key === "Up" || e.key === "ArrowDown" || e.key === "Down") {
+              _this9._handleUpDownKey(e.key);
+            } else if (e.key === "Enter") {
+              _this9._handleEnterKey();
+            } else if (e.key === "Escape") {
+              _this9._closeDropdown();
+            } else if (/^[a-zA-ZÀ-ÿа-яА-Я ]$/.test(e.key)) {
+              // jump to countries that start with the query string
+              if (queryTimer) {
+                clearTimeout(queryTimer);
+              }
+
+              query += e.key.toLowerCase();
+
+              _this9._searchForCountry(query); // if the timer hits 1 second, reset the query
+
+
+              queryTimer = setTimeout(function () {
+                query = "";
+              }, 1e3);
+            }
+          };
+
+          document.addEventListener("keydown", this._handleKeydownOnDropdown);
+        }
+      }, {
+        key: "_handleUpDownKey",
+        value: function _handleUpDownKey(key) {
+          var next = key === "ArrowUp" || key === "Up" ? this.highlightedItem.previousElementSibling : this.highlightedItem.nextElementSibling;
+
+          if (next) {
+            // skip the divider
+            if (next.classList.contains("iti__divider")) {
+              next = key === "ArrowUp" || key === "Up" ? next.previousElementSibling : next.nextElementSibling;
+            }
+
+            this._highlightListItem(next, true);
+          }
+        }
+      }, {
+        key: "_handleEnterKey",
+        value: function _handleEnterKey() {
+          if (this.highlightedItem) {
+            this._selectListItem(this.highlightedItem);
+          }
+        }
+      }, {
+        key: "_searchForCountry",
+        value: function _searchForCountry(query) {
+          for (var i = 0; i < this.countries.length; i++) {
+            if (this._startsWith(this.countries[i].name, query)) {
+              var listItem = this.countryList.querySelector("#iti-".concat(this.id, "__item-").concat(this.countries[i].iso2)); // update highlighting and scroll
+
+              this._highlightListItem(listItem, false);
+
+              this._scrollTo(listItem, true);
+
+              break;
+            }
+          }
+        }
+      }, {
+        key: "_startsWith",
+        value: function _startsWith(a, b) {
+          return a.substr(0, b.length).toLowerCase() === b;
+        }
+      }, {
+        key: "_updateValFromNumber",
+        value: function _updateValFromNumber(originalNumber) {
+          var number = originalNumber;
+
+          if (this.options.formatOnDisplay && window.intlTelInputUtils && this.selectedCountryData) {
+            var useNational = this.options.nationalMode || number.charAt(0) !== "+" && !this.options.separateDialCode;
+            var _intlTelInputUtils$nu = intlTelInputUtils.numberFormat,
+                NATIONAL = _intlTelInputUtils$nu.NATIONAL,
+                INTERNATIONAL = _intlTelInputUtils$nu.INTERNATIONAL;
+            var format = useNational ? NATIONAL : INTERNATIONAL;
+            number = intlTelInputUtils.formatNumber(number, this.selectedCountryData.iso2, format);
+          }
+
+          number = this._beforeSetNumber(number);
+          this.telInput.value = number;
+        }
+      }, {
+        key: "_updateFlagFromNumber",
+        value: function _updateFlagFromNumber(originalNumber) {
+          // if we already have US/Canada selected, make sure the number starts
+          // with a +1 so _getDialCode will be able to extract the area code
+          // update: if we dont yet have selectedCountryData, but we're here (trying to update the flag
+          // from the number), that means we're initialising the plugin with a number that already has a
+          // dial code, so fine to ignore this bit
+          var number = originalNumber;
+          var selectedDialCode = this.selectedCountryData.dialCode;
+          var isNanp = selectedDialCode === "1";
+
+          if (number && isNanp && number.charAt(0) !== "+") {
+            if (number.charAt(0) !== "1") {
+              number = "1".concat(number);
+            }
+
+            number = "+".concat(number);
+          } // if separateDialCode enabled, then consider the selected dial code to be part of the number
+
+
+          if (this.options.separateDialCode && selectedDialCode && number.charAt(0) !== "+") {
+            number = "+".concat(selectedDialCode).concat(number);
+          } // try and extract valid dial code from input
+
+
+          var dialCode = this._getDialCode(number, true);
+
+          var numeric = this._getNumeric(number);
+
+          var countryCode = null;
+
+          if (dialCode) {
+            var countryCodes = this.countryCodes[this._getNumeric(dialCode)]; // check if the right country is already selected. this should be false if the number is
+            // longer than the matched dial code because in this case we need to make sure that if
+            // there are multiple country matches, that the first one is selected (note: we could
+            // just check that here, but it requires the same loop that we already have later)
+
+
+            var alreadySelected = countryCodes.indexOf(this.selectedCountryData.iso2) !== -1 && numeric.length <= dialCode.length - 1;
+
+            var isRegionlessNanpNumber = selectedDialCode === "1" && this._isRegionlessNanp(numeric); // only update the flag if:
+            // A) NOT (we currently have a NANP flag selected, and the number is a regionlessNanp)
+            // AND
+            // B) the right country is not already selected
+
+
+            if (!isRegionlessNanpNumber && !alreadySelected) {
+              // if using onlyCountries option, countryCodes[0] may be empty, so we must find the first
+              // non-empty index
+              for (var j = 0; j < countryCodes.length; j++) {
+                if (countryCodes[j]) {
+                  countryCode = countryCodes[j];
+                  break;
+                }
+              }
+            }
+          } else if (number.charAt(0) === "+" && numeric.length) {
+            // invalid dial code, so empty
+            // Note: use getNumeric here because the number has not been formatted yet, so could contain
+            // bad chars
+            countryCode = "";
+          } else if (!number || number === "+") {
+            // empty, or just a plus, so default
+            countryCode = this.defaultCountry;
+          }
+
+          if (countryCode !== null) {
+            return this._setFlag(countryCode);
+          }
+
+          return false;
+        }
+      }, {
+        key: "_isRegionlessNanp",
+        value: function _isRegionlessNanp(number) {
+          var numeric = this._getNumeric(number);
+
+          if (numeric.charAt(0) === "1") {
+            var areaCode = numeric.substr(1, 3);
+            return regionlessNanpNumbers.indexOf(areaCode) !== -1;
+          }
+
+          return false;
+        }
+      }, {
+        key: "_highlightListItem",
+        value: function _highlightListItem(listItem, shouldFocus) {
+          var prevItem = this.highlightedItem;
+
+          if (prevItem) {
+            prevItem.classList.remove("iti__highlight");
+          }
+
+          this.highlightedItem = listItem;
+          this.highlightedItem.classList.add("iti__highlight");
+          this.selectedFlag.setAttribute("aria-activedescendant", listItem.getAttribute("id"));
+
+          if (shouldFocus) {
+            this.highlightedItem.focus();
+          }
+        }
+      }, {
+        key: "_getCountryData",
+        value: function _getCountryData(countryCode, ignoreOnlyCountriesOption, allowFail) {
+          var countryList = ignoreOnlyCountriesOption ? allCountries : this.countries;
+
+          for (var i = 0; i < countryList.length; i++) {
+            if (countryList[i].iso2 === countryCode) {
+              return countryList[i];
+            }
+          }
+
+          if (allowFail) {
+            return null;
+          }
+
+          throw new Error("No country data for '".concat(countryCode, "'"));
+        }
+      }, {
+        key: "_setFlag",
+        value: function _setFlag(countryCode) {
+          var _this$options3 = this.options,
+              allowDropdown = _this$options3.allowDropdown,
+              separateDialCode = _this$options3.separateDialCode,
+              showFlags = _this$options3.showFlags;
+          var prevCountry = this.selectedCountryData.iso2 ? this.selectedCountryData : {}; // do this first as it will throw an error and stop if countryCode is invalid
+
+          this.selectedCountryData = countryCode ? this._getCountryData(countryCode, false, false) : {}; // update the defaultCountry - we only need the iso2 from now on, so just store that
+
+          if (this.selectedCountryData.iso2) {
+            this.defaultCountry = this.selectedCountryData.iso2;
+          }
+
+          if (showFlags) {
+            this.selectedFlagInner.setAttribute("class", "iti__flag iti__".concat(countryCode));
+          }
+
+          this._setSelectedCountryFlagTitleAttribute(countryCode, separateDialCode);
+
+          if (separateDialCode) {
+            var dialCode = this.selectedCountryData.dialCode ? "+".concat(this.selectedCountryData.dialCode) : "";
+            this.selectedDialCode.innerHTML = dialCode; // offsetWidth is zero if input is in a hidden container during initialisation
+
+            var selectedFlagWidth = this.selectedFlag.offsetWidth || this._getHiddenSelectedFlagWidth(); // add 6px of padding after the grey selected-dial-code box, as this is what we use in the css
+
+
+            this.telInput.style.paddingLeft = "".concat(selectedFlagWidth + 6, "px");
+          } // and the input's placeholder
+
+
+          this._updatePlaceholder(); // update the active list item
+
+
+          if (allowDropdown) {
+            var prevItem = this.activeItem;
+
+            if (prevItem) {
+              prevItem.classList.remove("iti__active");
+              prevItem.setAttribute("aria-selected", "false");
+            }
+
+            if (countryCode) {
+              // check if there is a preferred item first, else fall back to standard
+              var nextItem = this.countryList.querySelector("#iti-".concat(this.id, "__item-").concat(countryCode, "-preferred")) || this.countryList.querySelector("#iti-".concat(this.id, "__item-").concat(countryCode));
+              nextItem.setAttribute("aria-selected", "true");
+              nextItem.classList.add("iti__active");
+              this.activeItem = nextItem;
+            }
+          } // return if the flag has changed or not
+
+
+          return prevCountry.iso2 !== countryCode;
+        }
+      }, {
+        key: "_setSelectedCountryFlagTitleAttribute",
+        value: function _setSelectedCountryFlagTitleAttribute(countryCode, separateDialCode) {
+          if (!this.selectedFlag) {
+            return;
+          }
+
+          var title;
+
+          if (countryCode && !separateDialCode) {
+            title = "".concat(this.selectedCountryData.name, ": +").concat(this.selectedCountryData.dialCode);
+          } else if (countryCode) {
+            // For screen reader output, we don't want to include the dial code in the reader output twice
+            // so just use the selected country name here:
+            title = this.selectedCountryData.name;
+          } else {
+            title = "Unknown";
+          }
+
+          this.selectedFlag.setAttribute("title", title);
+        }
+      }, {
+        key: "_getHiddenSelectedFlagWidth",
+        value: function _getHiddenSelectedFlagWidth() {
+          // to get the right styling to apply, all we need is a shallow clone of the container,
+          // and then to inject a deep clone of the selectedFlag element
+          var containerClone = this.telInput.parentNode.cloneNode();
+          containerClone.style.visibility = "hidden";
+          document.body.appendChild(containerClone);
+          var flagsContainerClone = this.flagsContainer.cloneNode();
+          containerClone.appendChild(flagsContainerClone);
+          var selectedFlagClone = this.selectedFlag.cloneNode(true);
+          flagsContainerClone.appendChild(selectedFlagClone);
+          var width = selectedFlagClone.offsetWidth;
+          containerClone.parentNode.removeChild(containerClone);
+          return width;
+        }
+      }, {
+        key: "_updatePlaceholder",
+        value: function _updatePlaceholder() {
+          var shouldSetPlaceholder = this.options.autoPlaceholder === "aggressive" || !this.hadInitialPlaceholder && this.options.autoPlaceholder === "polite";
+
+          if (window.intlTelInputUtils && shouldSetPlaceholder) {
+            var numberType = intlTelInputUtils.numberType[this.options.placeholderNumberType];
+            var placeholder = this.selectedCountryData.iso2 ? intlTelInputUtils.getExampleNumber(this.selectedCountryData.iso2, this.options.nationalMode, numberType) : "";
+            placeholder = this._beforeSetNumber(placeholder);
+
+            if (typeof this.options.customPlaceholder === "function") {
+              placeholder = this.options.customPlaceholder(placeholder, this.selectedCountryData);
+            }
+
+            this.telInput.setAttribute("placeholder", placeholder);
+          }
+        }
+      }, {
+        key: "_selectListItem",
+        value: function _selectListItem(listItem) {
+          // update selected flag and active list item
+          var flagChanged = this._setFlag(listItem.getAttribute("data-country-code"));
+
+          this._closeDropdown();
+
+          this._updateDialCode(listItem.getAttribute("data-dial-code")); // focus the input
+
+
+          this.telInput.focus(); // put cursor at end - this fix is required for FF and IE11 (with auto inserting dial code),
+          // who try to put the cursor at the beginning the first time
+
+          var len = this.telInput.value.length;
+          this.telInput.setSelectionRange(len, len);
+
+          if (flagChanged) {
+            this._triggerCountryChange();
+          }
+        }
+      }, {
+        key: "_closeDropdown",
+        value: function _closeDropdown() {
+          this.countryList.classList.add("iti__hide");
+          this.selectedFlag.setAttribute("aria-expanded", "false");
+          this.selectedFlag.removeAttribute("aria-activedescendant"); // update the arrow
+
+          this.dropdownArrow.classList.remove("iti__arrow--up"); // unbind key events
+
+          document.removeEventListener("keydown", this._handleKeydownOnDropdown);
+          document.documentElement.removeEventListener("click", this._handleClickOffToClose);
+          this.countryList.removeEventListener("mouseover", this._handleMouseoverCountryList);
+          this.countryList.removeEventListener("click", this._handleClickCountryList); // remove menu from container
+
+          if (this.options.dropdownContainer) {
+            if (!this.isMobile) {
+              window.removeEventListener("scroll", this._handleWindowScroll);
+            }
+
+            if (this.dropdown.parentNode) {
+              this.dropdown.parentNode.removeChild(this.dropdown);
+            }
+          }
+
+          this._trigger("close:countrydropdown");
+        }
+      }, {
+        key: "_scrollTo",
+        value: function _scrollTo(element, middle) {
+          var container = this.countryList; // windowTop from https://stackoverflow.com/a/14384091/217866
+
+          var windowTop = window.pageYOffset || document.documentElement.scrollTop;
+          var containerHeight = container.offsetHeight;
+          var containerTop = container.getBoundingClientRect().top + windowTop;
+          var containerBottom = containerTop + containerHeight;
+          var elementHeight = element.offsetHeight;
+          var elementTop = element.getBoundingClientRect().top + windowTop;
+          var elementBottom = elementTop + elementHeight;
+          var newScrollTop = elementTop - containerTop + container.scrollTop;
+          var middleOffset = containerHeight / 2 - elementHeight / 2;
+
+          if (elementTop < containerTop) {
+            // scroll up
+            if (middle) {
+              newScrollTop -= middleOffset;
+            }
+
+            container.scrollTop = newScrollTop;
+          } else if (elementBottom > containerBottom) {
+            // scroll down
+            if (middle) {
+              newScrollTop += middleOffset;
+            }
+
+            var heightDifference = containerHeight - elementHeight;
+            container.scrollTop = newScrollTop - heightDifference;
+          }
+        }
+      }, {
+        key: "_updateDialCode",
+        value: function _updateDialCode(newDialCodeBare) {
+          var inputVal = this.telInput.value; // save having to pass this every time
+
+          var newDialCode = "+".concat(newDialCodeBare);
+          var newNumber;
+
+          if (inputVal.charAt(0) === "+") {
+            // there's a plus so we're dealing with a replacement
+            var prevDialCode = this._getDialCode(inputVal);
+
+            if (prevDialCode) {
+              // current number contains a valid dial code, so replace it
+              newNumber = inputVal.replace(prevDialCode, newDialCode);
+            } else {
+              // current number contains an invalid dial code, so ditch it
+              // (no way to determine where the invalid dial code ends and the rest of the number begins)
+              newNumber = newDialCode;
+            }
+
+            this.telInput.value = newNumber;
+          } else if (this.options.autoInsertDialCode) {
+            if (inputVal) {
+              // there is an existing value with no dial code: prefix the new dial code
+              newNumber = newDialCode + inputVal;
+            } else {
+              newNumber = newDialCode;
+            }
+
+            this.telInput.value = newNumber;
+          }
+        }
+      }, {
+        key: "_getDialCode",
+        value: function _getDialCode(number, includeAreaCode) {
+          var dialCode = ""; // only interested in international numbers (starting with a plus)
+
+          if (number.charAt(0) === "+") {
+            var numericChars = ""; // iterate over chars
+
+            for (var i = 0; i < number.length; i++) {
+              var c = number.charAt(i); // if char is number (https://stackoverflow.com/a/8935649/217866)
+
+              if (!isNaN(parseInt(c, 10))) {
+                numericChars += c; // if current numericChars make a valid dial code
+
+                if (includeAreaCode) {
+                  if (this.countryCodes[numericChars]) {
+                    // store the actual raw string (useful for matching later)
+                    dialCode = number.substr(0, i + 1);
+                  }
+                } else {
+                  if (this.dialCodes[numericChars]) {
+                    dialCode = number.substr(0, i + 1); // if we're just looking for a dial code, we can break as soon as we find one
+
+                    break;
+                  }
+                } // stop searching as soon as we can - in this case when we hit max len
+
+
+                if (numericChars.length === this.countryCodeMaxLen) {
+                  break;
+                }
+              }
+            }
+          }
+
+          return dialCode;
+        }
+      }, {
+        key: "_getFullNumber",
+        value: function _getFullNumber() {
+          var val = this.telInput.value.trim();
+          var dialCode = this.selectedCountryData.dialCode;
+          var prefix;
+
+          var numericVal = this._getNumeric(val);
+
+          if (this.options.separateDialCode && val.charAt(0) !== "+" && dialCode && numericVal) {
+            // when using separateDialCode, it is visible so is effectively part of the typed number
+            prefix = "+".concat(dialCode);
+          } else {
+            prefix = "";
+          }
+
+          return prefix + val;
+        }
+      }, {
+        key: "_beforeSetNumber",
+        value: function _beforeSetNumber(originalNumber) {
+          var number = originalNumber;
+
+          if (this.options.separateDialCode) {
+            var dialCode = this._getDialCode(number); // if there is a valid dial code
+
+
+            if (dialCode) {
+              // in case _getDialCode returned an area code as well
+              dialCode = "+".concat(this.selectedCountryData.dialCode); // a lot of numbers will have a space separating the dial code and the main number, and
+              // some NANP numbers will have a hyphen e.g. +1 684-733-1234 - in both cases we want to get
+              // rid of it
+              // NOTE: don't just trim all non-numerics as may want to preserve an open parenthesis etc
+
+              var start = number[dialCode.length] === " " || number[dialCode.length] === "-" ? dialCode.length + 1 : dialCode.length;
+              number = number.substr(start);
+            }
+          }
+
+          return this._cap(number);
+        }
+      }, {
+        key: "_triggerCountryChange",
+        value: function _triggerCountryChange() {
+          this._trigger("countrychange");
+        }
+      }, {
+        key: "handleAutoCountry",
+        value: function handleAutoCountry() {
+          if (this.options.initialCountry === "auto") {
+            // we must set this even if there is an initial val in the input: in case the initial val is
+            // invalid and they delete it - they should see their auto country
+            this.defaultCountry = window.intlTelInputGlobals.autoCountry; // if there's no initial value in the input, then update the flag
+
+            if (!this.telInput.value) {
+              this.setCountry(this.defaultCountry);
+            }
+
+            this.resolveAutoCountryPromise();
+          }
+        }
+      }, {
+        key: "handleUtils",
+        value: function handleUtils() {
+          // if the request was successful
+          if (window.intlTelInputUtils) {
+            // if there's an initial value in the input, then format it
+            if (this.telInput.value) {
+              this._updateValFromNumber(this.telInput.value);
+            }
+
+            this._updatePlaceholder();
+          }
+
+          this.resolveUtilsScriptPromise();
+        }
+      }, {
+        key: "destroy",
+        value: function destroy() {
+          var form = this.telInput.form;
+
+          if (this.options.allowDropdown) {
+            // make sure the dropdown is closed (and unbind listeners)
+            this._closeDropdown();
+
+            this.selectedFlag.removeEventListener("click", this._handleClickSelectedFlag);
+            this.flagsContainer.removeEventListener("keydown", this._handleFlagsContainerKeydown); // label click hack
+
+            var label = this._getClosestLabel();
+
+            if (label) {
+              label.removeEventListener("click", this._handleLabelClick);
+            }
+          } // unbind hiddenInput listeners
+
+
+          if (this.hiddenInput && form) {
+            form.removeEventListener("submit", this._handleHiddenInputSubmit);
+          } // unbind autoInsertDialCode listeners
+
+
+          if (this.options.autoInsertDialCode) {
+            if (form) {
+              form.removeEventListener("submit", this._handleSubmitOrBlurEvent);
+            }
+
+            this.telInput.removeEventListener("blur", this._handleSubmitOrBlurEvent);
+          } // unbind key events, and cut/paste events
+
+
+          this.telInput.removeEventListener("keyup", this._handleKeyupEvent);
+          this.telInput.removeEventListener("cut", this._handleClipboardEvent);
+          this.telInput.removeEventListener("paste", this._handleClipboardEvent); // remove attribute of id instance: data-intl-tel-input-id
+
+          this.telInput.removeAttribute("data-intl-tel-input-id"); // remove markup (but leave the original input)
+
+          var wrapper = this.telInput.parentNode;
+          wrapper.parentNode.insertBefore(this.telInput, wrapper);
+          wrapper.parentNode.removeChild(wrapper);
+          delete window.intlTelInputGlobals.instances[this.id];
+        }
+      }, {
+        key: "getExtension",
+        value: function getExtension() {
+          if (window.intlTelInputUtils) {
+            return intlTelInputUtils.getExtension(this._getFullNumber(), this.selectedCountryData.iso2);
+          }
+
+          return "";
+        }
+      }, {
+        key: "getNumber",
+        value: function getNumber(format) {
+          if (window.intlTelInputUtils) {
+            var iso2 = this.selectedCountryData.iso2;
+            return intlTelInputUtils.formatNumber(this._getFullNumber(), iso2, format);
+          }
+
+          return "";
+        }
+      }, {
+        key: "getNumberType",
+        value: function getNumberType() {
+          if (window.intlTelInputUtils) {
+            return intlTelInputUtils.getNumberType(this._getFullNumber(), this.selectedCountryData.iso2);
+          }
+
+          return -99;
+        }
+      }, {
+        key: "getSelectedCountryData",
+        value: function getSelectedCountryData() {
+          return this.selectedCountryData;
+        }
+      }, {
+        key: "getValidationError",
+        value: function getValidationError() {
+          if (window.intlTelInputUtils) {
+            var iso2 = this.selectedCountryData.iso2;
+            return intlTelInputUtils.getValidationError(this._getFullNumber(), iso2);
+          }
+
+          return -99;
+        }
+      }, {
+        key: "isValidNumber",
+        value: function isValidNumber() {
+          var val = this._getFullNumber().trim();
+
+          return window.intlTelInputUtils ? intlTelInputUtils.isValidNumber(val, this.selectedCountryData.iso2) : null;
+        }
+      }, {
+        key: "setCountry",
+        value: function setCountry(originalCountryCode) {
+          var countryCode = originalCountryCode.toLowerCase(); // check if already selected
+
+          if (this.selectedCountryData.iso2 !== countryCode) {
+            this._setFlag(countryCode);
+
+            this._updateDialCode(this.selectedCountryData.dialCode);
+
+            this._triggerCountryChange();
+          }
+        }
+      }, {
+        key: "setNumber",
+        value: function setNumber(number) {
+          // we must update the flag first, which updates this.selectedCountryData, which is used for
+          // formatting the number before displaying it
+          var flagChanged = this._updateFlagFromNumber(number);
+
+          this._updateValFromNumber(number);
+
+          if (flagChanged) {
+            this._triggerCountryChange();
+          }
+        }
+      }, {
+        key: "setPlaceholderNumberType",
+        value: function setPlaceholderNumberType(type) {
+          this.options.placeholderNumberType = type;
+
+          this._updatePlaceholder();
+        }
+      }]);
+
+      return Iti;
+    }();
+    /********************
+    *  STATIC METHODS
+    ********************/
+    // get the country data object
+
+
+    intlTelInputGlobals.getCountryData = function () {
+      return allCountries;
+    }; // inject a <script> element to load utils.js
+
+
+    var injectScript = function injectScript(path, handleSuccess, handleFailure) {
+      // inject a new script element into the page
+      var script = document.createElement("script");
+
+      script.onload = function () {
+        forEachInstance("handleUtils");
+
+        if (handleSuccess) {
+          handleSuccess();
+        }
+      };
+
+      script.onerror = function () {
+        forEachInstance("rejectUtilsScriptPromise");
+
+        if (handleFailure) {
+          handleFailure();
+        }
+      };
+
+      script.className = "iti-load-utils";
+      script.async = true;
+      script.src = path;
+      document.body.appendChild(script);
+    }; // load the utils script
+
+
+    intlTelInputGlobals.loadUtils = function (path) {
+      // 2 options:
+      // 1) not already started loading (start)
+      // 2) already started loading (do nothing - just wait for the onload callback to fire, which will
+      // trigger handleUtils on all instances, invoking their resolveUtilsScriptPromise functions)
+      if (!window.intlTelInputUtils && !window.intlTelInputGlobals.startedLoadingUtilsScript) {
+        // only do this once
+        window.intlTelInputGlobals.startedLoadingUtilsScript = true; // if we have promises, then return a promise
+
+        if (typeof Promise !== "undefined") {
+          return new Promise(function (resolve, reject) {
+            return injectScript(path, resolve, reject);
+          });
+        }
+
+        injectScript(path);
+      }
+
+      return null;
+    }; // default options
+
+
+    intlTelInputGlobals.defaults = defaults; // version
+
+    intlTelInputGlobals.version = "18.1.7"; // convenience wrapper
+
+    return function (input, options) {
+      var iti = new Iti(input, options);
+
+      iti._init();
+
+      input.setAttribute("data-intl-tel-input-id", iti.id);
+      window.intlTelInputGlobals.instances[iti.id] = iti;
+      return iti;
+    };
+  }();
+});
+
+/***/ }),
+
+/***/ 6931:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+/**
+ * Exposing intl-tel-input as a component
+ */
+module.exports = __webpack_require__(26069);
+
+/***/ }),
+
 /***/ 20177:
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -20162,7 +22340,7 @@ __webpack_require__(87888);
 
 /***/ }),
 
-/***/ 72507:
+/***/ 66699:
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -20172,8 +22350,8 @@ __webpack_require__.d(__webpack_exports__, {
   "Z": function() { return /* binding */ loadField; }
 });
 
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/drupal-string.vue?vue&type=template&id=22fa4a70&
-var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.classCss},[_c('ValidationProvider',{attrs:{"name":_vm.fullname,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('b-form-group',{attrs:{"label":_vm.field.label,"description":_vm.field.description}},[_c('div',{staticClass:"field-item-value"},[_c('b-form-input',{attrs:{"placeholder":_vm.field.placeholder,"state":_vm.getValidationState(v),"name":_vm.fullname,"debounce":"2500"},on:{"input":_vm.input},model:{value:(_vm.input_value),callback:function ($$v) {_vm.input_value=$$v},expression:"input_value"}})],1),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()])]}}])})],1)}
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalString.vue?vue&type=template&id=37e80514&
+var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.classCss},[_c('ValidationProvider',{attrs:{"name":_vm.fullname,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('b-form-group',{class:_vm.size ? 'size-' + _vm.size : '',attrs:{"label":_vm.field.label,"description":_vm.field.description}},[_c('div',{staticClass:"field-item-value"},[_c('b-form-input',{attrs:{"placeholder":_vm.field.placeholder,"state":_vm.getValidationState(v),"name":_vm.fullname,"size":_vm.size,"debounce":"2500"},on:{"input":_vm.input},model:{value:(_vm.input_value),callback:function ($$v) {_vm.input_value=$$v},expression:"input_value"}})],1),(v.errors && v.errors.length > 0)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()])]}}])})],1)}
 var staticRenderFns = []
 
 
@@ -20197,7 +22375,7 @@ var rules = __webpack_require__(24684);
 }));
 (0,vee_validate_esm/* extend */.l7)("alpha", rules/* alpha */.Fq);
 (0,vee_validate_esm/* extend */.l7)("alpha", rules/* numeric */.uR); //export default extend;
-;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-80[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/drupal-string.vue?vue&type=script&lang=js&
+;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-80[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalString.vue?vue&type=script&lang=js&
 
 //
 //
@@ -20223,10 +22401,15 @@ var rules = __webpack_require__(24684);
 //
 //
 //
+//
+//
+//
+//
+//
 
 
 
-/* harmony default export */ var drupal_stringvue_type_script_lang_js_ = ({
+/* harmony default export */ var DrupalStringvue_type_script_lang_js_ = ({
   name: "DrupalString",
   components: {
     ValidationProvider: vee_validate_esm/* ValidationProvider */.d_
@@ -20253,6 +22436,12 @@ var rules = __webpack_require__(24684);
     parentName: {
       type: String,
       required: true
+    },
+    // permet de definir la taille du bouton,
+    // sm,md,lg
+    size: {
+      type: [String],
+      default: "sm"
     }
   },
   data: function data() {
@@ -20322,11 +22511,11 @@ var rules = __webpack_require__(24684);
     }
   }
 });
-;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/drupal-string.vue?vue&type=script&lang=js&
- /* harmony default export */ var fieldsDrupal_drupal_stringvue_type_script_lang_js_ = (drupal_stringvue_type_script_lang_js_); 
+;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalString.vue?vue&type=script&lang=js&
+ /* harmony default export */ var fieldsDrupal_DrupalStringvue_type_script_lang_js_ = (DrupalStringvue_type_script_lang_js_); 
 // EXTERNAL MODULE: ./node_modules/@vue/vue-loader-v15/lib/runtime/componentNormalizer.js
 var componentNormalizer = __webpack_require__(1001);
-;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/drupal-string.vue
+;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalString.vue
 
 
 
@@ -20335,7 +22524,7 @@ var componentNormalizer = __webpack_require__(1001);
 /* normalize component */
 ;
 var component = (0,componentNormalizer/* default */.Z)(
-  fieldsDrupal_drupal_stringvue_type_script_lang_js_,
+  fieldsDrupal_DrupalStringvue_type_script_lang_js_,
   render,
   staticRenderFns,
   false,
@@ -20345,7 +22534,186 @@ var component = (0,componentNormalizer/* default */.Z)(
   
 )
 
-/* harmony default export */ var drupal_string = (component.exports);
+/* harmony default export */ var DrupalString = (component.exports);
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalInteger.vue?vue&type=template&id=bc46f4fe&
+var DrupalIntegervue_type_template_id_bc46f4fe_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.classCss},[_c('ValidationProvider',{attrs:{"name":_vm.fullname,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('b-form-group',{class:_vm.size ? 'size-' + _vm.size : '',attrs:{"label":_vm.field.label,"description":_vm.field.description}},[_c('div',{staticClass:"field-item-value"},[_c('b-form-input',{attrs:{"placeholder":_vm.field.placeholder,"state":_vm.getValidationState(v),"name":_vm.fullname,"size":_vm.size,"min":_vm.settings.min,"max":_vm.settings.max,"debounce":"2500","type":"number"},on:{"input":_vm.input},model:{value:(_vm.input_value),callback:function ($$v) {_vm.input_value=$$v},expression:"input_value"}})],1),(v.errors && v.errors.length > 0)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()])]}}])})],1)}
+var DrupalIntegervue_type_template_id_bc46f4fe_staticRenderFns = []
+
+
+;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-80[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalInteger.vue?vue&type=script&lang=js&
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/* harmony default export */ var DrupalIntegervue_type_script_lang_js_ = ({
+  name: "DrupalInteger",
+  components: {
+    ValidationProvider: vee_validate_esm/* ValidationProvider */.d_
+  },
+  props: {
+    classCss: {
+      type: [Array],
+      default: function _default() {
+        return [];
+      }
+    },
+    field: {
+      type: Object,
+      required: true
+    },
+    model: {
+      type: [Object, Array],
+      required: true
+    },
+    namespaceStore: {
+      type: String,
+      required: true
+    },
+    parentName: {
+      type: String,
+      required: true
+    },
+    // permet de definir la taille du bouton,
+    // sm,md,lg
+    size: {
+      type: [String],
+      default: "sm"
+    }
+  },
+  data: function data() {
+    return {
+      input_value: null,
+      timeout: null
+    };
+  },
+  computed: {
+    fullname: function fullname() {
+      return this.parentName + this.field.name;
+    },
+    settings: function settings() {
+      var settings = {
+        min: "",
+        max: ""
+      };
+
+      if (this.field.definition_settings) {
+        if (this.field.definition_settings.min) settings.min = this.field.definition_settings.min;
+        if (this.field.definition_settings.max) settings.max = this.field.definition_settings.max;
+      }
+
+      return settings;
+    }
+  },
+  watch: {
+    /**
+     * Lorsque le champs est construt via les boucles dynamique,
+     * le template n'est pas reconstruit ducoup la valeur du precedent champs est concerservé.
+     * On applique ce watch et on verra les resultats.
+     * Cela ne s'execute que dans le cadre d'un watch et permet de ressoudre le probleme.
+     */
+    field: function field() {
+      this.input_value = this.getValue();
+    }
+  },
+  mounted: function mounted() {
+    // On recupere la valeur par defaut pour chaque construction:
+    this.input_value = this.getValue();
+  },
+  methods: {
+    getValidationState: function getValidationState(_ref) {
+      var dirty = _ref.dirty,
+          validated = _ref.validated,
+          _ref$valid = _ref.valid,
+          valid = _ref$valid === void 0 ? null : _ref$valid;
+      return (dirty || validated) && !valid ? valid : null;
+    },
+    getRules: function getRules() {
+      return loadField.getRules(this.field);
+    },
+    setValue: function setValue(vals) {
+      var _this = this;
+
+      clearTimeout(this.timeout);
+      this.timeout = setTimeout(function () {
+        if (_this.namespaceStore) {
+          _this.$store.dispatch(_this.namespaceStore + "/setValue", {
+            value: vals,
+            fieldName: _this.fullname
+          });
+        } else _this.$store.dispatch("setValue", {
+          value: vals,
+          fieldName: _this.fullname
+        });
+      }, loadField.timeToWait);
+    },
+    getValue: function getValue() {
+      if (this.model[this.field.name] && this.model[this.field.name][0]) {
+        return this.model[this.field.name][0].value;
+      } else return null;
+    },
+    input: function input(v) {
+      var vals = [];
+      vals.push({
+        value: v
+      });
+      this.setValue(vals);
+    }
+  }
+});
+;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalInteger.vue?vue&type=script&lang=js&
+ /* harmony default export */ var fieldsDrupal_DrupalIntegervue_type_script_lang_js_ = (DrupalIntegervue_type_script_lang_js_); 
+;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalInteger.vue
+
+
+
+
+
+/* normalize component */
+;
+var DrupalInteger_component = (0,componentNormalizer/* default */.Z)(
+  fieldsDrupal_DrupalIntegervue_type_script_lang_js_,
+  DrupalIntegervue_type_template_id_bc46f4fe_render,
+  DrupalIntegervue_type_template_id_bc46f4fe_staticRenderFns,
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* harmony default export */ var DrupalInteger = (DrupalInteger_component.exports);
 ;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/drupal-link.vue?vue&type=template&id=8bcca538&
 var drupal_linkvue_type_template_id_8bcca538_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.classCss},[_c('ValidationProvider',{attrs:{"name":_vm.fullname,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('b-form-group',{attrs:{"label":_vm.field.label,"description":_vm.field.description}},[_c('div',{staticClass:"field-item-value"},[_c('b-form-input',{attrs:{"placeholder":_vm.field.placeholder,"state":_vm.getValidationState(v),"name":_vm.fullname + 'title'},on:{"input":_vm.input},model:{value:(_vm.input_value.title),callback:function ($$v) {_vm.$set(_vm.input_value, "title", $$v)},expression:"input_value.title"}}),_c('b-form-input',{attrs:{"placeholder":_vm.field.placeholder,"state":_vm.getValidationState(v),"name":_vm.fullname + 'url'},on:{"input":_vm.input},model:{value:(_vm.input_value.uri),callback:function ($$v) {_vm.$set(_vm.input_value, "uri", $$v)},expression:"input_value.uri"}})],1),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()])]}}])})],1)}
 var drupal_linkvue_type_template_id_8bcca538_staticRenderFns = []
@@ -20607,20 +22975,20 @@ var drupal_color_component = (0,componentNormalizer/* default */.Z)(
 )
 
 /* harmony default export */ var drupal_color = (drupal_color_component.exports);
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalRadios.vue?vue&type=template&id=04fab202&scoped=true&
-var DrupalRadiosvue_type_template_id_04fab202_scoped_true_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.classCss,attrs:{"type-field-render":"DrupalRadios","type-field-drupal":_vm.field.type}},[_c('div',{staticClass:"field-item-value js-form-type-radio",attrs:{"format_val":_vm.format_val}},[_c('ValidationProvider',{attrs:{"name":_vm.fullname,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [(
-          _vm.field.definition_settings.target_type &&
-          _vm.field.definition_settings.target_type == 'taxonomy_term'
-        )?_c('OptionsTaxonomy',{attrs:{"field":_vm.field,"model":_vm.model,"namespace-store":_vm.namespaceStore},on:{"setValue":_vm.setValue}}):(
-          _vm.field.definition_settings.allowed_values &&
-          Object.keys(_vm.field.definition_settings.allowed_values).length > 0
-        )?_c('OptionsAllowedValues',{attrs:{"field":_vm.field,"model":_vm.model,"namespace-store":_vm.namespaceStore},on:{"setValue":_vm.setValue}}):(
-          _vm.field.definition_settings.target_type &&
-          _vm.field.definition_settings.target_type != ''
-        )?_c('OptionsEntities',{attrs:{"field":_vm.field,"model":_vm.model,"namespace-store":_vm.namespaceStore},on:{"setValue":_vm.setValue}}):_c('b-form-group',{attrs:{"label":_vm.field.label,"name":_vm.fullname}},[_c('div',{staticClass:"fieldset-wrapper"},[(_vm.field.settings && _vm.field.settings.list_options)?_c('div',{staticClass:"radio"},_vm._l((_vm.field.settings.list_options),function(option,o){return _c('b-form-radio',{key:o,staticClass:"form-check",attrs:{"name":_vm.fullname,"value":option.value,"state":_vm.getValidationState(v)},model:{value:(_vm.selected),callback:function ($$v) {_vm.selected=$$v},expression:"selected"}},[_c('transition',{attrs:{"name":"fade","mode":"out-in"}},[_c('div',[(option.image_url)?_c('b-img',{attrs:{"thumbnail":"","fluid":"","src":option.image_url,"alt":"Image 1"}}):_vm._e(),(!option.image_url)?_c('svgLoader'):_vm._e()],1)]),_c('div',{staticClass:"mt-5"},[_vm._v(_vm._s(option.label))]),(
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalRadios.vue?vue&type=template&id=b668fa62&scoped=true&
+var DrupalRadiosvue_type_template_id_b668fa62_scoped_true_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.classCss,attrs:{"type-field-render":"DrupalRadios","type-field-drupal":_vm.field.type}},[_c('div',{staticClass:"field-item-value js-form-type-radio",attrs:{"format_val":_vm.format_val}},[(
+        _vm.field.definition_settings.target_type &&
+        _vm.field.definition_settings.target_type == 'taxonomy_term'
+      )?_c('OptionsTaxonomy',{attrs:{"field":_vm.field,"model":_vm.model,"namespace-store":_vm.namespaceStore,"fullname":_vm.fullname},on:{"setValue":_vm.setValue}}):(
+        _vm.field.definition_settings.allowed_values &&
+        Object.keys(_vm.field.definition_settings.allowed_values).length > 0
+      )?_c('OptionsAllowedValues',{attrs:{"field":_vm.field,"model":_vm.model,"namespace-store":_vm.namespaceStore,"fullname":_vm.fullname},on:{"setValue":_vm.setValue}}):(
+        _vm.field.definition_settings.target_type &&
+        _vm.field.definition_settings.target_type != ''
+      )?_c('OptionsEntities',{attrs:{"field":_vm.field,"model":_vm.model,"namespace-store":_vm.namespaceStore},on:{"setValue":_vm.setValue}}):_c('ValidationProvider',{attrs:{"name":_vm.fullname,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('b-form-group',{class:_vm.size ? 'size-' + _vm.size : '',attrs:{"label":_vm.field.label,"name":_vm.fullname}},[_c('div',{staticClass:"fieldset-wrapper"},[(_vm.field.settings && _vm.field.settings.list_options)?_c('div',{staticClass:"radio"},_vm._l((_vm.field.settings.list_options),function(option,o){return _c('b-form-radio',{key:o,staticClass:"form-check",attrs:{"name":_vm.fullname,"value":option.value,"size":_vm.size,"state":_vm.getValidationState(v)},model:{value:(_vm.selected),callback:function ($$v) {_vm.selected=$$v},expression:"selected"}},[_c('transition',{attrs:{"name":"fade","mode":"out-in"}},[_c('div',[(option.image_url)?_c('b-img',{attrs:{"thumbnail":"","fluid":"","src":option.image_url,"alt":"Image 1"}}):_vm._e(),(!option.image_url)?_c('svgLoader'):_vm._e()],1)]),_c('div',{staticClass:"mt-5"},[_vm._v(_vm._s(option.label))]),(
                   option.description.value && option.description.value !== ''
                 )?_c('div',{staticClass:"mt-5 text-hover",domProps:{"innerHTML":_vm._s(option.description.value)}}):_vm._e()],1)}),1):_vm._e(),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()])])]}}])})],1)])}
-var DrupalRadiosvue_type_template_id_04fab202_scoped_true_staticRenderFns = []
+var DrupalRadiosvue_type_template_id_b668fa62_scoped_true_staticRenderFns = []
 
 
 // EXTERNAL MODULE: ../components_bootstrapvuejs/node_modules/core-js/modules/es.array.iterator.js
@@ -20766,20 +23134,30 @@ var svg_preloader_component = (0,componentNormalizer/* default */.Z)(
 //
 //
 //
- // import { ValidationProvider } from "vee-validate";
-// import "./vee-validation-rules";
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ var DrupalRadiosvue_type_script_lang_js_ = ({
   name: "DrupalRadios",
   components: {
-    // ValidationProvider,
     svgLoader: svg_preloader,
     OptionsTaxonomy: function OptionsTaxonomy() {
       return __webpack_require__.e(/* import() */ 449).then(__webpack_require__.bind(__webpack_require__, 31449));
     },
     OptionsAllowedValues: function OptionsAllowedValues() {
-      return __webpack_require__.e(/* import() */ 36).then(__webpack_require__.bind(__webpack_require__, 63036));
+      return __webpack_require__.e(/* import() */ 951).then(__webpack_require__.bind(__webpack_require__, 53951));
     },
     OptionsEntities: function OptionsEntities() {
       return __webpack_require__.e(/* import() */ 905).then(__webpack_require__.bind(__webpack_require__, 40905));
@@ -20807,6 +23185,12 @@ var svg_preloader_component = (0,componentNormalizer/* default */.Z)(
     parentName: {
       type: String,
       required: true
+    },
+    // permet de definir la taille du bouton,
+    // sm,md,lg
+    size: {
+      type: [String],
+      default: "sm"
     }
   },
   data: function data() {
@@ -20886,10 +23270,10 @@ var svg_preloader_component = (0,componentNormalizer/* default */.Z)(
 });
 ;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalRadios.vue?vue&type=script&lang=js&
  /* harmony default export */ var fieldsDrupal_DrupalRadiosvue_type_script_lang_js_ = (DrupalRadiosvue_type_script_lang_js_); 
-;// CONCATENATED MODULE: ./node_modules/mini-css-extract-plugin/dist/loader.js??clonedRuleSet-52[0].rules[0].use[0]!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-52[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-52[0].rules[0].use[2]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalRadios.vue?vue&type=style&index=0&id=04fab202&scoped=true&lang=css&
+;// CONCATENATED MODULE: ./node_modules/mini-css-extract-plugin/dist/loader.js??clonedRuleSet-52[0].rules[0].use[0]!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-52[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-52[0].rules[0].use[2]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalRadios.vue?vue&type=style&index=0&id=b668fa62&scoped=true&lang=css&
 // extracted by mini-css-extract-plugin
 
-;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalRadios.vue?vue&type=style&index=0&id=04fab202&scoped=true&lang=css&
+;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalRadios.vue?vue&type=style&index=0&id=b668fa62&scoped=true&lang=css&
 
 ;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalRadios.vue
 
@@ -20902,11 +23286,11 @@ var svg_preloader_component = (0,componentNormalizer/* default */.Z)(
 
 var DrupalRadios_component = (0,componentNormalizer/* default */.Z)(
   fieldsDrupal_DrupalRadiosvue_type_script_lang_js_,
-  DrupalRadiosvue_type_template_id_04fab202_scoped_true_render,
-  DrupalRadiosvue_type_template_id_04fab202_scoped_true_staticRenderFns,
+  DrupalRadiosvue_type_template_id_b668fa62_scoped_true_render,
+  DrupalRadiosvue_type_template_id_b668fa62_scoped_true_staticRenderFns,
   false,
   null,
-  "04fab202",
+  "b668fa62",
   null
   
 )
@@ -21117,14 +23501,216 @@ var drupal_list_string_component = (0,componentNormalizer/* default */.Z)(
 )
 
 /* harmony default export */ var drupal_list_string = (drupal_list_string_component.exports);
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/TextareaCkeditor.vue?vue&type=template&id=ce9a3420&
-var TextareaCkeditorvue_type_template_id_ce9a3420_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"mb-4",class:_vm.classCss},[_c('ValidationProvider',{staticClass:"form-group",attrs:{"name":_vm.fullname,"rules":{ required: true }},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('legend',[_vm._v(_vm._s(_vm.field.label))]),_c('ckeditor',{attrs:{"config":_vm.editorConfig,"editor-url":_vm.baseUrl + '/themes/contrib/wb_universe/ckeditor/ckeditor.js'},on:{"input":_vm.input,"namespaceloaded":_vm.onNamespaceLoaded},model:{value:(_vm.editorData),callback:function ($$v) {_vm.editorData=$$v},expression:"editorData"}}),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()]}}])})],1)}
-var TextareaCkeditorvue_type_template_id_ce9a3420_staticRenderFns = []
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/TextareaCkeditor.vue?vue&type=template&id=30dcce6c&
+var TextareaCkeditorvue_type_template_id_30dcce6c_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"mb-4",class:_vm.classCss},[_c('ValidationProvider',{staticClass:"form-group",attrs:{"name":_vm.fullname,"rules":{ required: true }},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('legend',[_vm._v(_vm._s(_vm.field.label))]),_c('div',{staticClass:"options-config"},[_c('b-form-checkbox',{attrs:{"switch":"","size":"md"},model:{value:(_vm.select_edit_mode),callback:function ($$v) {_vm.select_edit_mode=$$v},expression:"select_edit_mode"}},[_vm._v(" Edit code (Pro) ")])],1),(_vm.select_edit_mode)?_c('b-form-textarea',{attrs:{"placeholder":_vm.field.placeholder,"state":_vm.getValidationState(v),"name":_vm.fullname,"rows":"3","max-rows":"6"},on:{"input":_vm.input},model:{value:(_vm.editorData),callback:function ($$v) {_vm.editorData=$$v},expression:"editorData"}}):_vm._e(),(!_vm.select_edit_mode)?_c('ckeditor',{attrs:{"config":_vm.editorConfig,"editor-url":_vm.editorUrl},on:{"input":_vm.input,"namespaceloaded":_vm.onNamespaceLoaded},model:{value:(_vm.editorData),callback:function ($$v) {_vm.editorData=$$v},expression:"editorData"}}):_vm._e(),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()]}}])})],1)}
+var TextareaCkeditorvue_type_template_id_30dcce6c_staticRenderFns = []
 
 
 // EXTERNAL MODULE: ../components_bootstrapvuejs/node_modules/ckeditor4-vue/dist/ckeditor.js
 var ckeditor = __webpack_require__(47758);
 var ckeditor_default = /*#__PURE__*/__webpack_require__.n(ckeditor);
+;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/Ressouces/ckeditor-config.js
+/**
+ * Bug: Les plugins sont charger via cette route : /core/assets/vendor/
+ * Cela est du au fait que il ya un ckeditor qui est chargé à partir de la. (/core/modules/ckeditor/js/ckeditor.js et /core/assets/vendor/ckeditor/ckeditor.js)
+ * ||
+ * fgf
+ */
+
+/* harmony default export */ var ckeditor_config = ({
+  preEditorConfig: function preEditorConfig() {
+    return {
+      codeSnippet_theme: "monokai_sublime",
+      stylesSet: [],
+      // toolbars configs => https://ckeditor.com/latest/samples/toolbarconfigurator/#advanced
+      toolbar: [{
+        name: "basicstyles",
+        items: ["Bold", "Italic", "Underline", "Strike", "Subscript", "Superscript", "-", "CopyFormatting", "RemoveFormat"]
+      }, {
+        name: "clipboard",
+        items: ["Cut", "Copy", "Paste", "PasteText", "PasteFromWord", "-", "Undo", "Redo"]
+      }, {
+        name: "document",
+        items: ["Source", "-", // "Save",
+        // "NewPage",
+        // "Preview",
+        // "Print",
+        // "-",
+        "Templates", "CodeSnippet"]
+      }, // {
+      //   name: "editing",
+      //   items: ["Find", "Replace", "-", "SelectAll", "-", "Scayt"],
+      // },
+      // {
+      //   name: "forms",
+      //   items: [
+      //     "Form",
+      //     "Checkbox",
+      //     "Radio",
+      //     "TextField",
+      //     "Textarea",
+      //     "Select",
+      //     "Button",
+      //     "ImageButton",
+      //     "HiddenField",
+      //   ],
+      // },
+      //"/",
+      {
+        name: "paragraph",
+        items: ["NumberedList", "BulletedList", "-", "Outdent", "Indent", "-", "Blockquote", "CreateDiv", "-", "JustifyLeft", "JustifyCenter", "JustifyRight", "JustifyBlock", "-" // "BidiLtr",
+        // "BidiRtl",
+        // "Language",
+        ]
+      }, {
+        name: "links",
+        items: ["Link", "Unlink", "Anchor"]
+      }, {
+        name: "insert",
+        items: ["Image", "QuickUploaderUpload", "Flash", "Table", "HorizontalRule", "Smiley", "SpecialChar", "PageBreak", "Iframe"]
+      }, "/", {
+        name: "styles",
+        items: ["Styles", "Format", "Font", "FontSize"]
+      }, {
+        name: "colors",
+        items: ["TextColor", "BGColor"]
+      }, {
+        name: "tools",
+        items: ["Maximize", "ShowBlocks"]
+      }, {
+        name: "about",
+        items: ["About"]
+      }],
+      contentsCss: this.getImportCss(),
+      on: {
+        instanceReady: function instanceReady(ev) {
+          ev.sender.dataProcessor.writer.setRules("p", {
+            indent: true,
+            breakBeforeOpen: true,
+            breakAfterOpen: false,
+            breakBeforeClose: true,
+            breakAfterClose: true
+          });
+          ev.sender.dataProcessor.writer.setRules("img", {
+            indent: true,
+            breakBeforeOpen: true,
+            breakAfterOpen: false,
+            breakBeforeClose: false,
+            breakAfterClose: false
+          });
+          ev.sender.dataProcessor.writer.setRules("h1", {
+            indent: true,
+            breakBeforeOpen: false,
+            breakAfterOpen: false,
+            breakBeforeClose: false,
+            breakAfterClose: false
+          });
+          ev.sender.dataProcessor.writer.setRules("h2", {
+            indent: true,
+            breakBeforeOpen: false,
+            breakAfterOpen: false,
+            breakBeforeClose: false,
+            breakAfterClose: false
+          });
+          ev.sender.dataProcessor.writer.setRules("h3", {
+            indent: true,
+            breakBeforeOpen: false,
+            breakAfterOpen: false,
+            breakBeforeClose: false,
+            breakAfterClose: false
+          });
+          ev.sender.dataProcessor.writer.setRules("h4", {
+            indent: true,
+            breakBeforeOpen: false,
+            breakAfterOpen: false,
+            breakBeforeClose: false,
+            breakAfterClose: false
+          });
+          ev.sender.dataProcessor.writer.setRules("h5", {
+            indent: true,
+            breakBeforeOpen: false,
+            breakAfterOpen: false,
+            breakBeforeClose: false,
+            breakAfterClose: false
+          });
+          ev.sender.dataProcessor.writer.setRules("h6", {
+            indent: true,
+            breakBeforeOpen: false,
+            breakAfterOpen: false,
+            breakBeforeClose: false,
+            breakAfterClose: false
+          });
+          ev.sender.dataProcessor.writer.setRules("div", {
+            indent: true,
+            breakBeforeOpen: true,
+            breakAfterOpen: true,
+            breakBeforeClose: true,
+            breakAfterClose: false
+          });
+        }
+      }
+    };
+  },
+  onNamespaceLoaded: function onNamespaceLoaded(CKEDITOR) {
+    // pour empecher ckeditor d'ajouter '<p>'
+    CKEDITOR.config.enterMode = CKEDITOR.ENTER_BR; //
+
+    CKEDITOR.config.allowedContent = true; // CKEDITOR.config.contentsCss =
+    // "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css";
+
+    CKEDITOR.config.htmlEncodeOutput = false;
+    CKEDITOR.config.entities = false; // CKEDITOR.config.entities_processNumerical = 'force';
+
+    CKEDITOR.dtd.$removeEmpty.span = 0;
+    CKEDITOR.dtd.$removeEmpty.i = 0;
+    CKEDITOR.dtd.$removeEmpty.label = 0; // quickuploader
+    // Pas necessaire on a opté d'ajouter le module dans ckeditor au niveau du theme wb-universe/ckeditor.
+    // const date = new Date();
+    // CKEDITOR.plugins.addExternal(
+    //   "quickuploader",
+    //   request.config.getBaseUrl() +
+    //     "/libraries/quickuploader/plugin.js?v=" +
+    //     date.getTime()
+    // );
+    // humm.
+
+    if (loadField.config) CKEDITOR.config.quickuploaderUploadUrl = loadField.config.getBaseUrl();
+  },
+  // Le parent surchargera cette partie enfin de fournir ces styles.
+
+  /**
+   * example in parent : 
+   * ckeditorConfig.getImportCss = function () {
+        return (
+          "@import '" +
+          request.getBaseUrl() +
+          "/themes/contrib/wb_universe/node_modules/%40fortawesome/fontawesome-free/css/all.min.css'; @import 'https://wb-horizon.com/themes/custom/wb_horizon_com/css/vendor-style.css'; "
+        );
+      };
+   * @returns 
+   */
+  getImportCss: function getImportCss() {
+    return "";
+  },
+
+  /**
+   *  editor-url="https://cdn.ckeditor.com/4.20.1/standard/ckeditor.js" permet de specifier l'url externe.
+  NB: Dans la mesure ou la page dispose deja de ckeditor, le module ne chargera plus le CDN, il va utiliser celui qui est present.
+  Consequence, les plugins peuvent ne plus fonctionner sauf s'ils sont definie dans le nouveau plugin.
+  ***
+  Vous pouvez egalment utiliser le plugins local qui se trouve dans /themes/contrib/wb_universe/ckeditor/ckeditor.js" via cet attributes
+  editor-url="/themes/contrib/wb_universe/ckeditor/ckeditor.js".
+  ( pour pallier à ce probleme de ck-editor on va desactivée le module c )
+  ***
+   * @returns 
+   */
+  editorUrl: function editorUrl() {
+    //return "https://cdn.ckeditor.com/4.20.1/standard/ckeditor.js";
+    var urlEdit = loadField.config.getBaseUrl() + "/themes/contrib/wb_universe/ckeditor/ckeditor.js";
+    console.log("urlEdit : ", urlEdit);
+    return urlEdit;
+  }
+});
 ;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-80[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/TextareaCkeditor.vue?vue&type=script&lang=js&
 
 
@@ -21164,6 +23750,14 @@ var ckeditor_default = /*#__PURE__*/__webpack_require__.n(ckeditor);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
@@ -21201,139 +23795,15 @@ var ckeditor_default = /*#__PURE__*/__webpack_require__.n(ckeditor);
   data: function data() {
     return {
       editorData: "",
-      preEditorConfig: {
-        codeSnippet_theme: "monokai_sublime",
-        stylesSet: [],
-        // toolbars configs => https://ckeditor.com/latest/samples/toolbarconfigurator/#advanced
-        toolbar: [{
-          name: "document",
-          items: ["Source", "-", "Save", "NewPage", "Preview", "Print", "-", "Templates"]
-        }, {
-          name: "clipboard",
-          items: ["Cut", "Copy", "Paste", "PasteText", "PasteFromWord", "-", "Undo", "Redo"]
-        }, // {
-        //   name: "editing",
-        //   items: ["Find", "Replace", "-", "SelectAll", "-", "Scayt"],
-        // },
-        // {
-        //   name: "forms",
-        //   items: [
-        //     "Form",
-        //     "Checkbox",
-        //     "Radio",
-        //     "TextField",
-        //     "Textarea",
-        //     "Select",
-        //     "Button",
-        //     "ImageButton",
-        //     "HiddenField",
-        //   ],
-        // },
-        //"/",
-        {
-          name: "basicstyles",
-          items: ["Bold", "Italic", "Underline", "Strike", "Subscript", "Superscript", "-", "CopyFormatting", "RemoveFormat"]
-        }, {
-          name: "paragraph",
-          items: ["NumberedList", "BulletedList", "-", "Outdent", "Indent", "-", "Blockquote", "CreateDiv", "-", "JustifyLeft", "JustifyCenter", "JustifyRight", "JustifyBlock", "-", "BidiLtr", "BidiRtl", "Language"]
-        }, {
-          name: "links",
-          items: ["Link", "Unlink", "Anchor"]
-        }, {
-          name: "insert",
-          items: ["Image", "Flash", "Table", "HorizontalRule", "Smiley", "SpecialChar", "PageBreak", "Iframe"]
-        }, "/", {
-          name: "styles",
-          items: ["Styles", "Format", "Font", "FontSize"]
-        }, {
-          name: "colors",
-          items: ["TextColor", "BGColor"]
-        }, {
-          name: "tools",
-          items: ["Maximize", "ShowBlocks"]
-        }, {
-          name: "about",
-          items: ["About"]
-        }],
-        // On doit trouver un moyen de rendre cette
-        // contentsCss:
-        //   "@import '" +
-        //   config.config.getBaseUrl() +
-        //   "/themes/contrib/wb_universe/node_modules/%40fortawesome/fontawesome-free/css/all.min.css'; @import 'http://wb-horizon.com/themes/custom/wb_horizon_com/css/vendor-style.css';",
-        on: {
-          instanceReady: function instanceReady(ev) {
-            ev.sender.dataProcessor.writer.setRules("p", {
-              indent: true,
-              breakBeforeOpen: true,
-              breakAfterOpen: false,
-              breakBeforeClose: true,
-              breakAfterClose: true
-            });
-            ev.sender.dataProcessor.writer.setRules("img", {
-              indent: true,
-              breakBeforeOpen: true,
-              breakAfterOpen: false,
-              breakBeforeClose: false,
-              breakAfterClose: false
-            });
-            ev.sender.dataProcessor.writer.setRules("h1", {
-              indent: true,
-              breakBeforeOpen: false,
-              breakAfterOpen: false,
-              breakBeforeClose: false,
-              breakAfterClose: false
-            });
-            ev.sender.dataProcessor.writer.setRules("h2", {
-              indent: true,
-              breakBeforeOpen: false,
-              breakAfterOpen: false,
-              breakBeforeClose: false,
-              breakAfterClose: false
-            });
-            ev.sender.dataProcessor.writer.setRules("h3", {
-              indent: true,
-              breakBeforeOpen: false,
-              breakAfterOpen: false,
-              breakBeforeClose: false,
-              breakAfterClose: false
-            });
-            ev.sender.dataProcessor.writer.setRules("h4", {
-              indent: true,
-              breakBeforeOpen: false,
-              breakAfterOpen: false,
-              breakBeforeClose: false,
-              breakAfterClose: false
-            });
-            ev.sender.dataProcessor.writer.setRules("h5", {
-              indent: true,
-              breakBeforeOpen: false,
-              breakAfterOpen: false,
-              breakBeforeClose: false,
-              breakAfterClose: false
-            });
-            ev.sender.dataProcessor.writer.setRules("h6", {
-              indent: true,
-              breakBeforeOpen: false,
-              breakAfterOpen: false,
-              breakBeforeClose: false,
-              breakAfterClose: false
-            });
-            ev.sender.dataProcessor.writer.setRules("div", {
-              indent: true,
-              breakBeforeOpen: true,
-              breakAfterOpen: true,
-              breakBeforeClose: true,
-              breakAfterClose: false
-            });
-          }
-        }
-      },
-      timeout: null
+      preEditorConfig: ckeditor_config.preEditorConfig(),
+      editorUrl: ckeditor_config.editorUrl(),
+      timeout: null,
+      select_edit_mode: false
     };
   },
   computed: {
     editorConfig: function editorConfig() {
-      var extraPlugins = "codesnippet, print,format,font,colorbutton,justify,image,filebrowser,stylesheetparser";
+      var extraPlugins = "quickuploader, codesnippet, print,format,font,colorbutton,justify,image,filebrowser,stylesheetparser";
       return (0,objectSpread2/* default */.Z)({
         extraPlugins: extraPlugins
       }, this.preEditorConfig);
@@ -21389,15 +23859,7 @@ var ckeditor_default = /*#__PURE__*/__webpack_require__.n(ckeditor);
       this.setValue(vals);
     },
     onNamespaceLoaded: function onNamespaceLoaded(CKEDITOR) {
-      CKEDITOR.config.allowedContent = true; // CKEDITOR.config.contentsCss =
-      // "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css";
-
-      CKEDITOR.config.htmlEncodeOutput = false;
-      CKEDITOR.config.entities = false; // CKEDITOR.config.entities_processNumerical = 'force';
-
-      CKEDITOR.dtd.$removeEmpty.span = 0;
-      CKEDITOR.dtd.$removeEmpty.i = 0;
-      CKEDITOR.dtd.$removeEmpty.label = 0;
+      ckeditor_config.onNamespaceLoaded(CKEDITOR);
     }
   }
 });
@@ -21413,8 +23875,8 @@ var ckeditor_default = /*#__PURE__*/__webpack_require__.n(ckeditor);
 ;
 var TextareaCkeditor_component = (0,componentNormalizer/* default */.Z)(
   fieldsDrupal_TextareaCkeditorvue_type_script_lang_js_,
-  TextareaCkeditorvue_type_template_id_ce9a3420_render,
-  TextareaCkeditorvue_type_template_id_ce9a3420_staticRenderFns,
+  TextareaCkeditorvue_type_template_id_30dcce6c_render,
+  TextareaCkeditorvue_type_template_id_30dcce6c_staticRenderFns,
   false,
   null,
   null,
@@ -21768,13 +24230,15 @@ var drupal_file_component = (0,componentNormalizer/* default */.Z)(
 )
 
 /* harmony default export */ var drupal_file = (drupal_file_component.exports);
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/ExperienceType.vue?vue&type=template&id=9396c44e&scoped=true&
-var ExperienceTypevue_type_template_id_9396c44e_scoped_true_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"complexe_field",class:_vm.classCss},[_c('h4',{directives:[{name:"show",rawName:"v-show",value:(!_vm.showFormEdit),expression:"!showFormEdit"}]},[_vm._v(_vm._s(_vm.field.label))]),_c('div',{directives:[{name:"show",rawName:"v-show",value:(!_vm.showFormEdit),expression:"!showFormEdit"}],staticClass:"pb-3 field-mutiple",attrs:{"id":_vm.idHtml}},_vm._l((_vm.value_computed),function(val,k){return _c('div',{key:k,staticClass:"field-item-value mb-4 item"},[_c('div',{staticClass:"bg-light p-4 px-5"},[_c('div',{staticClass:"d-flex justify-content-between align-items-center"},[_c('div',{staticClass:"text"},[_c('div',{staticClass:"font-weight-bold"},[_vm._v(_vm._s(val.value))]),_c('div',{staticClass:"d-flex"},[_c('span',[_vm._v(_vm._s(val.company))]),_c('span',{staticClass:"d-inline-block pl-3"},[_vm._v(" "+_vm._s(_vm.getDateInFrench(val.date_debut))+" ")])])]),_c('div',{staticClass:"icon-buttons"},[_c('span',{directives:[{name:"b-tooltip",rawName:"v-b-tooltip.hover",modifiers:{"hover":true}}],staticClass:"btn-action mr-5",attrs:{"variant":"light","title":"Editer"},on:{"click":function($event){return _vm.Edit(val)}}},[_c('b-icon',{attrs:{"icon":"pencil-fill","variant":"secondary","font-scale":"1"}})],1),_c('span',{directives:[{name:"b-tooltip",rawName:"v-b-tooltip.hover",modifiers:{"hover":true}}],staticClass:"btn-action btn-drag-drop mr-5",attrs:{"variant":"light","title":"Glisser-déposer"}},[_c('b-icon',{attrs:{"icon":"arrows-move","variant":"secondary","font-scale":"1"}})],1),_c('span',{directives:[{name:"b-tooltip",rawName:"v-b-tooltip.hover",modifiers:{"hover":true}}],staticClass:"btn-action mr-4",attrs:{"variant":"light","title":"Supprimer"},on:{"click":function($event){return _vm.removeField(k)}}},[_c('b-icon',{attrs:{"icon":"trash-fill","variant":"secondary","font-scale":"1"}})],1)])])])])}),0),_c('div',{directives:[{name:"show",rawName:"v-show",value:(!_vm.showFormEdit),expression:"!showFormEdit"}],staticClass:"add-new-card",on:{"click":_vm.add}},[_c('div',{staticClass:"anc-content d-flex align-items-center"},[_c('b-icon',{staticClass:"text-info",attrs:{"icon":"plus-circle-fill","font-scale":"1.5"}}),_c('h4',{staticClass:"anc-titre"},[_vm._v(_vm._s(_vm.addButtonTitle))])],1)]),(_vm.showFormEdit)?_c('EditExperienceType',{attrs:{"f-value":_vm.currentEditValue,"field":_vm.field},on:{"closeEditForm":_vm.closeEditForm,"updateValue":_vm.updateValue}}):_vm._e()],1)}
-var ExperienceTypevue_type_template_id_9396c44e_scoped_true_staticRenderFns = []
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/ExperienceType.vue?vue&type=template&id=7998afe4&scoped=true&
+var ExperienceTypevue_type_template_id_7998afe4_scoped_true_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"complexe_field",class:_vm.classCss},[_c('h4',{directives:[{name:"show",rawName:"v-show",value:(!_vm.showFormEdit),expression:"!showFormEdit"}]},[_vm._v(_vm._s(_vm.field.label))]),_c('div',{directives:[{name:"show",rawName:"v-show",value:(!_vm.showFormEdit),expression:"!showFormEdit"}],staticClass:"pb-3 field-mutiple",attrs:{"id":_vm.idHtml}},_vm._l((_vm.value_computed),function(val,k){return _c('div',{key:k,staticClass:"field-item-value mb-4 item"},[_c('div',{staticClass:"bg-light p-4 px-5"},[_c('div',{staticClass:"d-flex justify-content-between align-items-center"},[_c('div',{staticClass:"text"},[_c('div',{staticClass:"font-weight-bold"},[_vm._v(_vm._s(val.value))]),_c('div',{staticClass:"d-flex"},[_c('span',[_vm._v(_vm._s(val.company))]),_c('span',{staticClass:"d-inline-block pl-3"},[_vm._v(" "+_vm._s(_vm.getDateInFrench(val.date_debut))+" ")])])]),_c('div',{staticClass:"icon-buttons"},[_c('span',{directives:[{name:"b-tooltip",rawName:"v-b-tooltip.hover",modifiers:{"hover":true}}],staticClass:"btn-action mr-5",attrs:{"variant":"light","title":"Editer"},on:{"click":function($event){return _vm.Edit(val)}}},[_c('b-icon',{attrs:{"icon":"pencil-fill","variant":"secondary","font-scale":"1"}})],1),_c('span',{directives:[{name:"b-tooltip",rawName:"v-b-tooltip.hover",modifiers:{"hover":true}}],staticClass:"btn-action btn-drag-drop mr-5",attrs:{"variant":"light","title":"Glisser-déposer"}},[_c('b-icon',{attrs:{"icon":"arrows-move","variant":"secondary","font-scale":"1"}})],1),_c('span',{directives:[{name:"b-tooltip",rawName:"v-b-tooltip.hover",modifiers:{"hover":true}}],staticClass:"btn-action mr-4",attrs:{"variant":"light","title":"Supprimer"},on:{"click":function($event){return _vm.removeField(k)}}},[_c('b-icon',{attrs:{"icon":"trash-fill","variant":"secondary","font-scale":"1"}})],1)])])])])}),0),_c('div',{directives:[{name:"show",rawName:"v-show",value:(!_vm.showFormEdit),expression:"!showFormEdit"}],staticClass:"add-new-card",on:{"click":_vm.add}},[_c('div',{staticClass:"anc-content d-flex align-items-center"},[_c('b-icon',{staticClass:"text-info",attrs:{"icon":"plus-circle-fill","font-scale":"1.5"}}),_c('h4',{staticClass:"anc-titre"},[_vm._v(_vm._s(_vm.addButtonTitle))])],1)]),(_vm.showFormEdit)?_c('EditExperienceType',{attrs:{"f-value":_vm.currentEditValue,"field":_vm.field},on:{"closeEditForm":_vm.closeEditForm,"updateValue":_vm.updateValue}}):_vm._e()],1)}
+var ExperienceTypevue_type_template_id_7998afe4_scoped_true_staticRenderFns = []
 
 
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/Ressouces/EditExperienceType.vue?vue&type=template&id=906063fc&
-var EditExperienceTypevue_type_template_id_906063fc_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',[_c('div',{staticClass:"p-3 py-5",on:{"click":function($event){return _vm.$emit('closeEditForm')}}},[_c('span',{directives:[{name:"b-tooltip",rawName:"v-b-tooltip.hover",modifiers:{"hover":true}}],staticClass:"btn-action btn-back",attrs:{"variant":"light","title":"Back"}},[_c('b-icon',{attrs:{"icon":"arrow-left","variant":"secondary","font-scale":"1"}}),_vm._v(" Retour ")],1)]),_c('div',{staticClass:"add-item-form"},[_c('b-form',[_c('b-row',{staticClass:" "},[_c('b-col',{attrs:{"md":"6"}},[_c('div',{staticClass:"fi-input"},[_c('label',{attrs:{"for":"input-titre"}},[_vm._v(_vm._s(_vm.settings.label_value))]),_c('b-form-input',{attrs:{"id":"input-titre","type":"text","placeholder":"Titre","required":""},model:{value:(_vm.form.value),callback:function ($$v) {_vm.$set(_vm.form, "value", $$v)},expression:"form.value"}}),_c('b-form-text',[_vm._v(" p.ex. Vendeur de cercueil ")])],1)]),_c('b-col',{attrs:{"md":"6"}},[_c('div',{staticClass:"fi-input"},[_c('label',{attrs:{"for":"input-compaign"}},[_vm._v(_vm._s(_vm.settings.label_company))]),_c('b-form-input',{attrs:{"id":"input-compaign","type":"text","placeholder":"la compagnie","required":""},model:{value:(_vm.form.company),callback:function ($$v) {_vm.$set(_vm.form, "company", $$v)},expression:"form.company"}}),_c('b-form-text',[_vm._v(" p.ex. Luis Vuitton")])],1)]),_c('b-col',{attrs:{"cols":"12"}},[_c('div',{staticClass:"fi-input"},[_c('label',{attrs:{"for":"input-location"}},[_vm._v(_vm._s(_vm.settings.label_address))]),_c('b-form-input',{attrs:{"id":"input-location","type":"text","placeholder":"Tokyo, Lagos","required":""},model:{value:(_vm.form.address),callback:function ($$v) {_vm.$set(_vm.form, "address", $$v)},expression:"form.address"}}),_c('b-form-text',[_vm._v(" p.ex. Lagos ")])],1)])],1),_c('b-row',{staticClass:" "},[_c('b-col',{attrs:{"md":"6"}},[_c('div',{staticClass:"fi-input"},[_c('label',{attrs:{"for":"input-date-debut"}},[_vm._v(" "+_vm._s(_vm.settings.label_date_debut)+" ")]),_c('b-form-datepicker',{attrs:{"id":"input-date-debut","type":"text","placeholder":"Date de début","required":"","locale":"fr","date-format-options":{
+// EXTERNAL MODULE: ../components_bootstrapvuejs/node_modules/core-js/modules/es.array.slice.js
+var es_array_slice = __webpack_require__(91421);
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/Ressouces/EditExperienceType.vue?vue&type=template&id=40a7aedc&
+var EditExperienceTypevue_type_template_id_40a7aedc_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',[_c('div',{staticClass:"p-3 py-5",on:{"click":function($event){return _vm.$emit('closeEditForm')}}},[_c('span',{directives:[{name:"b-tooltip",rawName:"v-b-tooltip.hover",modifiers:{"hover":true}}],staticClass:"btn-action btn-back",attrs:{"variant":"light","title":"Back"}},[_c('b-icon',{attrs:{"icon":"arrow-left","variant":"secondary","font-scale":"1"}}),_vm._v(" Retour ")],1)]),_c('div',{staticClass:"add-item-form"},[_c('b-form',[_c('b-row',{staticClass:" "},[_c('b-col',{attrs:{"md":"6"}},[_c('div',{staticClass:"fi-input"},[_c('label',{attrs:{"for":"input-titre"}},[_vm._v(_vm._s(_vm.settings.label_value))]),_c('b-form-input',{attrs:{"id":"input-titre","type":"text","placeholder":"Titre","required":""},model:{value:(_vm.form.value),callback:function ($$v) {_vm.$set(_vm.form, "value", $$v)},expression:"form.value"}}),_c('b-form-text',[_vm._v(" p.ex. Vendeur de cercueil ")])],1)]),_c('b-col',{attrs:{"md":"6"}},[_c('div',{staticClass:"fi-input"},[_c('label',{attrs:{"for":"input-compaign"}},[_vm._v(_vm._s(_vm.settings.label_company))]),_c('b-form-input',{attrs:{"id":"input-compaign","type":"text","placeholder":"la compagnie","required":""},model:{value:(_vm.form.company),callback:function ($$v) {_vm.$set(_vm.form, "company", $$v)},expression:"form.company"}}),_c('b-form-text',[_vm._v(" p.ex. Luis Vuitton")])],1)]),_c('b-col',{attrs:{"cols":"12"}},[_c('div',{staticClass:"fi-input"},[_c('label',{attrs:{"for":"input-location"}},[_vm._v(_vm._s(_vm.settings.label_address))]),_c('b-form-input',{attrs:{"id":"input-location","type":"text","placeholder":"Tokyo, Lagos","required":""},model:{value:(_vm.form.address),callback:function ($$v) {_vm.$set(_vm.form, "address", $$v)},expression:"form.address"}}),_c('b-form-text',[_vm._v(" p.ex. Lagos ")])],1)])],1),_c('b-row',{staticClass:" "},[_c('b-col',{attrs:{"md":"6"}},[_c('div',{staticClass:"fi-input"},[_c('label',{attrs:{"for":"input-date-debut"}},[_vm._v(" "+_vm._s(_vm.settings.label_date_debut)+" ")]),_c('b-form-datepicker',{attrs:{"id":"input-date-debut","type":"text","placeholder":"Date de début","required":"","locale":"fr","date-format-options":{
                 year: 'numeric',
                 month: 'short',
                 day: '2-digit',
@@ -21782,8 +24246,8 @@ var EditExperienceTypevue_type_template_id_906063fc_render = function () {var _v
                 year: 'numeric',
                 month: 'short',
                 day: '2-digit',
-              }},model:{value:(_vm.date_fin),callback:function ($$v) {_vm.date_fin=$$v},expression:"date_fin"}}),_c('b-form-text',[_vm._v(" p.ex. 22 Dec ")]),_c('b-form-checkbox',{staticClass:"mt-3 ml-2",attrs:{"required":""},model:{value:(_vm.form.en_poste),callback:function ($$v) {_vm.$set(_vm.form, "en_poste", $$v)},expression:"form.en_poste"}},[_vm._v(" "+_vm._s(_vm.settings.label_en_poste)+" ")])],1)])],1),_c('b-row',{staticClass:" "},[_c('b-col',[_c('div',{staticClass:"fi-input fi-input--textarea"},[_c('label',{staticClass:"label-respon",attrs:{"for":"input-textarea-role"}},[_vm._v(" "+_vm._s(_vm.settings.label_description)+" ")]),_c('ckeditor',{attrs:{"config":_vm.editorConfig},on:{"input":_vm.input,"namespaceloaded":_vm.onNamespaceLoaded},model:{value:(_vm.form.description),callback:function ($$v) {_vm.$set(_vm.form, "description", $$v)},expression:"form.description"}}),_c('b-form-text',[_vm._v(" p.ex. Organisation d'événements VIP et prise en charge de clients exclusifs. ")])],1)])],1)],1)],1)])}
-var EditExperienceTypevue_type_template_id_906063fc_staticRenderFns = []
+              }},model:{value:(_vm.date_fin),callback:function ($$v) {_vm.date_fin=$$v},expression:"date_fin"}}),_c('b-form-text',[_vm._v(" p.ex. 22 Dec ")]),_c('b-form-checkbox',{staticClass:"mt-3 ml-2",attrs:{"required":""},model:{value:(_vm.form.en_poste),callback:function ($$v) {_vm.$set(_vm.form, "en_poste", $$v)},expression:"form.en_poste"}},[_vm._v(" "+_vm._s(_vm.settings.label_en_poste)+" ")])],1)])],1),_c('b-row',{staticClass:" "},[_c('b-col',[_c('div',{staticClass:"fi-input fi-input--textarea"},[_c('label',{staticClass:"label-respon",attrs:{"for":"input-textarea-role"}},[_vm._v(" "+_vm._s(_vm.settings.label_description)+" ")]),_c('ckeditor',{attrs:{"config":_vm.editorConfig,"editor-url":_vm.editorUrl},on:{"input":_vm.input,"namespaceloaded":_vm.onNamespaceLoaded},model:{value:(_vm.form.description),callback:function ($$v) {_vm.$set(_vm.form, "description", $$v)},expression:"form.description"}}),_c('b-form-text',[_vm._v(" p.ex. Organisation d'événements VIP et prise en charge de clients exclusifs. ")])],1)])],1)],1)],1)])}
+var EditExperienceTypevue_type_template_id_40a7aedc_staticRenderFns = []
 
 
 // EXTERNAL MODULE: ../components_bootstrapvuejs/node_modules/core-js/modules/es.symbol.js
@@ -21930,6 +24394,8 @@ var es_symbol_description = __webpack_require__(66066);
 //
 //
 //
+//
+
 
 
 /* harmony default export */ var EditExperienceTypevue_type_script_lang_js_ = ({
@@ -21953,82 +24419,8 @@ var es_symbol_description = __webpack_require__(66066);
   data: function data() {
     return {
       editorData: "",
-      preEditorConfig: {
-        codeSnippet_theme: "monokai_sublime",
-        stylesSet: [],
-        toolbar: [{
-          name: "document",
-          items: ["Bold", "Italic", "-", "Cut", "Copy", "Paste", "PasteText", "PasteFromWord", "-", "Undo", "Redo"]
-        }],
-        contentsCss: "@import '" + loadField.config.getBaseUrl() + "/themes/contrib/wb_universe/node_modules/%40fortawesome/fontawesome-free/css/all.min.css'; @import 'http://wb-horizon.com/themes/custom/wb_horizon_com/css/vendor-style.css';",
-        on: {
-          instanceReady: function instanceReady(ev) {
-            ev.sender.dataProcessor.writer.setRules("p", {
-              indent: true,
-              breakBeforeOpen: true,
-              breakAfterOpen: false,
-              breakBeforeClose: true,
-              breakAfterClose: true
-            });
-            ev.sender.dataProcessor.writer.setRules("img", {
-              indent: true,
-              breakBeforeOpen: true,
-              breakAfterOpen: false,
-              breakBeforeClose: false,
-              breakAfterClose: false
-            });
-            ev.sender.dataProcessor.writer.setRules("h1", {
-              indent: true,
-              breakBeforeOpen: false,
-              breakAfterOpen: false,
-              breakBeforeClose: false,
-              breakAfterClose: false
-            });
-            ev.sender.dataProcessor.writer.setRules("h2", {
-              indent: true,
-              breakBeforeOpen: false,
-              breakAfterOpen: false,
-              breakBeforeClose: false,
-              breakAfterClose: false
-            });
-            ev.sender.dataProcessor.writer.setRules("h3", {
-              indent: true,
-              breakBeforeOpen: false,
-              breakAfterOpen: false,
-              breakBeforeClose: false,
-              breakAfterClose: false
-            });
-            ev.sender.dataProcessor.writer.setRules("h4", {
-              indent: true,
-              breakBeforeOpen: false,
-              breakAfterOpen: false,
-              breakBeforeClose: false,
-              breakAfterClose: false
-            });
-            ev.sender.dataProcessor.writer.setRules("h5", {
-              indent: true,
-              breakBeforeOpen: false,
-              breakAfterOpen: false,
-              breakBeforeClose: false,
-              breakAfterClose: false
-            });
-            ev.sender.dataProcessor.writer.setRules("h6", {
-              indent: true,
-              breakBeforeOpen: false,
-              breakAfterOpen: false,
-              breakBeforeClose: false,
-              breakAfterClose: false
-            });
-            ev.sender.dataProcessor.writer.setRules("div", {
-              indent: true,
-              breakBeforeOpen: true,
-              breakAfterOpen: true,
-              breakBeforeClose: true,
-              breakAfterClose: false
-            });
-          }
-        }
-      },
+      preEditorConfig: ckeditor_config.preEditorConfig(),
+      editorUrl: ckeditor_config.editorUrl(),
       timer: null
     };
   },
@@ -22112,15 +24504,7 @@ var es_symbol_description = __webpack_require__(66066);
       this.form.description = v;
     },
     onNamespaceLoaded: function onNamespaceLoaded(CKEDITOR) {
-      CKEDITOR.config.allowedContent = true; // CKEDITOR.config.contentsCss =
-      //   "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css";
-
-      CKEDITOR.config.htmlEncodeOutput = false;
-      CKEDITOR.config.entities = false; // CKEDITOR.config.entities_processNumerical = 'force';
-
-      CKEDITOR.dtd.$removeEmpty.span = 0;
-      CKEDITOR.dtd.$removeEmpty.i = 0;
-      CKEDITOR.dtd.$removeEmpty.label = 0;
+      ckeditor_config.onNamespaceLoaded(CKEDITOR);
     }
   }
 });
@@ -22136,8 +24520,8 @@ var es_symbol_description = __webpack_require__(66066);
 ;
 var EditExperienceType_component = (0,componentNormalizer/* default */.Z)(
   Ressouces_EditExperienceTypevue_type_script_lang_js_,
-  EditExperienceTypevue_type_template_id_906063fc_render,
-  EditExperienceTypevue_type_template_id_906063fc_staticRenderFns,
+  EditExperienceTypevue_type_template_id_40a7aedc_render,
+  EditExperienceTypevue_type_template_id_40a7aedc_staticRenderFns,
   false,
   null,
   null,
@@ -22163,7 +24547,7 @@ var modules_web_dom_collections_iterator = __webpack_require__(33948);
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es.error.cause.js
 var es_error_cause = __webpack_require__(21703);
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es.array.slice.js
-var es_array_slice = __webpack_require__(47042);
+var modules_es_array_slice = __webpack_require__(47042);
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es.function.name.js
 var modules_es_function_name = __webpack_require__(68309);
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es.array.from.js
@@ -22269,8 +24653,6 @@ function _createForOfIteratorHelper(o, allowArrayLike) {
 var classCallCheck = __webpack_require__(74225);
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/createClass.js
 var createClass = __webpack_require__(34547);
-// EXTERNAL MODULE: ../components_bootstrapvuejs/node_modules/core-js/modules/es.array.slice.js
-var modules_es_array_slice = __webpack_require__(91421);
 ;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/js/drap-drop-html5.js
 
 
@@ -22504,6 +24886,7 @@ var DragAndDrop = /*#__PURE__*/function () {
 
 
 
+
 //
 //
 //
@@ -22642,7 +25025,7 @@ var defaultValue = function defaultValue() {
   },
   data: function data() {
     return {
-      idHtml: "sort-" + Math.random().toString(36),
+      idHtml: "sort-" + Math.random().toString(36).slice(2),
       currentEditValue: {},
       showFormEdit: false,
       sortable: null,
@@ -22801,10 +25184,10 @@ var defaultValue = function defaultValue() {
 });
 ;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/ExperienceType.vue?vue&type=script&lang=js&
  /* harmony default export */ var fieldsDrupal_ExperienceTypevue_type_script_lang_js_ = (ExperienceTypevue_type_script_lang_js_); 
-;// CONCATENATED MODULE: ./node_modules/mini-css-extract-plugin/dist/loader.js??clonedRuleSet-62[0].rules[0].use[0]!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-62[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-62[0].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-62[0].rules[0].use[3]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/ExperienceType.vue?vue&type=style&index=0&id=9396c44e&lang=scss&scoped=true&
+;// CONCATENATED MODULE: ./node_modules/mini-css-extract-plugin/dist/loader.js??clonedRuleSet-62[0].rules[0].use[0]!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-62[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-62[0].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-62[0].rules[0].use[3]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/ExperienceType.vue?vue&type=style&index=0&id=7998afe4&lang=scss&scoped=true&
 // extracted by mini-css-extract-plugin
 
-;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/ExperienceType.vue?vue&type=style&index=0&id=9396c44e&lang=scss&scoped=true&
+;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/ExperienceType.vue?vue&type=style&index=0&id=7998afe4&lang=scss&scoped=true&
 
 ;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/ExperienceType.vue
 
@@ -22817,25 +25200,25 @@ var defaultValue = function defaultValue() {
 
 var ExperienceType_component = (0,componentNormalizer/* default */.Z)(
   fieldsDrupal_ExperienceTypevue_type_script_lang_js_,
-  ExperienceTypevue_type_template_id_9396c44e_scoped_true_render,
-  ExperienceTypevue_type_template_id_9396c44e_scoped_true_staticRenderFns,
+  ExperienceTypevue_type_template_id_7998afe4_scoped_true_render,
+  ExperienceTypevue_type_template_id_7998afe4_scoped_true_staticRenderFns,
   false,
   null,
-  "9396c44e",
+  "7998afe4",
   null
   
 )
 
 /* harmony default export */ var ExperienceType = (ExperienceType_component.exports);
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/MultiSelect.vue?vue&type=template&id=c29e3076&
-var MultiSelectvue_type_template_id_c29e3076_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.classCss,attrs:{"type-field-render":"MultiSelect","type-field-drupal":_vm.field.type}},[(
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/MultiSelect.vue?vue&type=template&id=03a152cd&
+var MultiSelectvue_type_template_id_03a152cd_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.classCss,attrs:{"type-field-render":"MultiSelect","type-field-drupal":_vm.field.type}},[(
       _vm.field.definition_settings &&
       _vm.field.definition_settings.target_type == 'taxonomy_term'
-    )?_c('MultiSelectTaxo',{attrs:{"field":_vm.field,"model":_vm.model,"namespace-store":_vm.namespaceStore,"parent-name":_vm.parentName}}):(
+    )?_c('MultiSelectTaxo',{attrs:{"field":_vm.field,"model":_vm.model,"namespace-store":_vm.namespaceStore,"parent-name":_vm.parentName,"override-config":_vm.overrideConfig}}):(
       _vm.field.definition_settings &&
       _vm.field.definition_settings.target_type != 'taxonomy_term'
-    )?_c('MultiSelectEntities',{attrs:{"field":_vm.field,"model":_vm.model,"namespace-store":_vm.namespaceStore,"parent-name":_vm.parentName}}):_vm._e()],1)}
-var MultiSelectvue_type_template_id_c29e3076_staticRenderFns = []
+    )?_c('MultiSelectEntities',{attrs:{"field":_vm.field,"model":_vm.model,"namespace-store":_vm.namespaceStore,"parent-name":_vm.parentName,"override-config":_vm.overrideConfig}}):_vm._e()],1)}
+var MultiSelectvue_type_template_id_03a152cd_staticRenderFns = []
 
 
 ;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-80[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/MultiSelect.vue?vue&type=script&lang=js&
@@ -22878,6 +25261,8 @@ var MultiSelectvue_type_template_id_c29e3076_staticRenderFns = []
 //
 //
 //
+//
+//
 /* harmony default export */ var MultiSelectvue_type_script_lang_js_ = ({
   name: "MultiSelect",
   components: {
@@ -22885,7 +25270,7 @@ var MultiSelectvue_type_template_id_c29e3076_staticRenderFns = []
       return __webpack_require__.e(/* import() */ 168).then(__webpack_require__.bind(__webpack_require__, 56168));
     },
     MultiSelectEntities: function MultiSelectEntities() {
-      return __webpack_require__.e(/* import() */ 219).then(__webpack_require__.bind(__webpack_require__, 32219));
+      return __webpack_require__.e(/* import() */ 827).then(__webpack_require__.bind(__webpack_require__, 98827));
     }
   },
   props: {
@@ -22910,6 +25295,15 @@ var MultiSelectvue_type_template_id_c29e3076_staticRenderFns = []
     parentName: {
       type: String,
       required: true
+    },
+
+    /**
+     * Pour effeutuer les requetes, certains champs initialise leur configuration, cela fontionne si l'application est interne au site.
+     * Mais dans le cadre d'une applcation decouplé, il faut utiliser la config definie par l'applicationde base. (dans ce cas on met true)
+     */
+    overrideConfig: {
+      type: Boolean,
+      default: false
     }
   }
 });
@@ -22926,8 +25320,8 @@ var MultiSelectvue_type_template_id_c29e3076_staticRenderFns = []
 
 var MultiSelect_component = (0,componentNormalizer/* default */.Z)(
   fieldsDrupal_MultiSelectvue_type_script_lang_js_,
-  MultiSelectvue_type_template_id_c29e3076_render,
-  MultiSelectvue_type_template_id_c29e3076_staticRenderFns,
+  MultiSelectvue_type_template_id_03a152cd_render,
+  MultiSelectvue_type_template_id_03a152cd_staticRenderFns,
   false,
   null,
   null,
@@ -22936,9 +25330,9 @@ var MultiSelect_component = (0,componentNormalizer/* default */.Z)(
 )
 
 /* harmony default export */ var MultiSelect = (MultiSelect_component.exports);
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/ValueNiveau.vue?vue&type=template&id=24371c37&scoped=true&
-var ValueNiveauvue_type_template_id_24371c37_scoped_true_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"complexe_field",class:_vm.classCss},[_c('h4',{directives:[{name:"show",rawName:"v-show",value:(!_vm.showFormEdit),expression:"!showFormEdit"}]},[_vm._v(_vm._s(_vm.field.label))]),_c('div',{directives:[{name:"show",rawName:"v-show",value:(!_vm.showFormEdit),expression:"!showFormEdit"}],staticClass:"pb-3 field-mutiple",attrs:{"id":_vm.idHtml}},_vm._l((_vm.value_computed),function(val,k){return _c('div',{key:k,staticClass:"field-item-value mb-4"},[_c('div',{staticClass:"bg-light p-4 px-5"},[_c('div',{staticClass:"d-flex justify-content-between align-items-center"},[(val)?_c('div',{staticClass:"text"},[(val && val.target_id && _vm.terms['tid-' + val.target_id])?_c('div',{staticClass:"font-weight-bold"},[_vm._v(" "+_vm._s(_vm.terms["tid-" + val.target_id].name)+" ")]):_vm._e(),(!_vm.terms['tid-' + val.target_id])?_c('i',{staticClass:"text-muted font-weight-bold"},[_vm._v(" Compétence ... ")]):_vm._e(),_c('div',{staticClass:"d-flex"},[_c('span',[_vm._v(" "+_vm._s(_vm.field.settings.niveau_options[val.niveau])+" ")])])]):_vm._e(),_c('div',{staticClass:"icon-buttons"},[_c('span',{directives:[{name:"b-tooltip",rawName:"v-b-tooltip.hover",modifiers:{"hover":true}}],staticClass:"btn-action mr-5",attrs:{"variant":"light","title":"Editer"},on:{"click":function($event){return _vm.Edit(val)}}},[_c('b-icon',{attrs:{"icon":"pencil-fill","variant":"secondary","font-scale":"1"}})],1),_c('span',{directives:[{name:"b-tooltip",rawName:"v-b-tooltip.hover",modifiers:{"hover":true}}],staticClass:"btn-action btn-drag-drop mr-5",attrs:{"variant":"light","title":"Glisser-déposer"}},[_c('b-icon',{attrs:{"icon":"arrows-move","variant":"secondary","font-scale":"1"}})],1),_c('span',{directives:[{name:"b-tooltip",rawName:"v-b-tooltip.hover",modifiers:{"hover":true}}],staticClass:"btn-action mr-4",attrs:{"variant":"light","title":"Supprimer"},on:{"click":function($event){return _vm.removeField(k)}}},[_c('b-icon',{attrs:{"icon":"trash-fill","variant":"secondary","font-scale":"1"}})],1)])])])])}),0),_c('div',{directives:[{name:"show",rawName:"v-show",value:(!_vm.showFormEdit),expression:"!showFormEdit"}],staticClass:"add-new-card",on:{"click":_vm.add}},[_c('div',{staticClass:"anc-content d-flex align-items-center"},[_c('b-icon',{staticClass:"text-info",attrs:{"icon":"plus-circle-fill","font-scale":"1.5"}}),_c('h4',{staticClass:"anc-titre"},[_vm._v(_vm._s(_vm.addButtonTitle))])],1)]),(_vm.showFormEdit)?_c('EditValueNiveau',{attrs:{"f-value":_vm.currentEditValue,"field":_vm.field,"terms":_vm.terms},on:{"closeEditForm":_vm.closeEditForm,"setValue":_vm.setValue,"addTermsInCache":_vm.addTermsInCache}}):_vm._e()],1)}
-var ValueNiveauvue_type_template_id_24371c37_scoped_true_staticRenderFns = []
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/ValueNiveau.vue?vue&type=template&id=73037056&scoped=true&
+var ValueNiveauvue_type_template_id_73037056_scoped_true_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"complexe_field",class:_vm.classCss},[_c('h4',{directives:[{name:"show",rawName:"v-show",value:(!_vm.showFormEdit),expression:"!showFormEdit"}]},[_vm._v(_vm._s(_vm.field.label))]),_c('div',{directives:[{name:"show",rawName:"v-show",value:(!_vm.showFormEdit),expression:"!showFormEdit"}],staticClass:"pb-3 field-mutiple",attrs:{"id":_vm.idHtml}},_vm._l((_vm.value_computed),function(val,k){return _c('div',{key:k,staticClass:"field-item-value mb-4"},[_c('div',{staticClass:"bg-light p-4 px-5"},[_c('div',{staticClass:"d-flex justify-content-between align-items-center"},[(val)?_c('div',{staticClass:"text"},[(val && val.target_id && _vm.terms['tid-' + val.target_id])?_c('div',{staticClass:"font-weight-bold"},[_vm._v(" "+_vm._s(_vm.terms["tid-" + val.target_id].name)+" ")]):_vm._e(),(!_vm.terms['tid-' + val.target_id])?_c('i',{staticClass:"text-muted font-weight-bold"},[_vm._v(" Compétence ... ")]):_vm._e(),_c('div',{staticClass:"d-flex"},[_c('span',[_vm._v(" "+_vm._s(_vm.field.settings.niveau_options[val.niveau])+" ")])])]):_vm._e(),_c('div',{staticClass:"icon-buttons"},[_c('span',{directives:[{name:"b-tooltip",rawName:"v-b-tooltip.hover",modifiers:{"hover":true}}],staticClass:"btn-action mr-5",attrs:{"variant":"light","title":"Editer"},on:{"click":function($event){return _vm.Edit(val)}}},[_c('b-icon',{attrs:{"icon":"pencil-fill","variant":"secondary","font-scale":"1"}})],1),_c('span',{directives:[{name:"b-tooltip",rawName:"v-b-tooltip.hover",modifiers:{"hover":true}}],staticClass:"btn-action btn-drag-drop mr-5",attrs:{"variant":"light","title":"Glisser-déposer"}},[_c('b-icon',{attrs:{"icon":"arrows-move","variant":"secondary","font-scale":"1"}})],1),_c('span',{directives:[{name:"b-tooltip",rawName:"v-b-tooltip.hover",modifiers:{"hover":true}}],staticClass:"btn-action mr-4",attrs:{"variant":"light","title":"Supprimer"},on:{"click":function($event){return _vm.removeField(k)}}},[_c('b-icon',{attrs:{"icon":"trash-fill","variant":"secondary","font-scale":"1"}})],1)])])])])}),0),_c('div',{directives:[{name:"show",rawName:"v-show",value:(!_vm.showFormEdit),expression:"!showFormEdit"}],staticClass:"add-new-card",on:{"click":_vm.add}},[_c('div',{staticClass:"anc-content d-flex align-items-center"},[_c('b-icon',{staticClass:"text-info",attrs:{"icon":"plus-circle-fill","font-scale":"1.5"}}),_c('h4',{staticClass:"anc-titre"},[_vm._v(_vm._s(_vm.addButtonTitle))])],1)]),(_vm.showFormEdit)?_c('EditValueNiveau',{attrs:{"f-value":_vm.currentEditValue,"field":_vm.field,"terms":_vm.terms},on:{"closeEditForm":_vm.closeEditForm,"setValue":_vm.setValue,"addTermsInCache":_vm.addTermsInCache}}):_vm._e()],1)}
+var ValueNiveauvue_type_template_id_73037056_scoped_true_staticRenderFns = []
 
 
 // EXTERNAL MODULE: ../drupal-vuejs/src/App/jsonApi/termsTaxo.js
@@ -23205,6 +25599,7 @@ var EditValueNiveau_component = (0,componentNormalizer/* default */.Z)(
 
 
 
+
 //
 //
 //
@@ -23347,7 +25742,7 @@ var ValueNiveauvue_type_script_lang_js_defaultValue = function defaultValue() {
   },
   data: function data() {
     return {
-      idHtml: "sort-" + Math.random().toString(36),
+      idHtml: "sort-" + Math.random().toString(36).slice(2),
       currentEditValue: {},
       showFormEdit: false,
 
@@ -23532,10 +25927,10 @@ var ValueNiveauvue_type_script_lang_js_defaultValue = function defaultValue() {
 });
 ;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/ValueNiveau.vue?vue&type=script&lang=js&
  /* harmony default export */ var fieldsDrupal_ValueNiveauvue_type_script_lang_js_ = (ValueNiveauvue_type_script_lang_js_); 
-;// CONCATENATED MODULE: ./node_modules/mini-css-extract-plugin/dist/loader.js??clonedRuleSet-62[0].rules[0].use[0]!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-62[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-62[0].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-62[0].rules[0].use[3]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/ValueNiveau.vue?vue&type=style&index=0&id=24371c37&lang=scss&scoped=true&
+;// CONCATENATED MODULE: ./node_modules/mini-css-extract-plugin/dist/loader.js??clonedRuleSet-62[0].rules[0].use[0]!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-62[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-62[0].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-62[0].rules[0].use[3]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/ValueNiveau.vue?vue&type=style&index=0&id=73037056&lang=scss&scoped=true&
 // extracted by mini-css-extract-plugin
 
-;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/ValueNiveau.vue?vue&type=style&index=0&id=24371c37&lang=scss&scoped=true&
+;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/ValueNiveau.vue?vue&type=style&index=0&id=73037056&lang=scss&scoped=true&
 
 ;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/ValueNiveau.vue
 
@@ -23548,11 +25943,11 @@ var ValueNiveauvue_type_script_lang_js_defaultValue = function defaultValue() {
 
 var ValueNiveau_component = (0,componentNormalizer/* default */.Z)(
   fieldsDrupal_ValueNiveauvue_type_script_lang_js_,
-  ValueNiveauvue_type_template_id_24371c37_scoped_true_render,
-  ValueNiveauvue_type_template_id_24371c37_scoped_true_staticRenderFns,
+  ValueNiveauvue_type_template_id_73037056_scoped_true_render,
+  ValueNiveauvue_type_template_id_73037056_scoped_true_staticRenderFns,
   false,
   null,
-  "24371c37",
+  "73037056",
   null
   
 )
@@ -23711,13 +26106,13 @@ var DrupalEmail_component = (0,componentNormalizer/* default */.Z)(
 )
 
 /* harmony default export */ var DrupalEmail = (DrupalEmail_component.exports);
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalCheckbox.vue?vue&type=template&id=44c0f504&scoped=true&
-var DrupalCheckboxvue_type_template_id_44c0f504_scoped_true_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.classCss,attrs:{"type-field-render":"DrupalCheckbox","type-field-drupal":_vm.field.type}},[_c('div',{staticClass:"field-item-value"},[_c('ValidationProvider',{attrs:{"name":_vm.fullname,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [(_vm.field.type == 'boolean_checkbox')?_c('b-form-group',{attrs:{"label":_vm.field.label,"description":_vm.field.description}},[_c('b-form-checkbox',{attrs:{"name":_vm.fullname,"switch":""},on:{"change":_vm.input},model:{value:(_vm.selected),callback:function ($$v) {_vm.selected=$$v},expression:"selected"}},[_vm._v(" "+_vm._s(_vm.field.label)+" ")])],1):(_vm.field.type == 'options_buttons')?_c('b-form-group',{attrs:{"label":_vm.field.label,"description":_vm.field.description},scopedSlots:_vm._u([{key:"default",fn:function(ref){
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalCheckbox.vue?vue&type=template&id=65327e6c&scoped=true&
+var DrupalCheckboxvue_type_template_id_65327e6c_scoped_true_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.classCss,attrs:{"type-field-render":"DrupalCheckbox","type-field-drupal":_vm.field.type}},[_c('div',{staticClass:"field-item-value"},[_c('ValidationProvider',{attrs:{"name":_vm.fullname,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [(_vm.field.type == 'boolean_checkbox')?_c('b-form-group',{class:_vm.size ? 'size-' + _vm.size : '',attrs:{"label":_vm.field.label,"description":_vm.field.description}},[_c('b-form-checkbox',{attrs:{"name":_vm.fullname,"size":_vm.size,"switch":""},on:{"change":_vm.input},model:{value:(_vm.selected),callback:function ($$v) {_vm.selected=$$v},expression:"selected"}},[_vm._v(" "+_vm._s(_vm.field.label)+" ")])],1):(_vm.field.type == 'options_buttons')?_c('b-form-group',{class:_vm.size ? 'size-' + _vm.size : '',attrs:{"label":_vm.field.label,"description":_vm.field.description},scopedSlots:_vm._u([{key:"default",fn:function(ref){
 var ariaDescribedby = ref.ariaDescribedby;
-return [_c('b-form-checkbox-group',{attrs:{"options":_vm.options_allowed_values,"aria-describedby":ariaDescribedby,"name":_vm.fullname},on:{"change":_vm.input_multi},model:{value:(_vm.multi_selected),callback:function ($$v) {_vm.multi_selected=$$v},expression:"multi_selected"}})]}}])}):_c('b-form-group',{attrs:{"label":_vm.field.label,"name":_vm.fullname}},[_c('div',{staticClass:"fieldset-wrapper"},[(_vm.field.settings && _vm.field.settings.list_options)?_c('div',{staticClass:"checkbox"},_vm._l((_vm.field.settings.list_options),function(option,o){return _c('b-form-radio',{key:o,staticClass:"form-check",attrs:{"name":_vm.fullname,"value":option.value,"state":_vm.getValidationState(v)},model:{value:(_vm.selected),callback:function ($$v) {_vm.selected=$$v},expression:"selected"}},[_c('transition',{attrs:{"name":"fade","mode":"out-in"}},[_c('div',[(option.image_url)?_c('b-img',{attrs:{"thumbnail":"","fluid":"","src":option.image_url,"alt":"Image 1"}}):_vm._e(),(!option.image_url)?_c('svgLoader'):_vm._e()],1)]),_c('div',{staticClass:"mt-5"},[_vm._v(_vm._s(option.label))]),(
+return [_c('b-form-checkbox-group',{attrs:{"options":_vm.options_allowed_values,"aria-describedby":ariaDescribedby,"name":_vm.fullname,"size":_vm.size},on:{"change":_vm.input_multi},model:{value:(_vm.multi_selected),callback:function ($$v) {_vm.multi_selected=$$v},expression:"multi_selected"}})]}}])}):_c('b-form-group',{class:_vm.size ? 'size-' + _vm.size : '',attrs:{"label":_vm.field.label,"name":_vm.fullname}},[_c('div',{staticClass:"fieldset-wrapper"},[(_vm.field.settings && _vm.field.settings.list_options)?_c('div',{staticClass:"checkbox"},_vm._l((_vm.field.settings.list_options),function(option,o){return _c('b-form-radio',{key:o,staticClass:"form-check",attrs:{"name":_vm.fullname,"value":option.value,"size":_vm.size,"state":_vm.getValidationState(v)},model:{value:(_vm.selected),callback:function ($$v) {_vm.selected=$$v},expression:"selected"}},[_c('transition',{attrs:{"name":"fade","mode":"out-in"}},[_c('div',[(option.image_url)?_c('b-img',{attrs:{"thumbnail":"","fluid":"","src":option.image_url,"alt":"Image 1"}}):_vm._e(),(!option.image_url)?_c('svgLoader'):_vm._e()],1)]),_c('div',{staticClass:"mt-5"},[_vm._v(_vm._s(option.label))]),(
                   option.description.value && option.description.value !== ''
                 )?_c('div',{staticClass:"mt-5 text-hover",domProps:{"innerHTML":_vm._s(option.description.value)}}):_vm._e()],1)}),1):_vm._e(),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()])])]}}])})],1)])}
-var DrupalCheckboxvue_type_template_id_44c0f504_scoped_true_staticRenderFns = []
+var DrupalCheckboxvue_type_template_id_65327e6c_scoped_true_staticRenderFns = []
 
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/defineProperty.js
@@ -23727,6 +26122,16 @@ var defineProperty = __webpack_require__(15594);
 
 
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -23850,6 +26255,12 @@ var defineProperty = __webpack_require__(15594);
     parentName: {
       type: String,
       required: true
+    },
+    // permet de definir la taille du bouton,
+    // sm,md,lg
+    size: {
+      type: [String],
+      default: "sm"
     }
   },
   data: function data() {
@@ -23986,10 +26397,10 @@ var defineProperty = __webpack_require__(15594);
 });
 ;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalCheckbox.vue?vue&type=script&lang=js&
  /* harmony default export */ var fieldsDrupal_DrupalCheckboxvue_type_script_lang_js_ = (DrupalCheckboxvue_type_script_lang_js_); 
-;// CONCATENATED MODULE: ./node_modules/mini-css-extract-plugin/dist/loader.js??clonedRuleSet-52[0].rules[0].use[0]!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-52[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-52[0].rules[0].use[2]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalCheckbox.vue?vue&type=style&index=0&id=44c0f504&scoped=true&lang=css&
+;// CONCATENATED MODULE: ./node_modules/mini-css-extract-plugin/dist/loader.js??clonedRuleSet-52[0].rules[0].use[0]!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-52[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-52[0].rules[0].use[2]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalCheckbox.vue?vue&type=style&index=0&id=65327e6c&scoped=true&lang=css&
 // extracted by mini-css-extract-plugin
 
-;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalCheckbox.vue?vue&type=style&index=0&id=44c0f504&scoped=true&lang=css&
+;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalCheckbox.vue?vue&type=style&index=0&id=65327e6c&scoped=true&lang=css&
 
 ;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/DrupalCheckbox.vue
 
@@ -24002,33 +26413,39 @@ var defineProperty = __webpack_require__(15594);
 
 var DrupalCheckbox_component = (0,componentNormalizer/* default */.Z)(
   fieldsDrupal_DrupalCheckboxvue_type_script_lang_js_,
-  DrupalCheckboxvue_type_template_id_44c0f504_scoped_true_render,
-  DrupalCheckboxvue_type_template_id_44c0f504_scoped_true_staticRenderFns,
+  DrupalCheckboxvue_type_template_id_65327e6c_scoped_true_render,
+  DrupalCheckboxvue_type_template_id_65327e6c_scoped_true_staticRenderFns,
   false,
   null,
-  "44c0f504",
+  "65327e6c",
   null
   
 )
 
 /* harmony default export */ var DrupalCheckbox = (DrupalCheckbox_component.exports);
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DateRange.vue?vue&type=template&id=b8ded7fc&scoped=true&
-var DateRangevue_type_template_id_b8ded7fc_scoped_true_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.classCss},[_c('ValidationProvider',{attrs:{"name":_vm.fullname,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('label',{attrs:{"for":"input-date-fin"}},[_vm._v(" "+_vm._s(_vm.field.label)+" ")]),_c('b-row',{staticClass:"date-range"},[_c('b-col',{attrs:{"md":"6"}},[_c('b-input-group',[_c('b-form-datepicker',{attrs:{"type":"text","placeholder":"Selectionner une date","required":"","locale":"fr","date-format-options":{
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DateRange.vue?vue&type=template&id=a0aa64c2&scoped=true&
+var DateRangevue_type_template_id_a0aa64c2_scoped_true_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.classCss},[_c('ValidationProvider',{attrs:{"name":_vm.fullname,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('label',{attrs:{"for":"input-date-fin"}},[_vm._v(" "+_vm._s(_vm.field.label)+" ")]),_c('b-row',{staticClass:"date-range"},[_c('b-col',{attrs:{"md":"6"}},[_c('b-input-group',[_c('b-form-datepicker',{attrs:{"type":"text","placeholder":"Selectionner une date","required":"","locale":"fr","date-format-options":{
               year: 'numeric',
               month: 'short',
               day: '2-digit',
-            }},on:{"input":_vm.date_change_debut},model:{value:(_vm.date.value),callback:function ($$v) {_vm.$set(_vm.date, "value", $$v)},expression:"date.value"}}),(_vm.field.type != 'datetime_default')?_c('b-form-input',{staticClass:"input-time",attrs:{"id":'b-' + _vm.idHtml,"type":"text","placeholder":"HH:mm:ss"},model:{value:(_vm.date.hour_begin),callback:function ($$v) {_vm.$set(_vm.date, "hour_begin", $$v)},expression:"date.hour_begin"}}):_vm._e(),(_vm.field.type != 'datetime_default')?_c('b-input-group-append',[_c('b-form-timepicker',{attrs:{"button-only":"","right":"","show-seconds":"","locale":"fr","aria-controls":'b-' + _vm.idHtml},model:{value:(_vm.date.hour_begin),callback:function ($$v) {_vm.$set(_vm.date, "hour_begin", $$v)},expression:"date.hour_begin"}})],1):_vm._e()],1)],1),(_vm.field.type == 'daterange_default')?_c('b-col',{attrs:{"md":"6"}},[_c('b-input-group',[_c('b-form-datepicker',{attrs:{"type":"text","placeholder":"Selectionner une date","required":"","locale":"fr","date-format-options":{
+            }},on:{"input":_vm.date_change},model:{value:(_vm.date.value),callback:function ($$v) {_vm.$set(_vm.date, "value", $$v)},expression:"date.value"}}),(_vm.field.type != 'datetime_default')?_c('b-form-input',{staticClass:"input-time",attrs:{"id":'b-' + _vm.idHtml,"type":"text","placeholder":"HH:mm:ss"},on:{"input":_vm.date_change},model:{value:(_vm.date.hour_begin),callback:function ($$v) {_vm.$set(_vm.date, "hour_begin", $$v)},expression:"date.hour_begin"}}):_vm._e(),(_vm.field.type != 'datetime_default')?_c('b-input-group-append',[_c('b-form-timepicker',{attrs:{"button-only":"","right":"","show-seconds":"","locale":"fr","aria-controls":'b-' + _vm.idHtml},on:{"input":_vm.date_change},model:{value:(_vm.date.hour_begin),callback:function ($$v) {_vm.$set(_vm.date, "hour_begin", $$v)},expression:"date.hour_begin"}})],1):_vm._e()],1)],1),(_vm.field.type == 'daterange_default')?_c('b-col',{attrs:{"md":"6"}},[_c('b-input-group',[_c('b-form-datepicker',{attrs:{"type":"text","placeholder":"Selectionner une date","required":"","locale":"fr","date-format-options":{
               year: 'numeric',
               month: 'short',
               day: '2-digit',
-            }},model:{value:(_vm.date.end_value),callback:function ($$v) {_vm.$set(_vm.date, "end_value", $$v)},expression:"date.end_value"}}),_c('b-form-input',{staticClass:"input-time",attrs:{"id":'e-' + _vm.idHtml,"type":"text","placeholder":"HH:mm:ss"},model:{value:(_vm.date.hour_end),callback:function ($$v) {_vm.$set(_vm.date, "hour_end", $$v)},expression:"date.hour_end"}}),_c('b-input-group-append',[_c('b-form-timepicker',{attrs:{"button-only":"","right":"","show-seconds":"","locale":"fr","aria-controls":'e-' + _vm.idHtml},model:{value:(_vm.date.hour_end),callback:function ($$v) {_vm.$set(_vm.date, "hour_end", $$v)},expression:"date.hour_end"}})],1)],1)],1):_vm._e()],1),_c('small',{staticClass:"form-text text-muted"},[_vm._v(_vm._s(_vm.field.description))]),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()]}}])})],1)}
-var DateRangevue_type_template_id_b8ded7fc_scoped_true_staticRenderFns = []
+            }},on:{"input":_vm.date_change},model:{value:(_vm.date.end_value),callback:function ($$v) {_vm.$set(_vm.date, "end_value", $$v)},expression:"date.end_value"}}),_c('b-form-input',{staticClass:"input-time",attrs:{"id":'e-' + _vm.idHtml,"type":"text","placeholder":"HH:mm:ss"},on:{"input":_vm.date_change},model:{value:(_vm.date.hour_end),callback:function ($$v) {_vm.$set(_vm.date, "hour_end", $$v)},expression:"date.hour_end"}}),_c('b-input-group-append',[_c('b-form-timepicker',{attrs:{"button-only":"","right":"","show-seconds":"","locale":"fr","aria-controls":'e-' + _vm.idHtml},on:{"input":_vm.date_change},model:{value:(_vm.date.hour_end),callback:function ($$v) {_vm.$set(_vm.date, "hour_end", $$v)},expression:"date.hour_end"}})],1)],1)],1):_vm._e()],1),_c('small',{staticClass:"form-text text-muted"},[_vm._v(_vm._s(_vm.field.description))]),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()]}}])})],1)}
+var DateRangevue_type_template_id_a0aa64c2_scoped_true_staticRenderFns = []
 
 
 ;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-80[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DateRange.vue?vue&type=script&lang=js&
 
 
 
+
+//
+//
+//
+//
+//
 //
 //
 //
@@ -24159,8 +26576,17 @@ var DateRangevue_type_template_id_b8ded7fc_scoped_true_staticRenderFns = []
         hour_begin: "",
         hour_end: ""
       },
-      idHtml: "time-" + Math.random().toString(36),
-      timeout: null
+      idHtml: "time-" + Math.random().toString(36).slice(2),
+      timeout: null,
+
+      /**
+       * On a deux format de sauvegarde, celui definit par string (YYYY-MM-DDTHH:mm:ss qui n'est pas un format normalisé)
+       * et celui definit par un integer (timeStamp).
+       * Pour l'instant compliqué de determiner qu'elle est le format qui doit etre utiliser.
+       * Donc, l'approche c'est de determiner le type à partir de la valeur par defaut.
+       * Par defaut, on conidere que c'est du string(pour etre compatible avec drupal >= 9.5.9).
+       */
+      checkFormatDate: "string"
     };
   },
   computed: {
@@ -24215,17 +26641,16 @@ var DateRangevue_type_template_id_b8ded7fc_scoped_true_staticRenderFns = []
      *
      */
     getValue: function getValue() {
-      console.log("date range : ", this.model[this.field.name]);
-
+      // console.log("date range : ", this.model[this.field.name]);
       if (this.model[this.field.name] && this.model[this.field.name][0] && this.model[this.field.name][0].value) {
-        var D_b = this.getDateFromDateTimeStamp(this.model[this.field.name][0].value);
+        var D_b = this.checkValue(this.model[this.field.name][0].value);
         var val = {
           value: D_b.date,
           hour_begin: D_b.hour
         };
 
         if (this.field.type == "daterange_default") {
-          var D_f = this.getDateFromDateTimeStamp(this.model[this.field.name][0].end_value);
+          var D_f = this.checkValue(this.model[this.field.name][0].end_value);
           val["end_value"] = D_f.date;
           val["hour_end"] = D_f.hour;
         }
@@ -24236,9 +26661,24 @@ var DateRangevue_type_template_id_b8ded7fc_scoped_true_staticRenderFns = []
         end_value: null,
         hour_begin: "",
         hour_end: ""
-      }; // pas necessaire ( car entrainne des mauvaise données )
-      //else return this.currentDate();
+      }; // pas necessaire ( car entrainne des mauvaises données )
+      // else return this.currentDate();
 
+    },
+    checkValue: function checkValue(data) {
+      var value = parseInt(data);
+
+      if (value > 326636489) {
+        this.checkFormatDate = "int";
+        return this.getDateFromDateTimeStamp(data);
+      } else {
+        var date = new Date(data);
+
+        if (date) {
+          this.checkFormatDate = "string";
+          return this.getDateFromDateTimeStamp(date.getTime() / 1000);
+        }
+      }
     },
 
     /**
@@ -24250,13 +26690,14 @@ var DateRangevue_type_template_id_b8ded7fc_scoped_true_staticRenderFns = []
       date.setTime(parseInt(DateTimeStamp) * 1000);
       var month = parseInt(date.getMonth()) + 1;
       return {
-        date: date.getFullYear() + "-" + month + "-" + date.getDate(),
-        hour: date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
+        date: date.getFullYear() + "-" + ("0" + month).slice(-2) + "-" + date.getDate(),
+        hour: ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ":" + ("0" + date.getSeconds()).slice(-2)
       };
     },
 
     /**
-     * @deprecated
+     * @deprecated pas utiliser ( car entrainne des mauvaise données )
+     * Permet d'ajouter la date encours ou date par defaut si vide.
      */
     currentDate: function currentDate() {
       var date = new Date();
@@ -24277,12 +26718,14 @@ var DateRangevue_type_template_id_b8ded7fc_scoped_true_staticRenderFns = []
     /**
      *
      */
-    date_change_debut: function date_change_debut() {
+    date_change: function date_change() {
       var vals = [];
 
       if (this.date.value) {
         var dateDebut = new Date(this.date.value + " " + this.date.hour_begin);
-        vals.push({
+        if (this.checkFormatDate == "string") vals.push({
+          value: this.date.value + "T" + this.date.hour_begin
+        });else vals.push({
           value: dateDebut.getTime() / 1000
         });
       } //
@@ -24290,7 +26733,9 @@ var DateRangevue_type_template_id_b8ded7fc_scoped_true_staticRenderFns = []
 
       if (this.date.end_value && this.field.type == "daterange_default") {
         var dateFin = new Date(this.date.end_value + " " + this.date.hour_end);
-        vals.push({
+        if (this.checkFormatDate == "string") vals.push({
+          end_value: this.date.end_value + "T" + this.date.hour_end
+        });else vals.push({
           end_value: dateFin.getTime() / 1000
         });
       }
@@ -24301,10 +26746,10 @@ var DateRangevue_type_template_id_b8ded7fc_scoped_true_staticRenderFns = []
 });
 ;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/DateRange.vue?vue&type=script&lang=js&
  /* harmony default export */ var fieldsDrupal_DateRangevue_type_script_lang_js_ = (DateRangevue_type_script_lang_js_); 
-;// CONCATENATED MODULE: ./node_modules/mini-css-extract-plugin/dist/loader.js??clonedRuleSet-62[0].rules[0].use[0]!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-62[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-62[0].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-62[0].rules[0].use[3]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DateRange.vue?vue&type=style&index=0&id=b8ded7fc&lang=scss&scoped=true&
+;// CONCATENATED MODULE: ./node_modules/mini-css-extract-plugin/dist/loader.js??clonedRuleSet-62[0].rules[0].use[0]!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-62[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-62[0].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-62[0].rules[0].use[3]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/DateRange.vue?vue&type=style&index=0&id=a0aa64c2&lang=scss&scoped=true&
 // extracted by mini-css-extract-plugin
 
-;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/DateRange.vue?vue&type=style&index=0&id=b8ded7fc&lang=scss&scoped=true&
+;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/DateRange.vue?vue&type=style&index=0&id=a0aa64c2&lang=scss&scoped=true&
 
 ;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/DateRange.vue
 
@@ -24317,26 +26762,32 @@ var DateRangevue_type_template_id_b8ded7fc_scoped_true_staticRenderFns = []
 
 var DateRange_component = (0,componentNormalizer/* default */.Z)(
   fieldsDrupal_DateRangevue_type_script_lang_js_,
-  DateRangevue_type_template_id_b8ded7fc_scoped_true_render,
-  DateRangevue_type_template_id_b8ded7fc_scoped_true_staticRenderFns,
+  DateRangevue_type_template_id_a0aa64c2_scoped_true_render,
+  DateRangevue_type_template_id_a0aa64c2_scoped_true_staticRenderFns,
   false,
   null,
-  "b8ded7fc",
+  "a0aa64c2",
   null
   
 )
 
 /* harmony default export */ var DateRange = (DateRange_component.exports);
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/CreationSitevirtuelComplexinline.vue?vue&type=template&id=65e258ed&
-var CreationSitevirtuelComplexinlinevue_type_template_id_65e258ed_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.classCss},[_c('b-form-group',{attrs:{"label":_vm.field.label,"description":_vm.field.description}},[_c('div',{staticClass:"accordion",attrs:{"role":"tablist"}},[_vm._l((_vm.fields),function(container,i){return _c(container.template,{key:i,tag:"component",staticClass:"mb-3",attrs:{"entity":container.entity,"class-entity":['pt-1'],"accordion-container":_vm.idAcordion}},_vm._l((container.fields),function(render,k){return _c(render.template,{key:k,tag:"component",attrs:{"field":render.field,"model":render.model,"entities":render.entities,"class-css":['mb-5'],"parent-name":_vm.parentChildName + _vm.field.name + '.' + i + '.entity.',"parent-child-name":_vm.parentChildName + _vm.field.name + '.' + i + '.entities.',"namespace-store":""},on:{"addNewValue":function($event){return _vm.addNewValue($event, render)},"removeField":function($event){return _vm.removeField($event, render)},"array_move":function($event){return _vm.array_move($event, render)}}})}),1)}),(_vm.fields.length == 0)?_c('small',{staticClass:"text-muted py-2"},[_vm._v(" Aucune section ")]):_vm._e()],2)])],1)}
-var CreationSitevirtuelComplexinlinevue_type_template_id_65e258ed_staticRenderFns = []
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/CreationSitevirtuelComplexinline.vue?vue&type=template&id=89c2ba68&
+var CreationSitevirtuelComplexinlinevue_type_template_id_89c2ba68_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.classCss},[_c('b-form-group',{attrs:{"label":_vm.field.label,"description":_vm.field.description}},[_c('div',{staticClass:"accordion",attrs:{"role":"tablist"}},[_vm._l((_vm.fields),function(container,i){return _c(container.template,{key:i,tag:"component",staticClass:"mb-3",attrs:{"entity":container.entity,"class-entity":['pt-1'],"accordion-container":_vm.idAcordion}},_vm._l((container.fields),function(render,k){return _c(render.template,{key:k,tag:"component",attrs:{"field":render.field,"model":render.model,"entities":render.entities,"class-css":['mb-5'],"parent-name":_vm.parentChildName + _vm.field.name + '.' + i + '.entity.',"parent-child-name":_vm.parentChildName + _vm.field.name + '.' + i + '.entities.',"namespace-store":""},on:{"addNewValue":function($event){return _vm.addNewValue($event, render)},"removeField":function($event){return _vm.removeField($event, render)},"array_move":function($event){return _vm.array_move($event, render)}}})}),1)}),(_vm.fields.length == 0)?_c('small',{staticClass:"text-muted py-2"},[_vm._v(" Aucune section ")]):_vm._e()],2)])],1)}
+var CreationSitevirtuelComplexinlinevue_type_template_id_89c2ba68_staticRenderFns = []
 
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/typeof.js
 var esm_typeof = __webpack_require__(87336);
 // EXTERNAL MODULE: ../components_bootstrapvuejs/node_modules/core-js/modules/es.object.keys.js
 var es_object_keys = __webpack_require__(91605);
+// EXTERNAL MODULE: ../components_bootstrapvuejs/node_modules/core-js/modules/es.array.includes.js
+var es_array_includes = __webpack_require__(83071);
+// EXTERNAL MODULE: ../components_bootstrapvuejs/node_modules/core-js/modules/es.string.includes.js
+var es_string_includes = __webpack_require__(27829);
 ;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/js/FormUttilities.js
+
+
 
 
 
@@ -24386,6 +26837,8 @@ var es_object_keys = __webpack_require__(91605);
               template: loadField.getField(field),
               field: field,
               model: entity.entity,
+              // doit etre supprimer pour la version 2x, cela est une information de trop.
+              //(on doit utiliser celui definit au niveau du container)
               entities: []
             };
 
@@ -24436,6 +26889,12 @@ var es_object_keys = __webpack_require__(91605);
    *   creates: 0, // incrementé durant le process.
    *   ...
    * },
+   * Evolution : 1
+   * On a remarqué un nouveau paramettre,
+   * target_revision_id (qui est requis pour que le processus de sauvegarde se passe bien).
+   * La logique est de verifier la l'object reference, s'il contient un nouveau element on declenche une erreur.
+   * les elements supportés pour le moment sont : target_revision_id, target_id.
+   * **
    * @param {Object} datas contient les données à sauvegarder.
    * @param {Object} suivers permet de suivre la creation
    * @return {Array} un tableau d'entité de drupal.
@@ -24457,6 +26916,30 @@ var es_object_keys = __webpack_require__(91605);
 
         return entity;
       };
+
+      var loopItemAddValues = function loopItemAddValues(values, resp, has_target_revision_id) {
+        console.log("loopItemAddValues values : ", values, "\n resp : ", resp, "\n has_target_revision_id : ", has_target_revision_id);
+
+        if (has_target_revision_id) {
+          // try to get revision.
+          var revision_id;
+
+          if (resp.data.json.revision_id && resp.data.json.revision_id[0] && resp.data.json.revision_id[0].value) {
+            revision_id = resp.data.json.revision_id[0].value;
+          } else {
+            return false;
+          }
+
+          values.push({
+            target_id: resp.data.id,
+            target_revision_id: revision_id
+          });
+        } else values.push({
+          target_id: resp.data.id
+        });
+
+        return true;
+      };
       /**
        * Permet de creer les sous contenus et return les target_ids.
        * @param {Array} items
@@ -24467,9 +26950,8 @@ var es_object_keys = __webpack_require__(91605);
 
       var loopItem = function loopItem(items, i) {
         var values = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+        var has_target_revision_id = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
         return new Promise(function (resolv, reject) {
-          console.log("loopItem : ", items);
-
           if (items[i]) {
             var item = items[i];
 
@@ -24482,13 +26964,12 @@ var es_object_keys = __webpack_require__(91605);
                   index: i
                 }).then(function (resp) {
                   suivers.creates++;
-                  values.push({
-                    target_id: resp.data.id
-                  });
+                  console.log(" Before loopItemAddValues 1 : ", values);
+                  if (!loopItemAddValues(values, resp, has_target_revision_id)) reject(" Revision requis mais non definit ");
                   i = i + 1;
 
                   if (i < items.length) {
-                    resolv(loopItem(items, i, values));
+                    resolv(loopItem(items, i, values, has_target_revision_id));
                   } else resolv(values);
                 }).catch(function (er) {
                   console.log(" catch loopItem : ", er);
@@ -24505,13 +26986,13 @@ var es_object_keys = __webpack_require__(91605);
                 index: i
               }).then(function (resp) {
                 suivers.creates++;
-                values.push({
-                  target_id: resp.data.id
-                });
+                console.log(" Before loopItemAddValues 2 : ", values);
+                if (!loopItemAddValues(values, resp, has_target_revision_id)) reject(" Revision requis mais non definit "); // values.push({ target_id: resp.data.id });
+
                 i = i + 1;
 
                 if (items.length <= i) {
-                  resolv(loopItem(items, i, values));
+                  resolv(loopItem(items, i, values, has_target_revision_id));
                 } else {
                   resolv(values);
                 }
@@ -24538,13 +27019,31 @@ var es_object_keys = __webpack_require__(91605);
 
       var loopFieldEntity = function loopFieldEntity(datas, fieldname, entity, keys, i) {
         return new Promise(function (resolv, reject) {
-          console.log(" loopFieldEntity : ", datas); // Si le champs contient des données,
+          console.log(" loopFieldEntity : ", datas, "\n fieldname : ", fieldname); // Si le champs contient des données,
           // on parcourt chacune des entrées.
 
           if (datas[fieldname] && datas[fieldname].length > 0) {
-            // Pour chaque champs, on cree les contenus et on recupere les ids.
-            loopItem(datas[fieldname], 0).then(function (resp) {
-              console.log("loopFieldEntity result of loopItem : ", resp);
+            console.log("entity[fieldname][0] : ", entity[fieldname][0], "\n : ", entity); // on verifie s'il ya des entrées supplementaire
+
+            if (entity[fieldname][0]) {
+              var has_target_revision_id = false;
+
+              var _keys = Object.keys(entity[fieldname][0]); //
+
+
+              if (_keys.includes("target_revision_id")) {
+                has_target_revision_id = true;
+              } // s'il ya plus de entrées , on emet une erreur de peur de perdre les données.
+
+
+              if (_keys.length > 2) {
+                reject("On a plus de donnée que pruvu dans l'objet à enregistrer");
+              }
+            } // Pour chaque champs, on cree les contenus et on recupere les ids.
+
+
+            loopItem(datas[fieldname], 0, [], has_target_revision_id).then(function (resp) {
+              console.log(" loopFieldEntity result of loopItem : ", resp);
               entity[fieldname] = resp; // on passe au champs suivant.
 
               i = i + 1;
@@ -24654,6 +27153,7 @@ var es_object_keys = __webpack_require__(91605);
 ;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-80[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/CreationSitevirtuelComplexinline.vue?vue&type=script&lang=js&
 
 
+
 //
 //
 //
@@ -24730,7 +27230,7 @@ var es_object_keys = __webpack_require__(91605);
   },
   data: function data() {
     return {
-      idAcordion: "accordion-" + Math.random().toString(36),
+      idAcordion: "accordion-" + Math.random().toString(36).slice(2),
       fields: []
     };
   },
@@ -24765,8 +27265,8 @@ var es_object_keys = __webpack_require__(91605);
 ;
 var CreationSitevirtuelComplexinline_component = (0,componentNormalizer/* default */.Z)(
   fieldsDrupal_CreationSitevirtuelComplexinlinevue_type_script_lang_js_,
-  CreationSitevirtuelComplexinlinevue_type_template_id_65e258ed_render,
-  CreationSitevirtuelComplexinlinevue_type_template_id_65e258ed_staticRenderFns,
+  CreationSitevirtuelComplexinlinevue_type_template_id_89c2ba68_render,
+  CreationSitevirtuelComplexinlinevue_type_template_id_89c2ba68_staticRenderFns,
   false,
   null,
   null,
@@ -25298,14 +27798,15 @@ var StockLevel_component = (0,componentNormalizer/* default */.Z)(
 )
 
 /* harmony default export */ var StockLevel = (StockLevel_component.exports);
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/IconTextWidget.vue?vue&type=template&id=422de7d5&
-var IconTextWidgetvue_type_template_id_422de7d5_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.classCss},[_c('ValidationProvider',{attrs:{"name":_vm.fullname,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('div',{staticClass:"border p-2 container-field"},[_c('div',{staticClass:"header d-flex align-items-center justify-content-between px-3 mb-3"},[_c('label',{staticClass:"pt-2",domProps:{"innerHTML":_vm._s(_vm.field.label)}}),_c('div',[(_vm.cardinality)?_c('b-button',{staticClass:"p-0 border-0",attrs:{"variant":"outline-info","size":"sm"},on:{"click":_vm.add}},[_c('b-icon',{attrs:{"icon":"plus-square","font-scale":"2"}})],1):_vm._e()],1)]),_vm._l((_vm.input_value),function(val,i){return _c('div',{key:i,staticClass:"px-3 pt-3 field-item-value"},[(_vm.cardinality)?_c('b-button',{staticClass:"p-0 border-0 elt-remove",attrs:{"variant":"outline-danger","size":"sm"},on:{"click":function($event){return _vm.remove(i)}}},[_c('b-icon',{attrs:{"icon":"trash","font-scale":"1"}})],1):_vm._e(),_c('b-form-group',{attrs:{"label":_vm.field.settings.label_1}},[_c('b-form-input',{attrs:{"placeholder":_vm.field.placeholder,"name":_vm.fullname + '.' + i,"debounce":"2500"},on:{"input":_vm.input},model:{value:(val.value),callback:function ($$v) {_vm.$set(val, "value", $$v)},expression:"val.value"}}),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()],1),(_vm.show_svg_field)?_c('b-form-group',{attrs:{"label":_vm.field.settings.label_2}},[_c('b-form-textarea',{attrs:{"rows":"3","max-rows":"6"},model:{value:(val.text),callback:function ($$v) {_vm.$set(val, "text", $$v)},expression:"val.text"}}),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()],1):_vm._e()],1)}),_c('div',{domProps:{"innerHTML":_vm._s(_vm.field.description)}})],2)]}}])})],1)}
-var IconTextWidgetvue_type_template_id_422de7d5_staticRenderFns = []
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/IconTextWidget.vue?vue&type=template&id=3efbd168&
+var IconTextWidgetvue_type_template_id_3efbd168_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.classCss},[_c('ValidationProvider',{attrs:{"name":_vm.fullname,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('div',{staticClass:"border p-2 container-field"},[_c('div',{staticClass:"header d-flex align-items-center justify-content-between px-3 mb-3"},[_c('label',{staticClass:"pt-2",domProps:{"innerHTML":_vm._s(_vm.field.label)}}),_c('div',[(_vm.cardinality)?_c('b-button',{staticClass:"p-0 border-0",attrs:{"variant":"outline-info","size":"sm"},on:{"click":_vm.add}},[_c('b-icon',{attrs:{"icon":"plus-square","font-scale":"2"}})],1):_vm._e()],1)]),_vm._l((_vm.input_value),function(val,i){return _c('div',{key:i,staticClass:"px-3 pt-3 field-item-value"},[(_vm.cardinality)?_c('b-button',{directives:[{name:"b-tooltip",rawName:"v-b-tooltip.v-danger",value:(' Supprimer '),expression:"' Supprimer '",modifiers:{"v-danger":true}}],staticClass:"p-0 border-0 elt-remove",attrs:{"variant":"outline-danger","size":"sm"},on:{"click":function($event){return _vm.remove(i)}}},[_c('b-icon',{attrs:{"icon":"trash","font-scale":"1"}})],1):_vm._e(),_c('b-form-group',{attrs:{"label":_vm.field.settings.label_1}},[_c('b-form-input',{attrs:{"placeholder":_vm.field.placeholder,"name":_vm.fullname + '.' + i,"debounce":"2500"},on:{"input":_vm.input},model:{value:(val.value),callback:function ($$v) {_vm.$set(val, "value", $$v)},expression:"val.value"}}),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()],1),(_vm.show_svg_field)?_c('b-form-group',{attrs:{"label":_vm.field.settings.label_2}},[_c('b-form-textarea',{attrs:{"rows":"3","max-rows":"6"},model:{value:(val.text),callback:function ($$v) {_vm.$set(val, "text", $$v)},expression:"val.text"}}),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()],1):_vm._e()],1)}),_c('div',{domProps:{"innerHTML":_vm._s(_vm.field.description)}})],2)]}}])})],1)}
+var IconTextWidgetvue_type_template_id_3efbd168_staticRenderFns = []
 
 
 ;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-80[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/IconTextWidget.vue?vue&type=script&lang=js&
 
 
+//
 //
 //
 //
@@ -25499,8 +28000,8 @@ var input_default = {
 ;
 var IconTextWidget_component = (0,componentNormalizer/* default */.Z)(
   fieldsDrupal_IconTextWidgetvue_type_script_lang_js_,
-  IconTextWidgetvue_type_template_id_422de7d5_render,
-  IconTextWidgetvue_type_template_id_422de7d5_staticRenderFns,
+  IconTextWidgetvue_type_template_id_3efbd168_render,
+  IconTextWidgetvue_type_template_id_3efbd168_staticRenderFns,
   false,
   null,
   null,
@@ -25509,14 +28010,15 @@ var IconTextWidget_component = (0,componentNormalizer/* default */.Z)(
 )
 
 /* harmony default export */ var IconTextWidget = (IconTextWidget_component.exports);
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/ChartWidgetType.vue?vue&type=template&id=2e3cfb23&
-var ChartWidgetTypevue_type_template_id_2e3cfb23_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.classCss},[_c('ValidationProvider',{attrs:{"name":_vm.fullname,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('div',{staticClass:"border p-2 container-field"},[_c('div',{staticClass:"header d-flex align-items-center justify-content-between px-3 mb-3"},[_c('label',{staticClass:"pt-2",domProps:{"innerHTML":_vm._s(_vm.field.label)}}),_c('div',[(_vm.cardinality)?_c('b-button',{staticClass:"p-0 border-0",attrs:{"variant":"outline-info","size":"sm"},on:{"click":_vm.add}},[_c('b-icon',{attrs:{"icon":"plus-square","font-scale":"2"}})],1):_vm._e()],1)]),_vm._l((_vm.input_value),function(val,i){return _c('div',{key:i,staticClass:"px-3 pt-3 field-item-value"},[(_vm.cardinality)?_c('b-button',{staticClass:"p-0 border-0 elt-remove",attrs:{"variant":"outline-danger","size":"sm"},on:{"click":function($event){return _vm.remove(i)}}},[_c('b-icon',{attrs:{"icon":"trash","font-scale":"1"}})],1):_vm._e(),_c('b-form-group',{attrs:{"label":_vm.field.settings.label_1}},[_c('b-form-input',{attrs:{"placeholder":_vm.field.placeholder,"name":_vm.fullname + '.' + i,"debounce":"2500"},on:{"input":_vm.setValue},model:{value:(val.label),callback:function ($$v) {_vm.$set(val, "label", $$v)},expression:"val.label"}}),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()],1),_c('b-form-group',{attrs:{"label":_vm.field.settings.label_2}},[_c('b-form-input',{attrs:{"type":"number","min":"0","max":"100"},on:{"input":_vm.setValue},model:{value:(val.value),callback:function ($$v) {_vm.$set(val, "value", $$v)},expression:"val.value"}}),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()],1),_c('b-form-group',{attrs:{"label":_vm.field.settings.label_3}},[_c('b-form-input',{attrs:{"type":"color"},model:{value:(val.color),callback:function ($$v) {_vm.$set(val, "color", $$v)},expression:"val.color"}}),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()],1)],1)}),_c('div',{domProps:{"innerHTML":_vm._s(_vm.field.description)}})],2)]}}])})],1)}
-var ChartWidgetTypevue_type_template_id_2e3cfb23_staticRenderFns = []
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/ChartWidgetType.vue?vue&type=template&id=54268cc2&
+var ChartWidgetTypevue_type_template_id_54268cc2_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.classCss},[_c('ValidationProvider',{attrs:{"name":_vm.fullname,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('div',{staticClass:"border p-2 container-field"},[_c('div',{staticClass:"header d-flex align-items-center justify-content-between px-3 mb-3"},[_c('label',{staticClass:"pt-2",domProps:{"innerHTML":_vm._s(_vm.field.label)}}),_c('div',[(_vm.cardinality)?_c('b-button',{staticClass:"p-0 border-0",attrs:{"variant":"outline-info","size":"sm"},on:{"click":_vm.add}},[_c('b-icon',{attrs:{"icon":"plus-square","font-scale":"2"}})],1):_vm._e()],1)]),_vm._l((_vm.input_value),function(val,i){return _c('div',{key:i,staticClass:"px-3 pt-3 field-item-value"},[(_vm.cardinality)?_c('b-button',{directives:[{name:"b-tooltip",rawName:"v-b-tooltip.v-danger",value:(' Supprimer '),expression:"' Supprimer '",modifiers:{"v-danger":true}}],staticClass:"p-0 border-0 elt-remove",attrs:{"variant":"outline-danger","size":"sm"},on:{"click":function($event){return _vm.remove(i)}}},[_c('b-icon',{attrs:{"icon":"trash","font-scale":"1"}})],1):_vm._e(),_c('b-form-group',{attrs:{"label":_vm.field.settings.label_1}},[_c('b-form-input',{attrs:{"placeholder":_vm.field.placeholder,"name":_vm.fullname + '.' + i,"debounce":"2500"},on:{"input":_vm.setValue},model:{value:(val.label),callback:function ($$v) {_vm.$set(val, "label", $$v)},expression:"val.label"}}),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()],1),_c('b-form-group',{attrs:{"label":_vm.field.settings.label_2}},[_c('b-form-input',{attrs:{"type":"number","min":"0","max":"100"},on:{"input":_vm.setValue},model:{value:(val.value),callback:function ($$v) {_vm.$set(val, "value", $$v)},expression:"val.value"}}),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()],1),_c('b-form-group',{attrs:{"label":_vm.field.settings.label_3}},[_c('b-form-input',{attrs:{"type":"color"},model:{value:(val.color),callback:function ($$v) {_vm.$set(val, "color", $$v)},expression:"val.color"}}),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()],1)],1)}),_c('div',{domProps:{"innerHTML":_vm._s(_vm.field.description)}})],2)]}}])})],1)}
+var ChartWidgetTypevue_type_template_id_54268cc2_staticRenderFns = []
 
 
 ;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-80[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/ChartWidgetType.vue?vue&type=script&lang=js&
 
 
+//
 //
 //
 //
@@ -25716,8 +28218,8 @@ var ChartWidgetTypevue_type_script_lang_js_input_default = {
 ;
 var ChartWidgetType_component = (0,componentNormalizer/* default */.Z)(
   fieldsDrupal_ChartWidgetTypevue_type_script_lang_js_,
-  ChartWidgetTypevue_type_template_id_2e3cfb23_render,
-  ChartWidgetTypevue_type_template_id_2e3cfb23_staticRenderFns,
+  ChartWidgetTypevue_type_template_id_54268cc2_render,
+  ChartWidgetTypevue_type_template_id_54268cc2_staticRenderFns,
   false,
   null,
   null,
@@ -25879,13 +28381,227 @@ var TexTarea_component = (0,componentNormalizer/* default */.Z)(
 )
 
 /* harmony default export */ var TexTarea = (TexTarea_component.exports);
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/MoreFieldsIconwTextidget.vue?vue&type=template&id=299978ee&
-var MoreFieldsIconwTextidgetvue_type_template_id_299978ee_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.classCss},[_c('ValidationProvider',{attrs:{"name":_vm.fullname,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('b-form-group',{attrs:{"label":_vm.field.label,"description":_vm.field.description}},[_vm._l((_vm.input_value),function(value,index){return _c('div',{key:index,staticClass:"field-item-value"},[_c('b-form-input',{attrs:{"placeholder":_vm.field.placeholder,"state":_vm.getValidationState(v),"name":_vm.fullname + '.value'},model:{value:(value.value),callback:function ($$v) {_vm.$set(value, "value", $$v)},expression:"value.value"}}),_c('b-form-textarea',{attrs:{"placeholder":_vm.field.placeholder,"state":_vm.getValidationState(v),"name":_vm.fullname + '.text',"rows":"3","max-rows":"6"},model:{value:(value.text),callback:function ($$v) {_vm.$set(value, "text", $$v)},expression:"value.text"}})],1)}),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()],2),(_vm.cardinality)?_c('div',[_c('b-button',{attrs:{"size":"sm","variant":"info"},on:{"click":function($event){$event.preventDefault();return _vm.addField.apply(null, arguments)}}},[_vm._v(" Add more ")])],1):_vm._e()]}}])})],1)}
-var MoreFieldsIconwTextidgetvue_type_template_id_299978ee_staticRenderFns = []
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/PhoneInternational.vue?vue&type=template&id=56048580&
+var PhoneInternationalvue_type_template_id_56048580_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{class:_vm.classCss},[_c('ValidationProvider',{attrs:{"name":_vm.fullname,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('b-form-group',{class:_vm.size ? 'size-' + _vm.size : '',attrs:{"label":_vm.field.label,"description":_vm.field.description}},[_c('input',{staticClass:"form-control",attrs:{"id":_vm.idHtml}}),_c('span',{staticClass:"d-none",attrs:{"id":_vm.idHtmlValid}},[_vm._v("✓ Valid")]),_c('span',{staticClass:"d-none",attrs:{"id":_vm.idHtmlError}})]),(v.errors && v.errors.length > 0)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()]}}])})],1)}
+var PhoneInternationalvue_type_template_id_56048580_staticRenderFns = []
+
+
+// EXTERNAL MODULE: ../components_bootstrapvuejs/node_modules/intl-tel-input/index.js
+var intl_tel_input = __webpack_require__(6931);
+var intl_tel_input_default = /*#__PURE__*/__webpack_require__.n(intl_tel_input);
+;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-80[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/PhoneInternational.vue?vue&type=script&lang=js&
+
+
+
+
+
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+
+/* harmony default export */ var PhoneInternationalvue_type_script_lang_js_ = ({
+  name: "PhoneInternational",
+  components: {
+    ValidationProvider: vee_validate_esm/* ValidationProvider */.d_
+  },
+  props: {
+    classCss: {
+      type: [Array],
+      default: function _default() {
+        return [];
+      }
+    },
+    field: {
+      type: Object,
+      required: true
+    },
+    model: {
+      type: [Object, Array],
+      required: true
+    },
+    namespaceStore: {
+      type: String,
+      required: true
+    },
+    parentName: {
+      type: String,
+      required: true
+    },
+    // permet de definir la taille du bouton,
+    // sm,md,lg
+    size: {
+      type: [String],
+      default: "md"
+    }
+  },
+  data: function data() {
+    return {
+      idHtml: "phoneint-" + Math.random().toString(36).slice(2),
+      idHtmlError: "phoneerr-" + Math.random().toString(36).slice(2),
+      idHtmlValid: "phonevalid-" + Math.random().toString(36).slice(2),
+      timeout: null
+    };
+  },
+  computed: {
+    fullname: function fullname() {
+      return this.parentName + this.field.name;
+    }
+  },
+  mounted: function mounted() {
+    this.initPhone();
+  },
+  methods: {
+    initPhone: function initPhone() {
+      var _this = this;
+
+      //
+      var input = document.querySelector("#" + this.idHtml);
+      var errorMsg = document.querySelector("#" + this.idHtmlError);
+      var validMsg = document.querySelector("#" + this.idHtmlValid); // here, the index maps to the error code returned from getValidationError - see readme
+      // const errorMap = [
+      //   "Invalid number",
+      //   "Invalid country code",
+      //   "Too short",
+      //   "Too long",
+      //   "Invalid number",
+      // ];
+      // initialise plugin
+
+      var iti = intl_tel_input_default()(input, {
+        separateDialCode: true,
+        preferredCountries: ["fr"],
+        initialCountry: "auto",
+        nationalMode: true,
+        formatOnDisplay: true,
+        geoIpLookup: function geoIpLookup(callback) {
+          fetch("https://ipapi.co/json").then(function (res) {
+            return res.json();
+          }).then(function (data) {
+            return callback(data.country_code);
+          }).catch(function () {
+            return callback("us");
+          });
+        },
+        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/18.1.7/js/utils.min.js"
+      }); // set default number
+
+      var number = this.getValue();
+
+      if (number && number !== null) {
+        iti.setNumber(number);
+      }
+
+      var reset = function reset() {
+        input.classList.remove("error", "is-invalid");
+        errorMsg.innerHTML = "";
+        errorMsg.classList.add("d-none");
+        validMsg.classList.add("d-none");
+      }; // on blur: validate
+
+
+      input.addEventListener("blur", function () {
+        reset();
+
+        if (input.value.trim()) {
+          if (iti.isValidNumber()) {// validMsg.classList.remove("d-none");
+          } else {// input.classList.add("error", "is-invalid");
+            // const errorCode = iti.getValidationError();
+            // if (errorMap[errorCode]) errorMsg.innerHTML = errorMap[errorCode];
+            // errorMsg.classList.remove("d-none");
+          }
+        }
+      }); // on keyup / change flag: reset
+
+      input.addEventListener("change", reset);
+      input.addEventListener("keyup", function () {
+        reset();
+        var vals = [];
+        vals.push({
+          value: iti.getNumber()
+        });
+
+        _this.setValue(vals);
+      });
+    },
+    getRules: function getRules() {
+      return loadField.getRules(this.field);
+    },
+    setValue: function setValue(vals) {
+      var _this2 = this;
+
+      clearTimeout(this.timeout);
+      this.timeout = setTimeout(function () {
+        if (_this2.namespaceStore) {
+          _this2.$store.dispatch(_this2.namespaceStore + "/setValue", {
+            value: vals,
+            fieldName: _this2.fullname
+          });
+        } else _this2.$store.dispatch("setValue", {
+          value: vals,
+          fieldName: _this2.fullname
+        });
+      }, loadField.timeToWait);
+    },
+    getValue: function getValue() {
+      if (this.model[this.field.name] && this.model[this.field.name][0]) {
+        return this.model[this.field.name][0].value;
+      } else return null;
+    }
+  }
+});
+;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/PhoneInternational.vue?vue&type=script&lang=js&
+ /* harmony default export */ var fieldsDrupal_PhoneInternationalvue_type_script_lang_js_ = (PhoneInternationalvue_type_script_lang_js_); 
+;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/PhoneInternational.vue
+
+
+
+
+
+/* normalize component */
+;
+var PhoneInternational_component = (0,componentNormalizer/* default */.Z)(
+  fieldsDrupal_PhoneInternationalvue_type_script_lang_js_,
+  PhoneInternationalvue_type_template_id_56048580_render,
+  PhoneInternationalvue_type_template_id_56048580_staticRenderFns,
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* harmony default export */ var PhoneInternational = (PhoneInternational_component.exports);
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/MoreFieldsIconwTextidget.vue?vue&type=template&id=a51b271a&
+var MoreFieldsIconwTextidgetvue_type_template_id_a51b271a_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"container-field",class:_vm.classCss},[_c('ValidationProvider',{attrs:{"name":_vm.fullname,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('b-form-group',{attrs:{"label":_vm.field.label,"description":_vm.field.description}},[_c('div',{staticClass:"options-config"},[_c('b-form-checkbox',{attrs:{"switch":"","size":"md"},model:{value:(_vm.select_edit_mode),callback:function ($$v) {_vm.select_edit_mode=$$v},expression:"select_edit_mode"}},[_vm._v(" Edit code (Pro) ")])],1),_vm._l((_vm.input_value),function(value,index){return _c('div',{key:index,staticClass:"field-item-value"},[_c('label',[_vm._v(_vm._s(_vm.field.settings.label_1))]),_c('b-form-input',{attrs:{"placeholder":_vm.field.placeholder,"state":_vm.getValidationState(v),"name":_vm.fullname + '.value'},model:{value:(value.value),callback:function ($$v) {_vm.$set(value, "value", $$v)},expression:"value.value"}}),_c('label',{staticClass:"mt-2"},[_vm._v(" "+_vm._s(_vm.field.settings.label_2)+" ")]),(_vm.select_edit_mode)?_c('b-form-textarea',{attrs:{"placeholder":_vm.field.placeholder,"state":_vm.getValidationState(v),"name":_vm.fullname + '.text',"rows":"3","max-rows":"6"},model:{value:(value.text),callback:function ($$v) {_vm.$set(value, "text", $$v)},expression:"value.text"}}):_vm._e(),(!_vm.select_edit_mode)?_c('ckeditor',{attrs:{"config":_vm.editorConfig,"editor-url":_vm.editorUrl},on:{"namespaceloaded":_vm.onNamespaceLoaded},model:{value:(value.text),callback:function ($$v) {_vm.$set(value, "text", $$v)},expression:"value.text"}}):_vm._e(),(_vm.cardinality)?_c('b-button',{directives:[{name:"b-tooltip",rawName:"v-b-tooltip.v-danger",value:(' Supprimer '),expression:"' Supprimer '",modifiers:{"v-danger":true}}],staticClass:"p-0 border-0 elt-remove",attrs:{"variant":"outline-danger","size":"sm"},on:{"click":function($event){return _vm.remove(index)}}},[_c('b-icon',{attrs:{"icon":"trash","font-scale":"1"}})],1):_vm._e()],1)}),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()],2),(_vm.cardinality)?_c('div',[_c('b-button',{attrs:{"size":"sm","variant":"info"},on:{"click":function($event){$event.preventDefault();return _vm.addField.apply(null, arguments)}}},[_vm._v(" Add more ")])],1):_vm._e()]}}])})],1)}
+var MoreFieldsIconwTextidgetvue_type_template_id_a51b271a_staticRenderFns = []
 
 
 ;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-80[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/MoreFieldsIconwTextidget.vue?vue&type=script&lang=js&
 
+
 //
 //
 //
@@ -25925,13 +28641,48 @@ var MoreFieldsIconwTextidgetvue_type_template_id_299978ee_staticRenderFns = []
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/**
+ * @deprecated will be remove before 2x. use MoreFieldsIconDescription
+ */
+
+
 
 
 
 /* harmony default export */ var MoreFieldsIconwTextidgetvue_type_script_lang_js_ = ({
   name: "MoreFieldsIconwTextidget",
   components: {
-    ValidationProvider: vee_validate_esm/* ValidationProvider */.d_
+    ValidationProvider: vee_validate_esm/* ValidationProvider */.d_,
+    ckeditor: (ckeditor_default()).component
   },
   props: {
     classCss: {
@@ -25964,7 +28715,10 @@ var MoreFieldsIconwTextidgetvue_type_template_id_299978ee_staticRenderFns = []
         text: "",
         format: "text_html"
       }],
-      timeout: null
+      timeout: null,
+      editorConfig: ckeditor_config.preEditorConfig(),
+      editorUrl: ckeditor_config.editorUrl(),
+      select_edit_mode: true
     };
   },
   computed: {
@@ -26040,6 +28794,12 @@ var MoreFieldsIconwTextidgetvue_type_template_id_299978ee_staticRenderFns = []
         format: "text_html"
       };
       this.input_value.push(newEntry);
+    },
+    remove: function remove(index) {
+      this.input_value.splice(index, 1);
+    },
+    onNamespaceLoaded: function onNamespaceLoaded(CKEDITOR) {
+      ckeditor_config.onNamespaceLoaded(CKEDITOR);
     }
   }
 });
@@ -26055,8 +28815,8 @@ var MoreFieldsIconwTextidgetvue_type_template_id_299978ee_staticRenderFns = []
 ;
 var MoreFieldsIconwTextidget_component = (0,componentNormalizer/* default */.Z)(
   fieldsDrupal_MoreFieldsIconwTextidgetvue_type_script_lang_js_,
-  MoreFieldsIconwTextidgetvue_type_template_id_299978ee_render,
-  MoreFieldsIconwTextidgetvue_type_template_id_299978ee_staticRenderFns,
+  MoreFieldsIconwTextidgetvue_type_template_id_a51b271a_render,
+  MoreFieldsIconwTextidgetvue_type_template_id_a51b271a_staticRenderFns,
   false,
   null,
   null,
@@ -26065,6 +28825,260 @@ var MoreFieldsIconwTextidget_component = (0,componentNormalizer/* default */.Z)(
 )
 
 /* harmony default export */ var MoreFieldsIconwTextidget = (MoreFieldsIconwTextidget_component.exports);
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/MoreFieldsIconwDescriptionidget.vue?vue&type=template&id=415a0071&
+var MoreFieldsIconwDescriptionidgetvue_type_template_id_415a0071_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"container-field",class:_vm.classCss},[_c('ValidationProvider',{attrs:{"name":_vm.fullname,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('b-form-group',{attrs:{"label":_vm.field.label,"description":_vm.field.description}},[_c('div',{staticClass:"options-config"},[_c('b-form-checkbox',{attrs:{"switch":"","size":"md"},model:{value:(_vm.select_edit_mode),callback:function ($$v) {_vm.select_edit_mode=$$v},expression:"select_edit_mode"}},[_vm._v(" Edit code (Pro) ")])],1),_vm._l((_vm.input_value),function(value,index){return _c('div',{key:index,staticClass:"field-item-value"},[_c('label',[_vm._v(" "+_vm._s(_vm.field.settings.label_1)+" ")]),_c('b-form-textarea',{attrs:{"placeholder":_vm.field.placeholder,"state":_vm.getValidationState(v),"name":_vm.fullname + '.value'},model:{value:(value.value),callback:function ($$v) {_vm.$set(value, "value", $$v)},expression:"value.value"}}),_c('label',{staticClass:"mt-2"},[_vm._v(" "+_vm._s(_vm.field.settings.label_2)+" ")]),(_vm.select_edit_mode)?_c('b-form-textarea',{attrs:{"placeholder":_vm.field.placeholder,"state":_vm.getValidationState(v),"name":_vm.fullname + '.text',"rows":"3","max-rows":"6"},model:{value:(value.text),callback:function ($$v) {_vm.$set(value, "text", $$v)},expression:"value.text"}}):_vm._e(),(!_vm.select_edit_mode)?_c('ckeditor',{attrs:{"value":value.text,"config":_vm.editorConfig,"editor-url":_vm.editorUrl},on:{"namespaceloaded":_vm.onNamespaceLoaded,"input":function($event){return _vm.inputRaw($event, index, 'value')}}}):_vm._e(),(_vm.cardinality)?_c('b-button',{directives:[{name:"b-tooltip",rawName:"v-b-tooltip.v-danger",value:(' Supprimer '),expression:"' Supprimer '",modifiers:{"v-danger":true}}],staticClass:"p-0 border-0 elt-remove",attrs:{"variant":"outline-danger","size":"sm"},on:{"click":function($event){return _vm.remove(index)}}},[_c('b-icon',{attrs:{"icon":"trash","font-scale":"1"}})],1):_vm._e()],1)}),(v.errors)?_c('div',{staticClass:"text-danger my-2"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0):_vm._e()],2),(_vm.cardinality)?_c('div',[_c('b-button',{attrs:{"size":"sm","variant":"info"},on:{"click":function($event){$event.preventDefault();return _vm.addField.apply(null, arguments)}}},[_vm._v(" Add more ")])],1):_vm._e()]}}])})],1)}
+var MoreFieldsIconwDescriptionidgetvue_type_template_id_415a0071_staticRenderFns = []
+
+
+;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-80[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/fieldsDrupal/MoreFieldsIconwDescriptionidget.vue?vue&type=script&lang=js&
+
+
+
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+
+/* harmony default export */ var MoreFieldsIconwDescriptionidgetvue_type_script_lang_js_ = ({
+  name: "MoreFieldsIconwDescriptionidget",
+  components: {
+    ValidationProvider: vee_validate_esm/* ValidationProvider */.d_,
+    ckeditor: (ckeditor_default()).component //ckeditor2: CKEditor.component,
+
+  },
+  props: {
+    classCss: {
+      type: [Array],
+      default: function _default() {
+        return [];
+      }
+    },
+    field: {
+      type: Object,
+      required: true
+    },
+    model: {
+      type: [Object, Array],
+      required: true
+    },
+    namespaceStore: {
+      type: String,
+      required: true
+    },
+    parentName: {
+      type: String,
+      required: true
+    }
+  },
+  data: function data() {
+    return {
+      input_value: [{
+        value: "",
+        text: "",
+        format: "text_html"
+      }],
+      editorConfig: ckeditor_config.preEditorConfig(),
+      editorUrl: ckeditor_config.editorUrl(),
+      select_edit_mode: true,
+      editorData: "emdf plfg"
+    };
+  },
+  computed: {
+    fullname: function fullname() {
+      return this.parentName + this.field.name;
+    },
+    cardinality: function cardinality() {
+      if (this.field.cardinality === -1) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  },
+  watch: {
+    /**
+     * Lorsque le champs est construt via les boucles dynamique,
+     * le template n'est pas reconstruit ducoup la valeur du precedent champs est concerservé.
+     * On applique ce watch et on verra les resultats.
+     * Cela ne s'execute que dans le cadre d'un watch et permet de ressoudre le probleme.
+     */
+    field: function field() {
+      console.log("watch : ");
+      this.input_value = this.getValue();
+    }
+  },
+  mounted: function mounted() {
+    // On recupere la valeur par defaut pour chaque construction:
+    this.input_value = this.getValue();
+  },
+  methods: {
+    getValidationState: function getValidationState(_ref) {
+      var dirty = _ref.dirty,
+          validated = _ref.validated,
+          _ref$valid = _ref.valid,
+          valid = _ref$valid === void 0 ? null : _ref$valid;
+      return (dirty || validated) && !valid ? valid : null;
+    },
+    getRules: function getRules() {
+      return loadField.getRules(this.field);
+    },
+    setValue: function setValue(vals) {
+      var _this = this;
+
+      return new Promise(function (resolv, reject) {
+        if (_this.namespaceStore) {
+          _this.$store.dispatch(_this.namespaceStore + "/setValue", {
+            value: vals,
+            fieldName: _this.fullname
+          }).then(function () {
+            resolv();
+          }).catch(function () {
+            reject();
+          });
+        } else _this.$store.dispatch("setValue", {
+          value: vals,
+          fieldName: _this.fullname
+        }).then(function () {
+          resolv();
+        }).catch(function () {
+          reject();
+        });
+      });
+    },
+    getValue: function getValue() {
+      // J'ai pas bien compris comment cela marche, mais le fait de retourner direcment cette object (this.model[this.field.name]) fonctionne.
+      return this.model[this.field.name];
+    },
+
+    /**
+     * Tentative de resolution.
+     * @param {*} value
+     * @param {*} index
+     * @param {*} property
+     */
+    inputRaw: function inputRaw(value, index, property) {
+      console.log("value :", value, "\n index : ", index, "\n property : ", property); // this.input_value[index][property] = value;
+    },
+    addField: function addField() {
+      var newEntry = {
+        value: "",
+        text: "",
+        format: "text_html"
+      };
+      this.input_value.push(newEntry); // console.log("this.model[this.field.name]", this.model[this.field.name]);
+      // // si le tableau de données est vide, on le remplie
+      // this.setValue(this.input_value).then(() => {
+      //   this.getValue();
+      // });
+    },
+    remove: function remove(index) {
+      this.input_value.splice(index, 1);
+    },
+    onNamespaceLoaded: function onNamespaceLoaded(CKEDITOR) {
+      ckeditor_config.onNamespaceLoaded(CKEDITOR);
+    }
+  }
+});
+;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/MoreFieldsIconwDescriptionidget.vue?vue&type=script&lang=js&
+ /* harmony default export */ var fieldsDrupal_MoreFieldsIconwDescriptionidgetvue_type_script_lang_js_ = (MoreFieldsIconwDescriptionidgetvue_type_script_lang_js_); 
+;// CONCATENATED MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/MoreFieldsIconwDescriptionidget.vue
+
+
+
+
+
+/* normalize component */
+;
+var MoreFieldsIconwDescriptionidget_component = (0,componentNormalizer/* default */.Z)(
+  fieldsDrupal_MoreFieldsIconwDescriptionidgetvue_type_script_lang_js_,
+  MoreFieldsIconwDescriptionidgetvue_type_template_id_415a0071_render,
+  MoreFieldsIconwDescriptionidgetvue_type_template_id_415a0071_staticRenderFns,
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* harmony default export */ var MoreFieldsIconwDescriptionidget = (MoreFieldsIconwDescriptionidget_component.exports);
 ;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/Containers/NoContainer.vue?vue&type=template&id=ecdce68a&
 var NoContainervue_type_template_id_ecdce68a_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',[_vm._t("default")],2)}
 var NoContainervue_type_template_id_ecdce68a_staticRenderFns = []
@@ -26143,12 +29157,13 @@ var SimpleCard_component = (0,componentNormalizer/* default */.Z)(
 )
 
 /* harmony default export */ var SimpleCard = (SimpleCard_component.exports);
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/Containers/AccordionCard.vue?vue&type=template&id=697bf9cc&
-var AccordionCardvue_type_template_id_697bf9cc_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('b-card',{class:_vm.classEntity,attrs:{"no-body":""}},[_c('b-card-header',{staticClass:"p-1",attrs:{"header-tag":"header","role":"tab","header-bg-variant":"info","header-text-variant":"light"}},[_c('div',{directives:[{name:"b-toggle",rawName:"v-b-toggle",value:(_vm.idAcordion),expression:"idAcordion"}],staticClass:"align-items-center d-flex justify-content-between"},[_c('h4',{staticClass:"mb-0 px-4 py-2"},[_vm._v(" "+_vm._s(_vm.entity.label)+" ")]),_c('div',{staticClass:"px-4"},[(!_vm.isOpen)?_c('b-icon',{staticClass:"light",attrs:{"icon":"chevron-double-down","font-scale":"1.2"}}):_vm._e(),(_vm.isOpen)?_c('b-icon',{staticClass:"light",attrs:{"icon":"chevron-double-up","font-scale":"1.2"}}):_vm._e()],1)])]),_c('b-collapse',{attrs:{"id":_vm.idAcordion,"accordion":_vm.accordionContainer,"role":"tabpanel"}},[_c('b-card-body',[_vm._t("default")],2)],1)],1)}
-var AccordionCardvue_type_template_id_697bf9cc_staticRenderFns = []
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/Containers/AccordionCard.vue?vue&type=template&id=1d0328fa&
+var AccordionCardvue_type_template_id_1d0328fa_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('b-card',{class:_vm.classEntity,attrs:{"no-body":""}},[_c('b-card-header',{staticClass:"p-1",attrs:{"header-tag":"header","role":"tab","header-bg-variant":"info","header-text-variant":"light"}},[_c('div',{directives:[{name:"b-toggle",rawName:"v-b-toggle",value:(_vm.idAcordion),expression:"idAcordion"}],staticClass:"align-items-center d-flex justify-content-between"},[_c('h4',{staticClass:"mb-0 px-4 py-2"},[_vm._v(" "+_vm._s(_vm.entity.label)+" ")]),_c('div',{staticClass:"px-4"},[(!_vm.isOpen)?_c('b-icon',{staticClass:"light",attrs:{"icon":"chevron-double-down","font-scale":"1.2"}}):_vm._e(),(_vm.isOpen)?_c('b-icon',{staticClass:"light",attrs:{"icon":"chevron-double-up","font-scale":"1.2"}}):_vm._e()],1)])]),_c('b-collapse',{attrs:{"id":_vm.idAcordion,"accordion":_vm.accordionContainer,"role":"tabpanel"}},[_c('b-card-body',[_vm._t("default")],2)],1)],1)}
+var AccordionCardvue_type_template_id_1d0328fa_staticRenderFns = []
 
 
 ;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-80[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/Containers/AccordionCard.vue?vue&type=script&lang=js&
+
 
 
 //
@@ -26215,7 +29230,7 @@ var AccordionCardvue_type_template_id_697bf9cc_staticRenderFns = []
   },
   data: function data() {
     return {
-      idAcordion: "accd-item-" + Math.random().toString(36),
+      idAcordion: "accd-item-" + Math.random().toString(36).slice(2),
       isOpen: false
     };
   },
@@ -26239,8 +29254,8 @@ var AccordionCardvue_type_template_id_697bf9cc_staticRenderFns = []
 ;
 var AccordionCard_component = (0,componentNormalizer/* default */.Z)(
   Containers_AccordionCardvue_type_script_lang_js_,
-  AccordionCardvue_type_template_id_697bf9cc_render,
-  AccordionCardvue_type_template_id_697bf9cc_staticRenderFns,
+  AccordionCardvue_type_template_id_1d0328fa_render,
+  AccordionCardvue_type_template_id_1d0328fa_staticRenderFns,
   false,
   null,
   null,
@@ -26275,6 +29290,10 @@ var AccordionCard_component = (0,componentNormalizer/* default */.Z)(
 
 
 
+
+ // @deprecated will be remove before 2x. use MoreFieldsIconDescription
+
+
  // load Container
 
 
@@ -26299,7 +29318,11 @@ var AccordionCard_component = (0,componentNormalizer/* default */.Z)(
     switch (key) {
       case "string":
       case "string_textfield":
-        template = drupal_string;
+        template = DrupalString;
+        break;
+
+      case "number":
+        template = DrupalInteger;
         break;
 
       case "email":
@@ -26399,9 +29422,18 @@ var AccordionCard_component = (0,componentNormalizer/* default */.Z)(
       case "string_textarea":
         template = TexTarea;
         break;
+      // @deprecated will be remove before 2x. use MoreFieldsIconDescription
 
       case "more_fields_icon_text_widget":
         template = MoreFieldsIconwTextidget;
+        break;
+
+      case "more_fields_icon_text_description_widget":
+        template = MoreFieldsIconwDescriptionidget;
+        break;
+
+      case "phone_international_widget":
+        template = PhoneInternational;
         break;
 
       default:
@@ -34494,6 +37526,9 @@ try {
 
 
 
+/**
+ * @see https://www.drupal.org/docs/core-modules-and-themes/core-modules/jsonapi-module/filtering
+ */
 
 var filters = /*#__PURE__*/function () {
   function filters() {
@@ -35184,6 +38219,14 @@ var basicRequest = {
   getBaseUrl: function getBaseUrl() {
     if (this.baseUrl) return this.isLocalDev && this.TestDomain ? this.TestDomain.trim("/") : this.baseUrl;else return this.isLocalDev && this.TestDomain ? this.TestDomain.trim("/") : window.location.protocol + "//" + window.location.host;
   },
+
+  /**
+   * Permet de recuperer les messages , en priorité celui definie dans headers.customstatustext.
+   *
+   * @param {*} er
+   * @param {*} type ( vrai pour recuperer les messages en cas de success )
+   * @returns
+   */
   getStatusText: function getStatusText(er) {
     var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
@@ -57912,7 +60955,7 @@ function _typeof(obj) {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.miniCssF = function(chunkId) {
 /******/ 			// return url for filenames based on template
-/******/ 			return "css/" + chunkId + "." + {"332":"5f5196f1","454":"40693ac0","528":"58213ea5","729":"93eeba88"}[chunkId] + ".css";
+/******/ 			return "css/" + chunkId + "." + {"245":"93eeba88","332":"5f5196f1","454":"40693ac0","528":"58213ea5"}[chunkId] + ".css";
 /******/ 		};
 /******/ 	}();
 /******/ 	
@@ -58061,7 +61104,7 @@ function _typeof(obj) {
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.f.miniCss = function(chunkId, promises) {
-/******/ 			var cssChunks = {"332":1,"454":1,"528":1,"729":1};
+/******/ 			var cssChunks = {"245":1,"332":1,"454":1,"528":1};
 /******/ 			if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);
 /******/ 			else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {
 /******/ 				promises.push(installedCssChunks[chunkId] = loadStylesheet(chunkId).then(function() {
@@ -103579,6 +106622,21 @@ var dist = __webpack_require__(40473);
 
         break;
 
+      case "check_apply_actions":
+        step.status = "run";
+        this.CheckApplyActions().then(function () {
+          step.status = "ok";
+          _this.currentBuildStep++;
+
+          _this.runStep(steps, state);
+        }).catch(function () {
+          step.status = "error";
+          _this.currentBuildStep++;
+
+          _this.runStep(steps, state);
+        });
+        break;
+
       default:
         // on ne devrait pas arrivé ici.
         this.messages.warnings.push(" Cette etape n'est pas definit : " + step.step);
@@ -103592,6 +106650,15 @@ var dist = __webpack_require__(40473);
       store.commit("CLEAN_LOCALSTORAGE");
       this.runWarningsMessages();
     }
+  },
+
+  /**
+   * Cette etape permet d'appliquer les configurations importante
+   */
+  CheckApplyActions: function CheckApplyActions() {
+    return this.bPost("/vuejs-entity/check-apply-actions", {
+      domain: this.domainRegister
+    });
   },
   // Dans cette etape, on cree les entités "donnee_internet_entity" et "domain_ovh_entity".
   CreateDomaine: function CreateDomaine(entity) {
@@ -105847,8 +108914,8 @@ var formRenderHeadervue_type_template_id_6646fccb_staticRenderFns = [function ()
 
 ;// CONCATENATED MODULE: ./src/components/FormRenderHeader/formRenderHeader.vue?vue&type=template&id=6646fccb&
 
-// EXTERNAL MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/loadField.js + 128 modules
-var fieldsDrupal_loadField = __webpack_require__(72507);
+// EXTERNAL MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/loadField.js + 141 modules
+var fieldsDrupal_loadField = __webpack_require__(66699);
 ;// CONCATENATED MODULE: ./src/components/FormRenderHeader/config.js
 
 
@@ -106114,7 +109181,7 @@ var users = __webpack_require__(32504);
   name: "page-register",
   components: {
     loginRegister: function loginRegister() {
-      return Promise.all(/* import() */[__webpack_require__.e(407), __webpack_require__.e(729)]).then(__webpack_require__.bind(__webpack_require__, 47729));
+      return Promise.all(/* import() */[__webpack_require__.e(407), __webpack_require__.e(245)]).then(__webpack_require__.bind(__webpack_require__, 60245));
     }
   },
   mounted: function mounted() {
@@ -106833,6 +109900,10 @@ external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vuex_esm/* default */
       titre: "Genere les styles du theme",
       status: false,
       step: "generate_style"
+    }, {
+      titre: "Verification",
+      status: false,
+      step: "check_apply_actions"
     } // Selectionnner les menus, les pages, le logo.
     ],
     // utilisateur connecter.
