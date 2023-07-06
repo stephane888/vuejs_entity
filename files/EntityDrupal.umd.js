@@ -60955,7 +60955,7 @@ function _typeof(obj) {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.miniCssF = function(chunkId) {
 /******/ 			// return url for filenames based on template
-/******/ 			return "css/" + chunkId + "." + {"245":"93eeba88","332":"5f5196f1","528":"58213ea5","614":"0409c4d8"}[chunkId] + ".css";
+/******/ 			return "css/" + chunkId + "." + {"189":"7a366976","245":"93eeba88","332":"5f5196f1","528":"58213ea5"}[chunkId] + ".css";
 /******/ 		};
 /******/ 	}();
 /******/ 	
@@ -61104,7 +61104,7 @@ function _typeof(obj) {
 /******/ 		};
 /******/ 		
 /******/ 		__webpack_require__.f.miniCss = function(chunkId, promises) {
-/******/ 			var cssChunks = {"245":1,"332":1,"528":1,"614":1};
+/******/ 			var cssChunks = {"189":1,"245":1,"332":1,"528":1};
 /******/ 			if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);
 /******/ 			else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {
 /******/ 				promises.push(installedCssChunks[chunkId] = loadStylesheet(chunkId).then(function() {
@@ -106334,7 +106334,7 @@ var TheContainer = function TheContainer() {
 };
 
 var formRender = function formRender() {
-  return __webpack_require__.e(/* import() */ 614).then(__webpack_require__.bind(__webpack_require__, 52614));
+  return __webpack_require__.e(/* import() */ 189).then(__webpack_require__.bind(__webpack_require__, 62189));
 };
 
 var textDuplicateEntities = function textDuplicateEntities() {
@@ -109925,6 +109925,10 @@ external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vuex_esm/* default */
       mail: [{
         value: ""
       }]
+    },
+    configs_login_rx_vuejs: {
+      client_google_id: "513247959752-qapd9jb30pdtoh51m0h53070a2v8c4er.apps.googleusercontent.com" //from https://console.cloud.google.com/apis/credentials?project=lesroisdelareno
+
     }
   },
   getters: {
