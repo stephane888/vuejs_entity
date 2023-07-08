@@ -106410,7 +106410,7 @@ var dist = __webpack_require__(40473);
   domainRegister: {},
 
   /**
-   * entité domain
+   * Entité domain_ovh_entity sur drupal
    */
   domainOvhEntity: {},
   OrtherPages: [],
@@ -106955,6 +106955,7 @@ var dist = __webpack_require__(40473);
                       "edit-config": "domain.config." + _this6.domainRegister.id + ".system.site",
                       "page.front": _this6.homePageContent.id && _this6.homePageContent.id[0] ? "/site-internet-entity/" + _this6.homePageContent.id[0].value : "",
                       name: _this6.donneeInternetEntity.name[0] && _this6.donneeInternetEntity.name[0].value ? _this6.donneeInternetEntity.name[0].value : "",
+                      mail: _this6.domainOvhEntity.sub_domain[0] && _this6.domainOvhEntity.sub_domain[0].value ? _this6.domainOvhEntity.sub_domain[0].value + "@wb-horizon.com" : "",
                       "page.404": "",
                       "page.403": ""
                     })
