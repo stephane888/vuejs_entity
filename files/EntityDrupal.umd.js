@@ -94894,8 +94894,7 @@ external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vuex_esm/* default */
           number++;
 
           if (datas[i].entities) {
-            console.log("loopCount : ", datas[i].entities);
-
+            //console.log("loopCount : ", datas[i].entities);
             for (var j in datas[i].entities) {
               loopCount(datas[i].entities[j]);
             }
@@ -94983,9 +94982,9 @@ external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vuex_esm/* default */
         if (payload.entity_type_id == undefined || !payload.entity_type_id) {
           reject("Paramettre manquant");
         } else rootConfig/* default.bPost */.Z.bPost("/apivuejs/save-entity/" + payload.entity_type_id, payload.value).then(function (resp) {
-          console.log("resp : ", resp); //setTimeout(() => {
-
-          console.log(" payload : ", payload);
+          //console.log("resp : ", resp);
+          //setTimeout(() => {
+          //console.log(" payload : ", payload);
           resolv(resp); //}, 1000);
         }).catch(function (er) {
           reject(er);
