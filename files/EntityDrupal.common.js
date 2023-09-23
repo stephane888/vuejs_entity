@@ -92503,7 +92503,8 @@ var FormUttilities = __webpack_require__(61161);
   prepareSaveEntities: function prepareSaveEntities(response, suivers) {
     var ActionDomainId = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
     FormUttilities/* default.domainRegister */.Z.domainRegister = this.domainRegister;
-    FormUttilities/* default.numberTry */.Z.numberTry = 2;
+    FormUttilities/* default.numberTry */.Z.numberTry = 5;
+    FormUttilities/* default.timeWaitBeforeRetry */.Z.timeWaitBeforeRetry = 25000;
     return FormUttilities/* default.prepareSaveEntities */.Z.prepareSaveEntities(store, response, suivers, ActionDomainId);
   }
 }));
