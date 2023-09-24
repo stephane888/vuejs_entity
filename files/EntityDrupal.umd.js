@@ -92246,7 +92246,7 @@ var FormUttilities = __webpack_require__(29338);
     return new Promise(function (resolv, reject) {
       var idHome = window.location.pathname.split("/").pop();
 
-      _this10.bGet("/generate_style_theme/set_default_style/" + idHome + "/" + _this10.domainRegister.id).then(function () {
+      _this10.bGet("/lesroidelareno-generate_style_theme/set_default_style/" + idHome + "/" + _this10.domainRegister.id).then(function () {
         _this10.bGet("/layoutgenentitystyles/manuel/api-generate/" + _this10.domainRegister.id).then(function () {
           resolv(_this10.bGet("/generate-style-theme/update-style-theme/" + _this10.domainRegister.id));
         }).catch(function () {
