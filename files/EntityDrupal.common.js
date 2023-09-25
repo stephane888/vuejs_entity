@@ -52415,7 +52415,7 @@ var basicRequest = {
     var _this3 = this;
 
     return new Promise(function (resolv, reject) {
-      if (_this3.languageId !== "" && _this3.languageId !== undefined && _this3.languageId !== null) url = "/" + _this3.languageId + url;
+      if (_this3.languageId !== "" && _this3.languageId !== undefined && _this3.languageId !== null && !url.includes("://")) url = "/" + _this3.languageId + url;
       var urlFinal = url.includes("://") ? url : _this3.getBaseUrl() + url;
       InstAxios.get(urlFinal, configs).then(function (reponse) {
         if (_this3.debug) console.log("Debug axio : \n", urlFinal, "\n Config: ", configs, "\n Duration : ", reponse.headers["request-duration"], "\n Reponse: ", reponse, "\n ------ \n");
@@ -92237,7 +92237,12 @@ var FormUttilities = __webpack_require__(61161);
       var idHome = window.location.pathname.split("/").pop();
 
       _this10.bGet("/lesroidelareno-generate_style_theme/set_default_style/" + idHome + "/" + _this10.domainRegister.id).then(function () {
-        _this10.bGet("/layoutgenentitystyles/manuel/api-generate/" + _this10.domainRegister.id).then(function () {
+        // il ya une nouvelle fonction de filtre d'entite et qui est est vraiment stricte.
+        // du coup pour pouvoir generer les styles, on doit le faire absolument via le domaine.
+        //this.bGet("/layoutgenentitystyles/manuel/api-generate/" + this.domainRegister.id);
+        var url = window.location.protocol + "//" + _this10.domainRegister.hostname + "/layoutgenentitystyles/manuel/api-generate/" + _this10.domainRegister.id;
+
+        _this10.bGet(url).then(function () {
           resolv(_this10.bGet("/generate-style-theme/update-style-theme/" + _this10.domainRegister.id));
         }).catch(function () {
           reject();
