@@ -91530,6 +91530,16 @@ var FormUttilities = __webpack_require__(61161);
    */
   domainOvhEntity: {},
   OrtherPages: [],
+
+  /**
+   * time to wait before retry.
+   */
+  timeWaitBeforeRetry: 25000,
+
+  /**
+   * nombre d'essaie.
+   */
+  numberRetry: 5,
   messages: {
     errors: [],
     warnings: []
@@ -92195,6 +92205,7 @@ var FormUttilities = __webpack_require__(61161);
     var info = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "";
     return new Promise(function (resolv, reject) {
       if (entity.id && entity.id[0].value) {
+        var essaie = 0;
         var type = entity["type"][0]["target_id"];
         var label = info + " : " + _this9.domainRegister.id;
         var id_domaine = (0,dist.limit)(_this9.domainRegister.id, 20, "");
@@ -92225,8 +92236,24 @@ var FormUttilities = __webpack_require__(61161);
             entity: id,
             view_mode: "default"
           }
+        }; // Permet de relancer en cas d'erreur du serveur.
+
+        var loop = function loop() {
+          return new Promise(function (resolvChild, rejectChild) {
+            _this9.bPost("/vuejs-entity/entity/add-block-in-region", values).then(function (resp) {
+              resolvChild(resp);
+            }).catch(function (err) {
+              if (essaie <= _this9.numberRetry) {
+                essaie++;
+                setTimeout(function () {
+                  resolvChild(loop());
+                }, _this9.timeWaitBeforeRetry);
+              } else rejectChild(err);
+            });
+          });
         };
-        resolv(_this9.bPost("/vuejs-entity/entity/add-block-in-region", values));
+
+        resolv(loop());
       } else reject(" ID du paragraph non definit ");
     });
   },
@@ -92508,8 +92535,8 @@ var FormUttilities = __webpack_require__(61161);
   prepareSaveEntities: function prepareSaveEntities(response, suivers) {
     var ActionDomainId = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
     FormUttilities/* default.domainRegister */.Z.domainRegister = this.domainRegister;
-    FormUttilities/* default.numberTry */.Z.numberTry = 5;
-    FormUttilities/* default.timeWaitBeforeRetry */.Z.timeWaitBeforeRetry = 25000;
+    FormUttilities/* default.numberTry */.Z.numberTry = this.numberRetry;
+    FormUttilities/* default.timeWaitBeforeRetry */.Z.timeWaitBeforeRetry = this.timeWaitBeforeRetry;
     return FormUttilities/* default.prepareSaveEntities */.Z.prepareSaveEntities(store, response, suivers, ActionDomainId);
   }
 }));
