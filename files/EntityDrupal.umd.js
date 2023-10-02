@@ -31317,7 +31317,7 @@ var AccordionCard_component = (0,componentNormalizer/* default */.Z)(
       };
 
       var loopItemAddValues = function loopItemAddValues(values, resp, has_target_revision_id) {
-        //console.log("loopItemAddValues values : ", values, "\n resp : ", resp, "\n has_target_revision_id : ", has_target_revision_id);
+        // console.log("loopItemAddValues values : ", values, "\n resp : ", resp, "\n has_target_revision_id : ", has_target_revision_id);
         if (has_target_revision_id) {
           // try to get revision.
           var revision_id;
@@ -92271,16 +92271,15 @@ var FormUttilities = __webpack_require__(29338);
     var _this10 = this;
 
     return new Promise(function (resolv, reject) {
-      var idHome = window.location.pathname.split("/").pop();
+      var idHome = window.location.pathname.split("/").pop(); // il ya une nouvelle fonction de filtre d'entite et qui est est vraiment stricte.
+      // du coup pour pouvoir generer les styles, on doit le faire absolument via le domaine.
+      //this.bGet("/layoutgenentitystyles/manuel/api-generate/" + this.domainRegister.id);
 
-      _this10.bGet("/lesroidelareno-generate_style_theme/set_default_style/" + idHome + "/" + _this10.domainRegister.id).then(function () {
-        // il ya une nouvelle fonction de filtre d'entite et qui est est vraiment stricte.
-        // du coup pour pouvoir generer les styles, on doit le faire absolument via le domaine.
-        //this.bGet("/layoutgenentitystyles/manuel/api-generate/" + this.domainRegister.id);
-        var url = window.location.protocol + "//" + _this10.domainRegister.hostname + "/layoutgenentitystyles/manuel/api-generate/" + _this10.domainRegister.id;
+      var url = window.location.protocol + "//" + _this10.domainRegister.hostname;
 
-        _this10.bGet(url).then(function () {
-          resolv(_this10.bGet("/generate-style-theme/update-style-theme/" + _this10.domainRegister.id));
+      _this10.bGet(url + "/lesroidelareno-generate_style_theme/set_default_style/" + idHome + "/" + _this10.domainRegister.id).then(function () {
+        _this10.bGet(url + "/layoutgenentitystyles/manuel/api-generate/" + _this10.domainRegister.id).then(function () {
+          resolv(_this10.bGet(url + "/generate-style-theme/update-style-theme/" + _this10.domainRegister.id));
         }).catch(function () {
           reject();
         });
