@@ -202,6 +202,7 @@ class FormEntityController extends ControllerBase {
         
         $entities = [];
         $this->DuplicateEntityReference->duplicateExistantReference($pageWeb, $entities);
+        
         // On charge les autres traductions.
         $translations = [];
         if ($entityModel->isTranslatable()) {
@@ -672,6 +673,12 @@ class FormEntityController extends ControllerBase {
    * @param String|integer $id
    *
    * @deprecated utiliser
+   *            
+   *            
+   *            
+   *            
+   *            
+   *            
    *            
    *            
    *            
