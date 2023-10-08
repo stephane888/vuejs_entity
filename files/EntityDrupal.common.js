@@ -52366,7 +52366,7 @@ var basicRequest = {
     var _this = this;
 
     return new Promise(function (resolv, reject) {
-      if (_this.languageId !== "" && _this.languageId !== undefined && _this.languageId !== null) url = "/" + _this.languageId + url;
+      if (_this.languageId !== "" && _this.languageId !== undefined && _this.languageId !== null && !url.includes("://")) url = "/" + _this.languageId + url;
       var urlFinal = url.includes("://") ? url : _this.getBaseUrl() + url;
       InstAxios.post(urlFinal, datas, configs).then(function (reponse) {
         if (_this.debug) console.log("Debug axio : \n", urlFinal, "\n payload: ", datas, "\n config: ", configs, "\n Duration : ", reponse.headers["request-duration"], "\n reponse: ", reponse, "\n ------ \n");
@@ -91780,6 +91780,8 @@ var FormUttilities = __webpack_require__(61161);
    * Cette etape permet d'appliquer les configurations importante
    */
   CheckApplyActions: function CheckApplyActions() {
+    var idHome = window.location.pathname.split("/").pop();
+    this.bPost("/admin/config/manage-add-plugins/" + this.domainRegister.id + "/" + idHome);
     return this.bPost("/vuejs-entity/check-apply-actions", {
       domain: this.domainRegister
     });
@@ -92199,6 +92201,15 @@ var FormUttilities = __webpack_require__(61161);
       });
     });
   },
+
+  /**
+   *
+   * @param {*} entity
+   * @param {*} entity_type_id
+   * @param {*} region
+   * @param {*} info
+   * @returns
+   */
   addEntityToBlock: function addEntityToBlock(entity, entity_type_id, region) {
     var _this9 = this;
 
@@ -92257,6 +92268,7 @@ var FormUttilities = __webpack_require__(61161);
       } else reject(" ID du paragraph non definit ");
     });
   },
+  //
   generateStyleTheme: function generateStyleTheme() {
     var _this10 = this;
 
