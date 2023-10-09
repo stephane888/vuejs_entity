@@ -31293,12 +31293,18 @@ var AccordionCard_component = (0,componentNormalizer/* default */.Z)(
 
     var ActionDomainId = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
     return new Promise(function (resolu, rejecte) {
-      // on vide les derniers ids.
+      console.log("prepareSaveEntities"); // on vide les derniers ids.
+
       _this.lastIdsEntity = [];
 
       var updateDomainId = function updateDomainId(entity) {
+        console.log("entity.field_domain_source : ", entity, "\n ActionDomainId : ", ActionDomainId, "\n this.domainRegister : ", _this.domainRegister);
+
         if (ActionDomainId && _this.domainRegister.id && entity.field_domain_access) {
           entity.field_domain_access = [{
+            target_id: _this.domainRegister.id
+          }];
+          if (entity.field_domain_source !== undefined) entity.field_domain_source = [{
             target_id: _this.domainRegister.id
           }];
         }
@@ -92544,7 +92550,7 @@ var FormUttilities = __webpack_require__(61161);
    * @returns
    */
   prepareSaveEntities: function prepareSaveEntities(response, suivers) {
-    var ActionDomainId = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+    var ActionDomainId = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
     FormUttilities/* default.domainRegister */.Z.domainRegister = this.domainRegister;
     FormUttilities/* default.numberTry */.Z.numberTry = this.numberRetry;
     FormUttilities/* default.timeWaitBeforeRetry */.Z.timeWaitBeforeRetry = this.timeWaitBeforeRetry;
