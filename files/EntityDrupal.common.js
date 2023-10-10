@@ -31293,13 +31293,12 @@ var AccordionCard_component = (0,componentNormalizer/* default */.Z)(
 
     var ActionDomainId = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
     return new Promise(function (resolu, rejecte) {
-      console.log("prepareSaveEntities"); // on vide les derniers ids.
-
+      //console.log("prepareSaveEntities");
+      // on vide les derniers ids.
       _this.lastIdsEntity = [];
 
       var updateDomainId = function updateDomainId(entity) {
-        console.log("entity.field_domain_source : ", entity, "\n ActionDomainId : ", ActionDomainId, "\n this.domainRegister : ", _this.domainRegister);
-
+        //console.log("entity.field_domain_source : ", entity, "\n ActionDomainId : ", ActionDomainId, "\n this.domainRegister : ", this.domainRegister);
         if (ActionDomainId && _this.domainRegister.id && entity.field_domain_access) {
           entity.field_domain_access = [{
             target_id: _this.domainRegister.id
@@ -91491,12 +91490,8 @@ var router_router = new vue_router_esm({
 /* harmony default export */ var src_router = (router_router);
 // EXTERNAL MODULE: ./node_modules/vuex/dist/vuex.esm.js
 var vuex_esm = __webpack_require__(34665);
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js
-var asyncToGenerator = __webpack_require__(16198);
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/defineProperty.js
 var esm_defineProperty = __webpack_require__(23796);
-// EXTERNAL MODULE: ./node_modules/regenerator-runtime/runtime.js
-var runtime = __webpack_require__(78975);
 // EXTERNAL MODULE: ./src/rootConfig.js
 var rootConfig = __webpack_require__(76924);
 // EXTERNAL MODULE: ./node_modules/stringz/dist/index.js
@@ -91504,8 +91499,6 @@ var dist = __webpack_require__(63489);
 // EXTERNAL MODULE: ../components_bootstrapvuejs/src/js/FormUttilities.js
 var FormUttilities = __webpack_require__(61161);
 ;// CONCATENATED MODULE: ./src/store/saveEntity.js
-
-
 
 
 
@@ -92091,50 +92084,58 @@ var FormUttilities = __webpack_require__(61161);
   CreateTheme: function CreateTheme() {
     var _this6 = this;
 
-    return (0,asyncToGenerator/* default */.Z)( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-      return regeneratorRuntime.wrap(function _callee$(_context) {
-        while (1) {
-          switch (_context.prev = _context.next) {
-            case 0:
-              return _context.abrupt("return", new Promise(function (resolv) {
-                var values = {
-                  site_config: [{
-                    value: JSON.stringify({
-                      "edit-config": "domain.config." + _this6.domainRegister.id + ".system.site",
-                      "page.front": _this6.homePageContent.id && _this6.homePageContent.id[0] ? "/site-internet-entity/" + _this6.homePageContent.id[0].value : "",
-                      name: _this6.donneeInternetEntity.name[0] && _this6.donneeInternetEntity.name[0].value ? _this6.donneeInternetEntity.name[0].value : "",
-                      mail: _this6.domainOvhEntity.sub_domain[0] && _this6.domainOvhEntity.sub_domain[0].value ? _this6.domainOvhEntity.sub_domain[0].value + "@wb-horizon.com" : "",
-                      "page.404": "",
-                      "page.403": ""
-                    })
-                  }],
-                  logo: _this6.donneeInternetEntity.image_logo && _this6.donneeInternetEntity.image_logo.length ? _this6.donneeInternetEntity.image_logo : [],
-                  run_npm: [{
-                    value: false
-                  }]
-                }; //
+    return new Promise(function (resolv) {
+      var values = {
+        site_config: [{
+          value: JSON.stringify({
+            "edit-config": "domain.config." + _this6.domainRegister.id + ".system.site",
+            "page.front": _this6.homePageContent.id && _this6.homePageContent.id[0] ? "/site-internet-entity/" + _this6.homePageContent.id[0].value : "",
+            name: _this6.donneeInternetEntity.name[0] && _this6.donneeInternetEntity.name[0].value ? _this6.donneeInternetEntity.name[0].value : "",
+            mail: _this6.domainOvhEntity.sub_domain[0] && _this6.domainOvhEntity.sub_domain[0].value ? _this6.domainOvhEntity.sub_domain[0].value + "@wb-horizon.com" : "",
+            "page.404": "",
+            "page.403": ""
+          })
+        }],
+        logo: _this6.donneeInternetEntity.image_logo && _this6.donneeInternetEntity.image_logo.length ? _this6.donneeInternetEntity.image_logo : [],
+        run_npm: [{
+          value: false
+        }]
+      }; //
 
-                //
-                if (_this6.domainRegister.id) {
-                  values["hostname"] = [{
-                    value: _this6.domainRegister.id
-                  }];
-                } // Applis colors
+      if (_this6.domainRegister.id) {
+        values["hostname"] = [{
+          value: _this6.domainRegister.id
+        }];
+      } // Applis colors
 
 
-                // Applis colors
-                _this6.ApplieColor(values).then(function (resp) {
-                  resolv(_this6.bPost("/vuejs-entity/entity/save/config_theme_entity", resp));
-                });
-              }));
+      _this6.ApplieColor(values).then(function (resp) {
+        // Permet de relancer en cas d'erreur du serveur.
 
-            case 1:
-            case "end":
-              return _context.stop();
-          }
-        }
-      }, _callee);
-    }))();
+        /**
+         * Pour le theme, il faut essayer de comprendre ce qui se passe en cas d'echec. il ya plusieurs cas de figure possible.
+         */
+        var essaie = 0;
+
+        var loop = function loop() {
+          console.log("create theme with retry");
+          return new Promise(function (resolvChild, rejectChild) {
+            _this6.bPost("/vuejs-entity/entity/save/config_theme_entity", resp).then(function (resp) {
+              resolvChild(resp);
+            }).catch(function (err) {
+              if (essaie <= _this6.numberRetry) {
+                essaie++;
+                setTimeout(function () {
+                  resolvChild(loop());
+                }, _this6.timeWaitBeforeRetry);
+              } else rejectChild(err);
+            });
+          });
+        };
+
+        resolv(loop()); // resolv(this.bPost("/vuejs-entity/entity/save/config_theme_entity", resp));
+      });
+    });
   },
 
   /**
