@@ -47734,12 +47734,23 @@ var index = {
 /* harmony import */ var _siteweb_AppVuejs_create_website_node_modules_babel_runtime_helpers_esm_objectSpread2_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(40406);
 /* harmony import */ var wbuutilities__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(32038);
 
- //
+ // On surcharger la durée d'attente d'une requete.
 
+wbuutilities__WEBPACK_IMPORTED_MODULE_1__/* .AjaxToastBootStrap.axiosInstance.defaults.timeout */ .Ht.axiosInstance.defaults.timeout = 1200000;
+wbuutilities__WEBPACK_IMPORTED_MODULE_1__/* .AjaxToastBootStrap.setHeaders */ .Ht.setHeaders("x-semaphore", "bloquant");
 /* harmony default export */ __webpack_exports__["Z"] = ((0,_siteweb_AppVuejs_create_website_node_modules_babel_runtime_helpers_esm_objectSpread2_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z)((0,_siteweb_AppVuejs_create_website_node_modules_babel_runtime_helpers_esm_objectSpread2_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z)({}, wbuutilities__WEBPACK_IMPORTED_MODULE_1__/* .AjaxToastBootStrap */ .Ht), {}, {
   languageId: window.drupalSettings && window.drupalSettings.path && window.drupalSettings.path.currentLanguage ? window.drupalSettings.path.currentLanguage : null,
   TestDomain: "http://wb-horizon.kksa",
-  debug: false
+  debug: true // on doit surcharger les les requetes afin d'ajouter un header "x-semaphore", qui permettra que toutes les requtes passe par le semaphore.
+  // bGet(url, configs = {}, showNotification = false) {
+  //   configs = this.mergeHeaders(configs);
+  //   return AjaxToastBootStrap.bGet(url, { headers: configs }, showNotification);
+  // },
+  // bPost(url, datas, configs = {}, showNotification = false) {
+  //   configs = this.mergeHeaders(configs);
+  //   return AjaxToastBootStrap.bPost(url, datas, { headers: configs }, showNotification);
+  // },
+
 }));
 
 /***/ }),
@@ -47897,7 +47908,7 @@ var filters = /*#__PURE__*/function () {
     value: function addFilter(fieldName, operator, value) {
       var key = "fil-" + _rootConfig_js__WEBPACK_IMPORTED_MODULE_2__/* ["default"].getRandomIntInclusive */ .Z.getRandomIntInclusive();
       this.addParam(key, "path", fieldName);
-      this.addParam(key, "operator", operator);
+      this.addParam(key, "operator", encodeURIComponent(operator));
       this.addParam(key, "value", value);
       return this.query;
     }
@@ -52247,7 +52258,11 @@ axios.default = axios; // this module should only have a default export
 
 /**
  * Permet d'effectuer les requetes
- * pour modifier ou definir les paramettres par defaut de l'instance, {AjaxBasic}.axiosInstance.defaults.timeout = 30000;
+ * pour modifier ou definir les paramettres par defaut de l'instance,
+ * 1- importer
+ * import { AjaxToastBootStrap } from "wbuutilities";
+ * 2- Surcharger ( par example la duree)
+ * AjaxToastBootStrap.axiosInstance.defaults.timeout = 1200000;
  */
 
 var InstAxios = lib_axios.create({
@@ -52259,7 +52274,7 @@ InstAxios.interceptors.request.use(function (config) {
   config.headers["request-startTime"] = new Date().getTime(); //
 
   return config;
-}); //surcharge de la reponse
+}); // surcharge de la reponse
 
 InstAxios.interceptors.response.use(function (response) {
   // Calcul de la durée
@@ -52335,6 +52350,12 @@ var basicRequest = {
   isLocalDev: window.location.host.includes("localhost") || window.location.host.includes(".kksa") ? true : false,
 
   /**
+   * Permet d'ajouter les enttetes.
+   * {key:value}
+   */
+  customHeaders: {},
+
+  /**
    * Permet de derminer la source du domaine, en function des paramettres definit.
    * @private (ne doit pas etre surcharger).
    * @returns String
@@ -52377,12 +52398,14 @@ var basicRequest = {
       return null;
     }
   },
-  post: function post(url, datas, configs) {
+  post: function post(url, datas) {
     var _this = this;
 
+    var configs = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     return new Promise(function (resolv, reject) {
       if (_this.languageId !== "" && _this.languageId !== undefined && _this.languageId !== null && !url.includes("://")) url = "/" + _this.languageId + url;
       var urlFinal = url.includes("://") ? url : _this.getBaseUrl() + url;
+      configs = _this.mergeHeaders(configs);
       InstAxios.post(urlFinal, datas, configs).then(function (reponse) {
         if (_this.debug) console.log("Debug axio : \n", urlFinal, "\n payload: ", datas, "\n config: ", configs, "\n Duration : ", reponse.headers["request-duration"], "\n reponse: ", reponse, "\n ------ \n");
         resolv({
@@ -52403,11 +52426,13 @@ var basicRequest = {
       });
     });
   },
-  delete: function _delete(url, datas, configs) {
+  delete: function _delete(url, datas) {
     var _this2 = this;
 
+    var configs = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     return new Promise(function (resolv, reject) {
       var urlFinal = url.includes("://") ? url : _this2.getBaseUrl() + url;
+      configs = _this2.mergeHeaders(configs);
       InstAxios.delete(urlFinal, configs, datas).then(function (reponse) {
         resolv({
           status: true,
@@ -52426,12 +52451,14 @@ var basicRequest = {
       });
     });
   },
-  get: function get(url, configs) {
+  get: function get(url) {
     var _this3 = this;
 
+    var configs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     return new Promise(function (resolv, reject) {
       if (_this3.languageId !== "" && _this3.languageId !== undefined && _this3.languageId !== null && !url.includes("://")) url = "/" + _this3.languageId + url;
       var urlFinal = url.includes("://") ? url : _this3.getBaseUrl() + url;
+      configs = _this3.mergeHeaders(configs);
       InstAxios.get(urlFinal, configs).then(function (reponse) {
         if (_this3.debug) console.log("Debug axio : \n", urlFinal, "\n Config: ", configs, "\n Duration : ", reponse.headers["request-duration"], "\n Reponse: ", reponse, "\n ------ \n");
         resolv({
@@ -52503,6 +52530,28 @@ var basicRequest = {
         return reject(error);
       };
     });
+  },
+
+  /**
+   * Permet d'ajouter une configuration specifique
+   */
+  setHeaders: function setHeaders(key, value) {
+    this.customHeaders[key] = value;
+  },
+
+  /**
+   * Permet d'additionner la configation
+   */
+  mergeHeaders: function mergeHeaders(configs) {
+    if (!configs.headers) configs.headers = {};
+
+    if (this.customHeaders) {
+      for (var i in this.customHeaders) {
+        configs.headers[i] = this.customHeaders[i];
+      }
+    }
+
+    return configs;
   }
 };
 /* harmony default export */ var basic = (basicRequest);
@@ -93896,7 +93945,7 @@ var drupal_file_component = (0,componentNormalizer/* default */.Z)(
   },
   getImageUrl: function getImageUrl(fid) {
     var style = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "medium";
-    return this.get("/vuejs-entity/image/" + fid + "/" + style);
+    return this.bGet("/vuejs-entity/image/" + fid + "/" + style);
   },
   getRules: function getRules(field) {
     var rules = {};
@@ -94769,7 +94818,7 @@ var page_save_component = (0,componentNormalizer/* default */.Z)(
     // /vuejs-entity/form/block_content/default/header
     loadFields: function loadFields(state) {
       var idHome = window.location.pathname.split("/").pop();
-      FormRenderHeader_config.post("/vuejs-entity/form/paragraphs/" + idHome + "/header").then(function (resp) {
+      FormRenderHeader_config.bPost("/vuejs-entity/form/paragraphs/" + idHome + "/header").then(function (resp) {
         if (resp.data) {
           state.entities = resp.data;
         }
@@ -94828,7 +94877,7 @@ var page_save_component = (0,componentNormalizer/* default */.Z)(
     // /vuejs-entity/form/block_content/default/header
     loadFields: function loadFields(state) {
       var idHome = window.location.pathname.split("/").pop();
-      FormRenderFooter_config.post("/vuejs-entity/form/paragraphs/" + idHome + "/footer").then(function (resp) {
+      FormRenderFooter_config.bPost("/vuejs-entity/form/paragraphs/" + idHome + "/footer").then(function (resp) {
         if (resp.data) {
           state.entities = resp.data;
         }
@@ -95045,7 +95094,7 @@ external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vuex_esm/* default */
     // Load strings texte
     loadStrings: function loadStrings(_ref5) {
       var commit = _ref5.commit;
-      return rootConfig/* default.get */.Z.get("/vuejs-entity/default-string").then(function (resp) {
+      return rootConfig/* default.bGet */.Z.bGet("/vuejs-entity/default-string").then(function (resp) {
         if (resp.data) {
           commit("SET_STRINGS", resp.data);
         }
