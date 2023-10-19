@@ -108,7 +108,6 @@ vuejs_entity.add_block_in_region:
     _title: 'Add Block In Region'
   requirements:
     _access: 'TRUE'
-    
 #    
 vuejs_entity.add_menu_items:
   path: '/vuejs-entity/entity/add-menu-items'
@@ -116,8 +115,7 @@ vuejs_entity.add_menu_items:
     _controller: '\Drupal\vuejs_entity\Controller\FormEntityController::createMenuAndItems'
     _title: 'Add Block In Region'
   requirements:
-    _access: 'TRUE'
-        
+    _access: 'TRUE'      
 #    
 vuejs_entity.create_domain:
   path: '/vuejs-entity/domaine/add/{domain_ovh_entity_id}'
@@ -126,8 +124,7 @@ vuejs_entity.create_domain:
     _title: 'ModelChoisieForm'
   requirements:
     _access: 'TRUE'
-    
-    
+#  
 vuejs_entity.layout.configure:
   path: '/layout/configure/{section_storage_type}/{section_storage}/{delta}/{plugin_id}'
   defaults:
@@ -135,7 +132,7 @@ vuejs_entity.layout.configure:
     _title: 'ModelChoisieForm'
   requirements:
     _access: 'TRUE'
-    
+#  
 vuejs_entity.layout.defaultconfigure:
   path: '/layout/defaultconfigure/{section_storage_type}/{section_storage}/{delta}/{plugin_id}'
   defaults:
@@ -143,7 +140,7 @@ vuejs_entity.layout.defaultconfigure:
     _title: 'ModelChoisieForm'
   requirements:
     _access: 'TRUE'   
-    
+#
 vuejs_entity.layout.add.subconfig:
   path: '/layout/add-subconfigure/{section_storage_type}/{section_storage}/{delta}/{plugin_id}/{domaine_id}'
   defaults:

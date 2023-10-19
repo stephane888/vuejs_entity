@@ -47736,12 +47736,12 @@ var index = {
 
  // On surcharger la durée d'attente d'une requete.
 
-wbuutilities__WEBPACK_IMPORTED_MODULE_1__/* .AjaxToastBootStrap.axiosInstance.defaults.timeout */ .Ht.axiosInstance.defaults.timeout = 1200000;
+wbuutilities__WEBPACK_IMPORTED_MODULE_1__/* .AjaxToastBootStrap.axiosInstance.defaults.timeout */ .Ht.axiosInstance.defaults.timeout = 800000;
 wbuutilities__WEBPACK_IMPORTED_MODULE_1__/* .AjaxToastBootStrap.setHeaders */ .Ht.setHeaders("x-semaphore", "bloquant");
 /* harmony default export */ __webpack_exports__["Z"] = ((0,_siteweb_AppVuejs_create_website_node_modules_babel_runtime_helpers_esm_objectSpread2_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z)((0,_siteweb_AppVuejs_create_website_node_modules_babel_runtime_helpers_esm_objectSpread2_js__WEBPACK_IMPORTED_MODULE_0__/* ["default"] */ .Z)({}, wbuutilities__WEBPACK_IMPORTED_MODULE_1__/* .AjaxToastBootStrap */ .Ht), {}, {
   languageId: window.drupalSettings && window.drupalSettings.path && window.drupalSettings.path.currentLanguage ? window.drupalSettings.path.currentLanguage : null,
   TestDomain: "http://wb-horizon.kksa",
-  debug: true // on doit surcharger les les requetes afin d'ajouter un header "x-semaphore", qui permettra que toutes les requtes passe par le semaphore.
+  debug: false // on doit surcharger les les requetes afin d'ajouter un header "x-semaphore", qui permettra que toutes les requtes passe par le semaphore.
   // bGet(url, configs = {}, showNotification = false) {
   //   configs = this.mergeHeaders(configs);
   //   return AjaxToastBootStrap.bGet(url, { headers: configs }, showNotification);
@@ -91838,15 +91838,18 @@ var FormUttilities = __webpack_require__(29338);
    * Cette etape permet d'appliquer les configurations importante
    */
   CheckApplyActions: function CheckApplyActions() {
-    var idHome = window.location.pathname.split("/").pop();
-    this.bPost("/admin/config/manage-add-plugins/" + this.domainRegister.id + "/" + idHome);
-    return this.bPost("/vuejs-entity/check-apply-actions", {
+    var idHome = window.location.pathname.split("/").pop(); // this.bPost("/admin/config/manage-add-plugins/" + this.domainRegister.id + "/" + idHome);
+
+    this.LoopGetRequest("/admin/config/manage-add-plugins/" + this.domainRegister.id + "/" + idHome);
+    return this.LoopPostRequest("/vuejs-entity/check-apply-actions", {
       domain: this.domainRegister
-    });
+    }); // return this.bPost("/vuejs-entity/check-apply-actions", {
+    //   domain: this.domainRegister,
+    // });
   },
   // Dans cette etape, on cree les entités "donnee_internet_entity" et "domain_ovh_entity".
   CreateDomaine: function CreateDomaine(entity) {
-    return this.bPost("/vuejs-entity/entity/save/donnee_internet_entity", entity);
+    return this.LoopPostRequest("/vuejs-entity/entity/save/donnee_internet_entity", entity);
   },
   // On enregistre le domaine sur OVH et on l'enregistre egalement comme multidomaine sur drupal.
   RegisterDomaine: function RegisterDomaine() {
@@ -91855,7 +91858,11 @@ var FormUttilities = __webpack_require__(29338);
     return new Promise(function (resolv, reject) {
       if (_this2.donneeInternetEntity.domain_ovh_entity && _this2.donneeInternetEntity.domain_ovh_entity[0] && _this2.donneeInternetEntity.domain_ovh_entity[0].target_id) {
         // Cree l'entité domain s'il n'existe pas et recupere les entites domain et domain_ovh_entity.
-        resolv(_this2.bPost("/vuejs-entity/domaine/add/" + _this2.donneeInternetEntity.domain_ovh_entity[0].target_id));
+        _this2.LoopGetRequest("/vuejs-entity/domaine/add/" + _this2.donneeInternetEntity.domain_ovh_entity[0].target_id).then(function (resp) {
+          resolv(resp);
+        }).catch(function (er) {
+          reject(er);
+        });
       } else {
         reject(" Le nom de domaine n'a pas pu etre creer ");
       }
@@ -92079,15 +92086,23 @@ var FormUttilities = __webpack_require__(29338);
       }); // Contruit le menus et les items.
 
 
-      _this5.bPost("/vuejs-entity/entity/add-menu-items", {
+      var menuParam = {
         menu: menu,
         items: items,
         domain: {
           field_domain_access: _this5.domainRegister.id,
           field_domain_source: _this5.domainRegister.id
-        } // block_content_type: "header_footer", // La construction doit etre statique car il ya un mappage de champs à faire.
+        }
+      }; // this.bPost("/vuejs-entity/entity/add-menu-items", {
+      //   menu: menu,
+      //   items: items,
+      //   domain: {
+      //     field_domain_access: this.domainRegister.id,
+      //     field_domain_source: this.domainRegister.id,
+      //   },
+      // });
 
-      }).then(function (resp) {
+      _this5.LoopPostRequest("/vuejs-entity/entity/add-menu-items", menuParam).then(function (resp) {
         if (resp.data.menu && resp.data.menu.id) {
           // On met à jour le champs "field_reference_menu" au niveau de l'object du header
           state.storeFormRenderHeader.entities[0].entity.field_reference_menu = [{
@@ -92137,13 +92152,13 @@ var FormUttilities = __webpack_require__(29338);
       },
       weight: 0
     };
-    return this.bPost("/vuejs-entity/entity/add-block-in-region", system_main_block);
+    return this.LoopPostRequest("/vuejs-entity/entity/add-block-in-region", system_main_block); // return this.bPost("/vuejs-entity/entity/add-block-in-region", system_main_block);
   },
   //
   CreateTheme: function CreateTheme() {
     var _this6 = this;
 
-    return new Promise(function (resolv) {
+    return new Promise(function (resolv, reject) {
       var values = {
         site_config: [{
           value: JSON.stringify({
@@ -92174,25 +92189,13 @@ var FormUttilities = __webpack_require__(29338);
         /**
          * Pour le theme, il faut essayer de comprendre ce qui se passe en cas d'echec. il ya plusieurs cas de figure possible.
          */
-        var essaie = 0;
-
-        var loop = function loop() {
-          console.log("create theme with retry");
-          return new Promise(function (resolvChild, rejectChild) {
-            _this6.bPost("/vuejs-entity/entity/save/config_theme_entity", resp).then(function (resp) {
-              resolvChild(resp);
-            }).catch(function (err) {
-              if (essaie <= _this6.numberRetry) {
-                essaie++;
-                setTimeout(function () {
-                  resolvChild(loop());
-                }, _this6.timeWaitBeforeRetry);
-              } else rejectChild(err);
-            });
-          });
-        };
-
-        resolv(loop()); // resolv(this.bPost("/vuejs-entity/entity/save/config_theme_entity", resp));
+        _this6.LoopPostRequest("/vuejs-entity/entity/save/config_theme_entity", resp).then(function (resp) {
+          resolv(resp);
+        }).catch(function (er) {
+          reject(er);
+        });
+      }).catch(function (er) {
+        reject(er);
       });
     });
   },
@@ -92282,7 +92285,6 @@ var FormUttilities = __webpack_require__(29338);
     var info = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "";
     return new Promise(function (resolv, reject) {
       if (entity.id && entity.id[0].value) {
-        var essaie = 0;
         var type = entity["type"][0]["target_id"];
         var label = info + " : " + _this9.domainRegister.id;
         var id_domaine = (0,dist.limit)(_this9.domainRegister.id, 20, "");
@@ -92314,23 +92316,28 @@ var FormUttilities = __webpack_require__(29338);
             view_mode: "default"
           }
         }; // Permet de relancer en cas d'erreur du serveur.
+        // const loop = () => {
+        //   return new Promise((resolvChild, rejectChild) => {
+        //     this.bPost("/vuejs-entity/entity/add-block-in-region", values)
+        //       .then((resp) => {
+        //         resolvChild(resp);
+        //       })
+        //       .catch((err) => {
+        //         if (essaie <= this.numberRetry) {
+        //           essaie++;
+        //           setTimeout(() => {
+        //             resolvChild(loop());
+        //           }, this.timeWaitBeforeRetry);
+        //         } else rejectChild(err);
+        //       });
+        //   });
+        // };
 
-        var loop = function loop() {
-          return new Promise(function (resolvChild, rejectChild) {
-            _this9.bPost("/vuejs-entity/entity/add-block-in-region", values).then(function (resp) {
-              resolvChild(resp);
-            }).catch(function (err) {
-              if (essaie <= _this9.numberRetry) {
-                essaie++;
-                setTimeout(function () {
-                  resolvChild(loop());
-                }, _this9.timeWaitBeforeRetry);
-              } else rejectChild(err);
-            });
-          });
-        };
-
-        resolv(loop());
+        _this9.LoopPostRequest("/vuejs-entity/entity/add-block-in-region", values).then(function (resp) {
+          resolv(resp);
+        }).catch(function (er) {
+          reject(er);
+        });
       } else reject(" ID du paragraph non definit ");
     });
   },
@@ -92339,21 +92346,39 @@ var FormUttilities = __webpack_require__(29338);
     var _this10 = this;
 
     return new Promise(function (resolv, reject) {
-      var idHome = window.location.pathname.split("/").pop(); // il ya une nouvelle fonction de filtre d'entite et qui est est vraiment stricte.
+      var idHome = window.location.pathname.split("/").pop(); // il ya une nouvelle fonction de filtre d'entite et qui est tres stricte.
       // du coup pour pouvoir generer les styles, on doit le faire absolument via le domaine.
-      //this.bGet("/layoutgenentitystyles/manuel/api-generate/" + this.domainRegister.id);
+      // this.bGet("/layoutgenentitystyles/manuel/api-generate/" + this.domainRegister.id);
 
       var url = window.location.protocol + "//" + _this10.domainRegister.hostname;
 
-      _this10.bGet(url + "/lesroidelareno-generate_style_theme/set_default_style/" + idHome + "/" + _this10.domainRegister.id).then(function () {
-        _this10.bGet(url + "/layoutgenentitystyles/manuel/api-generate/" + _this10.domainRegister.id).then(function () {
-          resolv(_this10.bGet(url + "/generate-style-theme/update-style-theme/" + _this10.domainRegister.id));
+      _this10.LoopGetRequest(url + "/lesroidelareno-generate_style_theme/set_default_style/" + idHome + "/" + _this10.domainRegister.id).then(function () {
+        _this10.LoopGetRequest(url + "/layoutgenentitystyles/manuel/api-generate/" + _this10.domainRegister.id).then(function () {
+          _this10.LoopGetRequest(url + "/generate-style-theme/update-style-theme/" + _this10.domainRegister.id).then(function () {
+            resolv();
+          }).catch(function () {
+            reject();
+          });
         }).catch(function () {
           reject();
         });
       }).catch(function (e) {
         reject(e);
-      });
+      }); //
+      // this.bGet(url + "/lesroidelareno-generate_style_theme/set_default_style/" + idHome + "/" + this.domainRegister.id)
+      //   .then(() => {
+      //     this.bGet(url + "/layoutgenentitystyles/manuel/api-generate/" + this.domainRegister.id)
+      //       .then(() => {
+      //         resolv(this.bGet(url + "/generate-style-theme/update-style-theme/" + this.domainRegister.id));
+      //       })
+      //       .catch(() => {
+      //         reject();
+      //       });
+      //   })
+      //   .catch((e) => {
+      //     reject(e);
+      //   });
+
     });
   },
   //
@@ -92615,6 +92640,71 @@ var FormUttilities = __webpack_require__(29338);
     FormUttilities/* default.numberTry */.Z.numberTry = this.numberRetry;
     FormUttilities/* default.timeWaitBeforeRetry */.Z.timeWaitBeforeRetry = this.timeWaitBeforeRetry;
     return FormUttilities/* default.prepareSaveEntities */.Z.prepareSaveEntities(store, response, suivers, ActionDomainId);
+  },
+
+  /**
+   * Permet de relancer les requetes de types POST.
+   */
+  LoopPostRequest: function LoopPostRequest(url, resp) {
+    var _this12 = this;
+
+    return new Promise(function (resolv, reject) {
+      console.log("LoopPostRequest");
+      var essaie = 0;
+
+      var loop = function loop() {
+        return new Promise(function (resolvChild, rejectChild) {
+          _this12.bPost(url, resp).then(function (resp) {
+            resolvChild(resp);
+          }).catch(function (err) {
+            if (essaie <= _this12.numberRetry) {
+              essaie++;
+              setTimeout(function () {
+                resolvChild(loop());
+              }, _this12.timeWaitBeforeRetry);
+            } else rejectChild(err);
+          });
+        });
+      };
+
+      loop().then(function (resp) {
+        resolv(resp);
+      }).catch(function (er) {
+        reject(er);
+      });
+    });
+  },
+
+  /**
+   * Permet de relancer les requetes de types GET.
+   */
+  LoopGetRequest: function LoopGetRequest(url) {
+    var _this13 = this;
+
+    return new Promise(function (resolv, reject) {
+      var essaie = 0;
+
+      var loop = function loop() {
+        return new Promise(function (resolvChild, rejectChild) {
+          _this13.bGet(url).then(function (resp) {
+            resolvChild(resp);
+          }).catch(function (err) {
+            if (essaie <= _this13.numberRetry) {
+              essaie++;
+              setTimeout(function () {
+                resolvChild(loop());
+              }, _this13.timeWaitBeforeRetry);
+            } else rejectChild(err);
+          });
+        });
+      };
+
+      loop().then(function (resp) {
+        resolv(resp);
+      }).catch(function (er) {
+        reject(er);
+      });
+    });
   }
 }));
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es.string.includes.js
