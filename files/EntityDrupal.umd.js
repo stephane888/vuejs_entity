@@ -91849,16 +91849,28 @@ var FormUttilities = __webpack_require__(29338);
   },
   // Dans cette etape, on cree les entités "donnee_internet_entity" et "domain_ovh_entity".
   CreateDomaine: function CreateDomaine(entity) {
-    return this.LoopPostRequest("/vuejs-entity/entity/save/donnee_internet_entity", entity);
-  },
-  // On enregistre le domaine sur OVH et on l'enregistre egalement comme multidomaine sur drupal.
-  RegisterDomaine: function RegisterDomaine() {
     var _this2 = this;
 
     return new Promise(function (resolv, reject) {
-      if (_this2.donneeInternetEntity.domain_ovh_entity && _this2.donneeInternetEntity.domain_ovh_entity[0] && _this2.donneeInternetEntity.domain_ovh_entity[0].target_id) {
+      _this2.LoopGetRequest("/admin/lesroidelareno/add-roles").then(function () {
+        _this2.LoopPostRequest("/vuejs-entity/entity/save/donnee_internet_entity", entity).then(function (resp) {
+          resolv(resp);
+        }).catch(function (er) {
+          reject(er);
+        });
+      }).catch(function (er) {
+        reject(er);
+      });
+    });
+  },
+  // On enregistre le domaine sur OVH et on l'enregistre egalement comme multidomaine sur drupal.
+  RegisterDomaine: function RegisterDomaine() {
+    var _this3 = this;
+
+    return new Promise(function (resolv, reject) {
+      if (_this3.donneeInternetEntity.domain_ovh_entity && _this3.donneeInternetEntity.domain_ovh_entity[0] && _this3.donneeInternetEntity.domain_ovh_entity[0].target_id) {
         // Cree l'entité domain s'il n'existe pas et recupere les entites domain et domain_ovh_entity.
-        _this2.LoopGetRequest("/vuejs-entity/domaine/add/" + _this2.donneeInternetEntity.domain_ovh_entity[0].target_id).then(function (resp) {
+        _this3.LoopGetRequest("/vuejs-entity/domaine/add/" + _this3.donneeInternetEntity.domain_ovh_entity[0].target_id).then(function (resp) {
           resolv(resp);
         }).catch(function (er) {
           reject(er);
@@ -91874,11 +91886,11 @@ var FormUttilities = __webpack_require__(29338);
    * Cela se fait en deux etapes : on recupere la matrice et on cree chaque entité.
    */
   CreateHomeContent: function CreateHomeContent(step) {
-    var _this3 = this;
+    var _this4 = this;
 
     return new Promise(function (resolv, reject) {
       var idHome = window.location.pathname.split("/").pop();
-      var title = _this3.donneeInternetEntity.name[0] && _this3.donneeInternetEntity.name[0].value ? "Bienvenue chez " + _this3.donneeInternetEntity.name[0].value : "Theme generé";
+      var title = _this4.donneeInternetEntity.name[0] && _this4.donneeInternetEntity.name[0].value ? "Bienvenue chez " + _this4.donneeInternetEntity.name[0].value : "Theme generé";
       var payload = {
         id: idHome,
         content: {
@@ -91887,10 +91899,10 @@ var FormUttilities = __webpack_require__(29338);
           }],
           // Ce titre va etre surcharger par celui de la version model. Ensuite on devrait le supprimer.(meme pour auther page)
           field_domain_access: [{
-            target_id: _this3.domainRegister.id
+            target_id: _this4.domainRegister.id
           }],
           field_domain_source: [{
-            target_id: _this3.domainRegister.id
+            target_id: _this4.domainRegister.id
           }],
           is_default_theme: [{
             value: false
@@ -91898,7 +91910,7 @@ var FormUttilities = __webpack_require__(29338);
         }
       };
       store.dispatch("getMatriceEntities", payload).then(function (resp) {
-        _this3.getNumberEntities(resp.data).then(function (numbers) {
+        _this4.getNumberEntities(resp.data).then(function (numbers) {
           var vals = {
             numbers: numbers,
             creates: 0,
@@ -91909,7 +91921,7 @@ var FormUttilities = __webpack_require__(29338);
             vals.page = resp.data[0].entity.name[0].value;
           }
 
-          _this3.prepareSaveEntities(resp.data, vals).then(function (entities) {
+          _this4.prepareSaveEntities(resp.data, vals).then(function (entities) {
             // Dans ce cas principalment, on doit retourner uniquement le contenu de la homepage.
             if (entities[0] && entities[0].id) {
               resolv(entities[0]);
@@ -91917,7 +91929,7 @@ var FormUttilities = __webpack_require__(29338);
               reject(" Une erreur s'est produite pendant la construction de la page ");
             }
           }).catch(function (er) {
-            _this3.runErrorsMessages(er);
+            _this4.runErrorsMessages(er);
 
             reject(" Une erreur s'est produite pendant la construction de la page ... ");
           });
@@ -91931,11 +91943,11 @@ var FormUttilities = __webpack_require__(29338);
   },
   // On cree les autres pages :
   CreateOrtherPages: function CreateOrtherPages(step) {
-    var _this4 = this;
+    var _this5 = this;
 
     return new Promise(function (resolv2, reject) {
-      if (_this4.donneeInternetEntity.pages && _this4.donneeInternetEntity.pages.length) {
-        var options = _this4.getLabelPages();
+      if (_this5.donneeInternetEntity.pages && _this5.donneeInternetEntity.pages.length) {
+        var options = _this5.getLabelPages();
         /**
          * Cree une page et son contenu à chaque execution
          * @param {*} i
@@ -91948,14 +91960,14 @@ var FormUttilities = __webpack_require__(29338);
           var i = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
           var essaie = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
           return new Promise(function (resolv) {
-            var id = _this4.donneeInternetEntity.pages[i] ? _this4.donneeInternetEntity.pages[i].value : null;
+            var id = _this5.donneeInternetEntity.pages[i] ? _this5.donneeInternetEntity.pages[i].value : null;
             var title = options[id] ? options[id] : "page generate";
             var values = {
               field_domain_access: [{
-                target_id: _this4.domainRegister.id
+                target_id: _this5.domainRegister.id
               }],
               field_domain_source: [{
-                target_id: _this4.domainRegister.id
+                target_id: _this5.domainRegister.id
               }],
               is_default_theme: [{
                 value: false
@@ -91975,7 +91987,7 @@ var FormUttilities = __webpack_require__(29338);
                 content: values
               };
               store.dispatch("getMatriceEntities", payload).then(function (resp) {
-                _this4.getNumberEntities(resp.data).then(function (numbers) {
+                _this5.getNumberEntities(resp.data).then(function (numbers) {
                   var vals = {
                     numbers: numbers,
                     creates: 0,
@@ -91986,9 +91998,9 @@ var FormUttilities = __webpack_require__(29338);
                     vals.page = resp.data[0].entity.name[0].value;
                   }
 
-                  _this4.prepareSaveEntities(resp.data, vals).then(function (entities) {
+                  _this5.prepareSaveEntities(resp.data, vals).then(function (entities) {
                     entities.forEach(function (entity) {
-                      _this4.OrtherPages.push(entity);
+                      _this5.OrtherPages.push(entity);
                     });
                     var id = i + 1;
                     resolv(loop(id));
@@ -91998,7 +92010,7 @@ var FormUttilities = __webpack_require__(29338);
                    * On fait 2 tentatives, si elle n'aboutie pas on passe à la suite.
                    */
                   .catch(function () {
-                    _this4.messages.warnings.push(" Erreur rencontrée lors de la creation de cette page : <b>" + title + "</b> vous pourriez la re-creer plus tard. ");
+                    _this5.messages.warnings.push(" Erreur rencontrée lors de la creation de cette page : <b>" + title + "</b> vous pourriez la re-creer plus tard. ");
 
                     setTimeout(function () {
                       if (essaie <= 2) {
@@ -92052,26 +92064,26 @@ var FormUttilities = __webpack_require__(29338);
    * @returns
    */
   CreateMenus: function CreateMenus(state) {
-    var _this5 = this;
+    var _this6 = this;
 
     return new Promise(function (resolv, reject) {
       // Build menu :
       var menu = {
         //this.domainOvhEntity.sub_domain[0].value contient a-z0-9,
-        id: _this5.domainOvhEntity.sub_domain[0].value + "-main",
+        id: _this6.domainOvhEntity.sub_domain[0].value + "-main",
         //on a remplacé "_" par "-", il faudra resterter l'export/import.
-        label: _this5.domainRegister.id + ": menu principal",
+        label: _this6.domainRegister.id + ": menu principal",
         description: "Menu generé automatiquement",
         third_party_settings: {
           lesroidelareno: {
-            domain_id: _this5.domainRegister.id
+            domain_id: _this6.domainRegister.id
           }
         }
       }; // build items
 
       var items = [];
 
-      _this5.OrtherPages.forEach(function (page) {
+      _this6.OrtherPages.forEach(function (page) {
         if (page.id[0] && page.id[0].value) items.push({
           title: [{
             value: page.name[0] ? page.name[0].value : "lien genere :" + page.id[0].value
@@ -92090,8 +92102,8 @@ var FormUttilities = __webpack_require__(29338);
         menu: menu,
         items: items,
         domain: {
-          field_domain_access: _this5.domainRegister.id,
-          field_domain_source: _this5.domainRegister.id
+          field_domain_access: _this6.domainRegister.id,
+          field_domain_source: _this6.domainRegister.id
         }
       }; // this.bPost("/vuejs-entity/entity/add-menu-items", {
       //   menu: menu,
@@ -92102,7 +92114,7 @@ var FormUttilities = __webpack_require__(29338);
       //   },
       // });
 
-      _this5.LoopPostRequest("/vuejs-entity/entity/add-menu-items", menuParam).then(function (resp) {
+      _this6.LoopPostRequest("/vuejs-entity/entity/add-menu-items", menuParam).then(function (resp) {
         if (resp.data.menu && resp.data.menu.id) {
           // On met à jour le champs "field_reference_menu" au niveau de l'object du header
           state.storeFormRenderHeader.entities[0].entity.field_reference_menu = [{
@@ -92110,12 +92122,12 @@ var FormUttilities = __webpack_require__(29338);
           }];
           resolv();
         } else {
-          _this5.messages.warnings.push(" Une erreur est survenu lors de la disposition des menus, vous pourriez le faire plus tard. ");
+          _this6.messages.warnings.push(" Une erreur est survenu lors de la disposition des menus, vous pourriez le faire plus tard. ");
 
           reject();
         }
       }).catch(function () {
-        _this5.messages.warnings.push(" Une erreur est survenu lors de la creation des menus, vous pourriez le faire plus tard. ");
+        _this6.messages.warnings.push(" Une erreur est survenu lors de la creation des menus, vous pourriez le faire plus tard. ");
 
         reject();
       });
@@ -92156,40 +92168,40 @@ var FormUttilities = __webpack_require__(29338);
   },
   //
   CreateTheme: function CreateTheme() {
-    var _this6 = this;
+    var _this7 = this;
 
     return new Promise(function (resolv, reject) {
       var values = {
         site_config: [{
           value: JSON.stringify({
-            "edit-config": "domain.config." + _this6.domainRegister.id + ".system.site",
-            "page.front": _this6.homePageContent.id && _this6.homePageContent.id[0] ? "/site-internet-entity/" + _this6.homePageContent.id[0].value : "",
-            name: _this6.donneeInternetEntity.name[0] && _this6.donneeInternetEntity.name[0].value ? _this6.donneeInternetEntity.name[0].value : "",
-            mail: _this6.domainOvhEntity.sub_domain[0] && _this6.domainOvhEntity.sub_domain[0].value ? _this6.domainOvhEntity.sub_domain[0].value + "@wb-horizon.com" : "",
+            "edit-config": "domain.config." + _this7.domainRegister.id + ".system.site",
+            "page.front": _this7.homePageContent.id && _this7.homePageContent.id[0] ? "/site-internet-entity/" + _this7.homePageContent.id[0].value : "",
+            name: _this7.donneeInternetEntity.name[0] && _this7.donneeInternetEntity.name[0].value ? _this7.donneeInternetEntity.name[0].value : "",
+            mail: _this7.domainOvhEntity.sub_domain[0] && _this7.domainOvhEntity.sub_domain[0].value ? _this7.domainOvhEntity.sub_domain[0].value + "@wb-horizon.com" : "",
             "page.404": "",
             "page.403": ""
           })
         }],
-        logo: _this6.donneeInternetEntity.image_logo && _this6.donneeInternetEntity.image_logo.length ? _this6.donneeInternetEntity.image_logo : [],
+        logo: _this7.donneeInternetEntity.image_logo && _this7.donneeInternetEntity.image_logo.length ? _this7.donneeInternetEntity.image_logo : [],
         run_npm: [{
           value: false
         }]
       }; //
 
-      if (_this6.domainRegister.id) {
+      if (_this7.domainRegister.id) {
         values["hostname"] = [{
-          value: _this6.domainRegister.id
+          value: _this7.domainRegister.id
         }];
       } // Applis colors
 
 
-      _this6.ApplieColor(values).then(function (resp) {
+      _this7.ApplieColor(values).then(function (resp) {
         // Permet de relancer en cas d'erreur du serveur.
 
         /**
          * Pour le theme, il faut essayer de comprendre ce qui se passe en cas d'echec. il ya plusieurs cas de figure possible.
          */
-        _this6.LoopPostRequest("/vuejs-entity/entity/save/config_theme_entity", resp).then(function (resp) {
+        _this7.LoopPostRequest("/vuejs-entity/entity/save/config_theme_entity", resp).then(function (resp) {
           resolv(resp);
         }).catch(function (er) {
           reject(er);
@@ -92209,12 +92221,12 @@ var FormUttilities = __webpack_require__(29338);
    * @returns
    */
   createParagraphHeader: function createParagraphHeader(state) {
-    var _this7 = this;
+    var _this8 = this;
 
     return new Promise(function (resolv, reject) {
       var headers = state.storeFormRenderHeader.entities;
 
-      _this7.getNumberEntities(headers).then(function (numbers) {
+      _this8.getNumberEntities(headers).then(function (numbers) {
         // On met à jour le domaineId;
         var vals = {
           numbers: numbers,
@@ -92222,38 +92234,7 @@ var FormUttilities = __webpack_require__(29338);
           page: ""
         };
 
-        _this7.prepareSaveEntities(headers, vals, true).then(function (entities) {
-          // car on doit avoir un seul niveau de données.
-          if (entities[0] && entities[0].id) {
-            resolv(entities[0]);
-          } else reject(" Une erreur s'est produite pendant la construction de l'entete ");
-        }).catch(function (er) {
-          _this7.runErrorsMessages(er);
-
-          reject(" Une erreur s'est produite pendant la construction de l'entete ... ");
-        });
-      }).catch(function (er) {
-        _this7.runErrorsMessages(er);
-
-        reject(" Impossible de determiner les sous entites de l'entete ... ");
-      });
-    });
-  },
-  createParagraphFooter: function createParagraphFooter(state) {
-    var _this8 = this;
-
-    return new Promise(function (resolv, reject) {
-      var footers = state.storeFormRenderFooter.entities;
-
-      _this8.getNumberEntities(footers).then(function (numbers) {
-        // On met à jour le domaineId;
-        var vals = {
-          numbers: numbers,
-          creates: 0,
-          page: ""
-        };
-
-        _this8.prepareSaveEntities(footers, vals, true).then(function (entities) {
+        _this8.prepareSaveEntities(headers, vals, true).then(function (entities) {
           // car on doit avoir un seul niveau de données.
           if (entities[0] && entities[0].id) {
             resolv(entities[0]);
@@ -92270,6 +92251,37 @@ var FormUttilities = __webpack_require__(29338);
       });
     });
   },
+  createParagraphFooter: function createParagraphFooter(state) {
+    var _this9 = this;
+
+    return new Promise(function (resolv, reject) {
+      var footers = state.storeFormRenderFooter.entities;
+
+      _this9.getNumberEntities(footers).then(function (numbers) {
+        // On met à jour le domaineId;
+        var vals = {
+          numbers: numbers,
+          creates: 0,
+          page: ""
+        };
+
+        _this9.prepareSaveEntities(footers, vals, true).then(function (entities) {
+          // car on doit avoir un seul niveau de données.
+          if (entities[0] && entities[0].id) {
+            resolv(entities[0]);
+          } else reject(" Une erreur s'est produite pendant la construction de l'entete ");
+        }).catch(function (er) {
+          _this9.runErrorsMessages(er);
+
+          reject(" Une erreur s'est produite pendant la construction de l'entete ... ");
+        });
+      }).catch(function (er) {
+        _this9.runErrorsMessages(er);
+
+        reject(" Impossible de determiner les sous entites de l'entete ... ");
+      });
+    });
+  },
 
   /**
    *
@@ -92280,19 +92292,19 @@ var FormUttilities = __webpack_require__(29338);
    * @returns
    */
   addEntityToBlock: function addEntityToBlock(entity, entity_type_id, region) {
-    var _this9 = this;
+    var _this10 = this;
 
     var info = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "";
     return new Promise(function (resolv, reject) {
       if (entity.id && entity.id[0].value) {
         var type = entity["type"][0]["target_id"];
-        var label = info + " : " + _this9.domainRegister.id;
-        var id_domaine = (0,dist.limit)(_this9.domainRegister.id, 20, "");
+        var label = info + " : " + _this10.domainRegister.id;
+        var id_domaine = (0,dist.limit)(_this10.domainRegister.id, 20, "");
         var id_system = (0,dist.limit)(id_domaine + type, 30, "");
         var id = entity.id[0].value;
         var values = {
           id: id_system,
-          theme: _this9.domainRegister.id,
+          theme: _this10.domainRegister.id,
           region: region,
           plugin: "entity_block:" + entity_type_id,
           provider: "entity_block",
@@ -92304,7 +92316,7 @@ var FormUttilities = __webpack_require__(29338);
               context_mapping: {
                 domain: "@domain.current_domain_context:domain"
               },
-              domains: (0,esm_defineProperty/* default */.Z)({}, _this9.domainRegister.id, _this9.domainRegister.id)
+              domains: (0,esm_defineProperty/* default */.Z)({}, _this10.domainRegister.id, _this10.domainRegister.id)
             }
           },
           settings: {
@@ -92333,7 +92345,7 @@ var FormUttilities = __webpack_require__(29338);
         //   });
         // };
 
-        _this9.LoopPostRequest("/vuejs-entity/entity/add-block-in-region", values).then(function (resp) {
+        _this10.LoopPostRequest("/vuejs-entity/entity/add-block-in-region", values).then(function (resp) {
           resolv(resp);
         }).catch(function (er) {
           reject(er);
@@ -92343,18 +92355,18 @@ var FormUttilities = __webpack_require__(29338);
   },
   //
   generateStyleTheme: function generateStyleTheme() {
-    var _this10 = this;
+    var _this11 = this;
 
     return new Promise(function (resolv, reject) {
       var idHome = window.location.pathname.split("/").pop(); // il ya une nouvelle fonction de filtre d'entite et qui est tres stricte.
       // du coup pour pouvoir generer les styles, on doit le faire absolument via le domaine.
       // this.bGet("/layoutgenentitystyles/manuel/api-generate/" + this.domainRegister.id);
 
-      var url = window.location.protocol + "//" + _this10.domainRegister.hostname;
+      var url = window.location.protocol + "//" + _this11.domainRegister.hostname;
 
-      _this10.LoopGetRequest(url + "/lesroidelareno-generate_style_theme/set_default_style/" + idHome + "/" + _this10.domainRegister.id).then(function () {
-        _this10.LoopGetRequest(url + "/layoutgenentitystyles/manuel/api-generate/" + _this10.domainRegister.id).then(function () {
-          _this10.LoopGetRequest(url + "/generate-style-theme/update-style-theme/" + _this10.domainRegister.id).then(function () {
+      _this11.LoopGetRequest(url + "/lesroidelareno-generate_style_theme/set_default_style/" + idHome + "/" + _this11.domainRegister.id).then(function () {
+        _this11.LoopGetRequest(url + "/layoutgenentitystyles/manuel/api-generate/" + _this11.domainRegister.id).then(function () {
+          _this11.LoopGetRequest(url + "/generate-style-theme/update-style-theme/" + _this11.domainRegister.id).then(function () {
             resolv();
           }).catch(function () {
             reject();
@@ -92383,21 +92395,21 @@ var FormUttilities = __webpack_require__(29338);
   },
   //
   ApplieColor: function ApplieColor(values) {
-    var _this11 = this;
+    var _this12 = this;
 
     return new Promise(function (resolv) {
       var newValue = {};
-      var type = _this11.donneeInternetEntity.type_color_theme.length ? _this11.donneeInternetEntity.type_color_theme[0].value : "0"; // l'utilisateur a choisie les couleurs.
+      var type = _this12.donneeInternetEntity.type_color_theme.length ? _this12.donneeInternetEntity.type_color_theme[0].value : "0"; // l'utilisateur a choisie les couleurs.
 
       if (type == "0") {
         newValue = (0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({}, values), {}, {
-          wbubackground: _this11.donneeInternetEntity.background && _this11.donneeInternetEntity.background.length ? _this11.donneeInternetEntity.background : [],
-          color_link_hover: _this11.donneeInternetEntity.color_linkhover && _this11.donneeInternetEntity.color_linkhover.length ? _this11.donneeInternetEntity.color_linkhover : [],
-          color_primary: _this11.donneeInternetEntity.color_primary && _this11.donneeInternetEntity.color_primary.length ? _this11.donneeInternetEntity.color_primary : [],
-          color_secondaire: _this11.donneeInternetEntity.color_secondary && _this11.donneeInternetEntity.color_secondary.length ? _this11.donneeInternetEntity.color_secondary : []
+          wbubackground: _this12.donneeInternetEntity.background && _this12.donneeInternetEntity.background.length ? _this12.donneeInternetEntity.background : [],
+          color_link_hover: _this12.donneeInternetEntity.color_linkhover && _this12.donneeInternetEntity.color_linkhover.length ? _this12.donneeInternetEntity.color_linkhover : [],
+          color_primary: _this12.donneeInternetEntity.color_primary && _this12.donneeInternetEntity.color_primary.length ? _this12.donneeInternetEntity.color_primary : [],
+          color_secondaire: _this12.donneeInternetEntity.color_secondary && _this12.donneeInternetEntity.color_secondary.length ? _this12.donneeInternetEntity.color_secondary : []
         });
       } else {
-        newValue = (0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({}, values), _this11.themeColors());
+        newValue = (0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({}, values), _this12.themeColors());
       }
 
       resolv(newValue);
@@ -92646,7 +92658,7 @@ var FormUttilities = __webpack_require__(29338);
    * Permet de relancer les requetes de types POST.
    */
   LoopPostRequest: function LoopPostRequest(url, resp) {
-    var _this12 = this;
+    var _this13 = this;
 
     return new Promise(function (resolv, reject) {
       console.log("LoopPostRequest");
@@ -92654,14 +92666,14 @@ var FormUttilities = __webpack_require__(29338);
 
       var loop = function loop() {
         return new Promise(function (resolvChild, rejectChild) {
-          _this12.bPost(url, resp).then(function (resp) {
+          _this13.bPost(url, resp).then(function (resp) {
             resolvChild(resp);
           }).catch(function (err) {
-            if (essaie <= _this12.numberRetry) {
+            if (essaie <= _this13.numberRetry) {
               essaie++;
               setTimeout(function () {
                 resolvChild(loop());
-              }, _this12.timeWaitBeforeRetry);
+              }, _this13.timeWaitBeforeRetry);
             } else rejectChild(err);
           });
         });
@@ -92679,21 +92691,21 @@ var FormUttilities = __webpack_require__(29338);
    * Permet de relancer les requetes de types GET.
    */
   LoopGetRequest: function LoopGetRequest(url) {
-    var _this13 = this;
+    var _this14 = this;
 
     return new Promise(function (resolv, reject) {
       var essaie = 0;
 
       var loop = function loop() {
         return new Promise(function (resolvChild, rejectChild) {
-          _this13.bGet(url).then(function (resp) {
+          _this14.bGet(url).then(function (resp) {
             resolvChild(resp);
           }).catch(function (err) {
-            if (essaie <= _this13.numberRetry) {
+            if (essaie <= _this14.numberRetry) {
               essaie++;
               setTimeout(function () {
                 resolvChild(loop());
-              }, _this13.timeWaitBeforeRetry);
+              }, _this14.timeWaitBeforeRetry);
             } else rejectChild(err);
           });
         });
