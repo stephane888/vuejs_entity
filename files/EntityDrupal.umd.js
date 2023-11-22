@@ -95167,8 +95167,6 @@ external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vuex_esm/* default */
      * @returns
      */
     getMatriceEntities: function getMatriceEntities(_ref3, payload) {
-      var _this = this;
-
       var commit = _ref3.commit;
       return new Promise(function (resolv, reject) {
         /**
@@ -95180,7 +95178,7 @@ external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vuex_esm/* default */
 
         var loop = function loop() {
           return new Promise(function (resolvChild, rejectChild) {
-            _this.bPost("/vuejs-entity/entity/generate-page-web/" + payload.id, payload.content).then(function (resp) {
+            rootConfig/* default.bPost */.Z.bPost("/vuejs-entity/entity/generate-page-web/" + payload.id, payload.content).then(function (resp) {
               resolvChild(resp);
             }).catch(function (err) {
               if (essaie <= numberRetry) {
