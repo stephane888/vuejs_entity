@@ -95167,14 +95167,46 @@ external_commonjs_vue_commonjs2_vue_root_Vue_default().use(vuex_esm/* default */
      * @returns
      */
     getMatriceEntities: function getMatriceEntities(_ref3, payload) {
+      var _this = this;
+
       var commit = _ref3.commit;
       return new Promise(function (resolv, reject) {
-        rootConfig/* default.bPost */.Z.bPost("/vuejs-entity/entity/generate-page-web/" + payload.id, payload.content).then(function (resp) {
+        /**
+         * Permet de relancer les requetes de types POST.
+         */
+        var essaie = 0;
+        var numberRetry = 5;
+        var timeWaitBeforeRetry = 25000;
+
+        var loop = function loop() {
+          return new Promise(function (resolvChild, rejectChild) {
+            _this.bPost("/vuejs-entity/entity/generate-page-web/" + payload.id, payload.content).then(function (resp) {
+              resolvChild(resp);
+            }).catch(function (err) {
+              if (essaie <= numberRetry) {
+                essaie++;
+                setTimeout(function () {
+                  resolvChild(loop());
+                }, timeWaitBeforeRetry);
+              } else rejectChild(err);
+            });
+          });
+        };
+
+        loop().then(function (resp) {
           commit("SET_ENTITYDUPLICATE", resp.data);
           resolv(resp);
         }).catch(function (er) {
           reject(er);
-        });
+        }); // config
+        //   .bPost("/vuejs-entity/entity/generate-page-web/" + payload.id, payload.content)
+        //   .then((resp) => {
+        //     commit("SET_ENTITYDUPLICATE", resp.data);
+        //     resolv(resp);
+        //   })
+        //   .catch((er) => {
+        //     reject(er);
+        //   });
       });
     },
     saveEntity: function saveEntity(_ref4, payload) {
