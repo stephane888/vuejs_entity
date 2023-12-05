@@ -52405,7 +52405,7 @@ var basicRequest = {
     return new Promise(function (resolv, reject) {
       if (_this.languageId !== "" && _this.languageId !== undefined && _this.languageId !== null && !url.includes("://")) url = "/" + _this.languageId + url;
       var urlFinal = url.includes("://") ? url : _this.getBaseUrl() + url;
-      configs = _this.mergeHeaders(configs);
+      configs = _this.mergeCustomHeaders(configs);
       InstAxios.post(urlFinal, datas, configs).then(function (reponse) {
         if (_this.debug) console.log("Debug axio : \n", urlFinal, "\n payload: ", datas, "\n config: ", configs, "\n Duration : ", reponse.headers["request-duration"], "\n reponse: ", reponse, "\n ------ \n");
         resolv({
@@ -52432,7 +52432,7 @@ var basicRequest = {
     var configs = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     return new Promise(function (resolv, reject) {
       var urlFinal = url.includes("://") ? url : _this2.getBaseUrl() + url;
-      configs = _this2.mergeHeaders(configs);
+      configs = _this2.mergeCustomHeaders(configs);
       InstAxios.delete(urlFinal, configs, datas).then(function (reponse) {
         resolv({
           status: true,
@@ -52458,7 +52458,7 @@ var basicRequest = {
     return new Promise(function (resolv, reject) {
       if (_this3.languageId !== "" && _this3.languageId !== undefined && _this3.languageId !== null && !url.includes("://")) url = "/" + _this3.languageId + url;
       var urlFinal = url.includes("://") ? url : _this3.getBaseUrl() + url;
-      configs = _this3.mergeHeaders(configs);
+      configs = _this3.mergeCustomHeaders(configs);
       InstAxios.get(urlFinal, configs).then(function (reponse) {
         if (_this3.debug) console.log("Debug axio : \n", urlFinal, "\n Config: ", configs, "\n Duration : ", reponse.headers["request-duration"], "\n Reponse: ", reponse, "\n ------ \n");
         resolv({
@@ -52542,7 +52542,7 @@ var basicRequest = {
   /**
    * Permet d'additionner la configation
    */
-  mergeHeaders: function mergeHeaders(configs) {
+  mergeCustomHeaders: function mergeCustomHeaders(configs) {
     if (!configs.headers) configs.headers = {};
 
     if (this.customHeaders) {
@@ -94388,50 +94388,15 @@ var page_register_component = (0,componentNormalizer/* default */.Z)(
 )
 
 /* harmony default export */ var page_register = (page_register_component.exports);
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/sections/page-save.vue?vue&type=template&id=689259e8&
-var page_savevue_type_template_id_689259e8_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"last-stepe"},[_c('label',[_vm._v(" Creer votre site maintenant !!! ")]),_c('p',{staticClass:"step-donneesite--label"},[_c('span',{domProps:{"innerHTML":_vm._s(_vm.strings.page_save_1)}})]),(_vm.errorMessages.length)?_c('div',{staticClass:"content-save-text mx-auto mt-5"},_vm._l((_vm.errorMessages),function(msg,i){return _c('b-alert',{key:i,attrs:{"show":"","dismissible":"","variant":"danger"}},[_c('div',{domProps:{"innerHTML":_vm._s(msg)}})])}),1):_vm._e(),(_vm.warningMessages.length)?_c('div',{staticClass:"content-save-text mx-auto mt-5"},_vm._l((_vm.warningMessages),function(msg,i){return _c('b-alert',{key:i,attrs:{"show":"","dismissible":"","variant":"warning"}},[_c('div',{domProps:{"innerHTML":_vm._s(msg)}})])}),1):_vm._e(),(_vm.creation_running)?_c('div',{staticClass:"text-left mx-auto content-save-text"},[_c('ul',{staticClass:"puce-step-vertical step-build"},_vm._l((_vm.build_steps),function(item,i){return _c('li',{key:i,staticClass:"d-flex align-items-baseline",class:[
-          item.status == 'ok' ? 'active' : '',
-          item.status == 'error' ? 'text-danger' : '' ]},[_c('div',[_c('div',[_vm._v(_vm._s(item.titre))]),_vm._l((item.entities),function(incresing,i){return _c('small',{key:i,staticClass:"d-block"},[_vm._v(" "+_vm._s(incresing.creates)+"/"+_vm._s(incresing.numbers)+" Contenu(s) à creer pour la page : "+_vm._s(incresing.page)+". ")])})],2),(item.status == 'run')?_c('b-icon',{staticClass:"ml-auto",attrs:{"icon":"three-dots","font-scale":"1.3","animation":"cylon","variant":"primary"}}):_vm._e(),(item.status == 'ok')?_c('b-icon',{staticClass:"ml-auto",attrs:{"icon":"check2","font-scale":"1.5","variant":"primary"}}):_vm._e()],1)}),0),(_vm.finish_status)?_c('div',{staticClass:"my-5 h3 text-primary d-none"},[_vm._v(" Votre site serra disponible d'ici 1 minute "),_vm._m(0)]):_vm._e(),(_vm.finish_status)?_c('div',{staticClass:"action d-flex flex-column"},[_c('b-button',{on:{"click":_vm.open_new_site}},[_c('span',{domProps:{"innerHTML":_vm._s(_vm.strings.page_save_vue)}}),_c('b-icon',{staticClass:"float-right",attrs:{"icon":"award","font-scale":"1.3"}})],1),_c('b-button',{on:{"click":_vm.open_new_site_admin}},[_vm._v(" "+_vm._s(_vm.strings.page_save_admin)+" "),_c('b-icon',{staticClass:"float-right",attrs:{"icon":"folder-symlink","font-scale":"1.3"}})],1)],1):_vm._e(),(_vm.finish_status)?_c('div',{staticClass:"my-5 h3"},[_vm._v(" "+_vm._s(_vm.strings.page_save_url)+" "),_c('a',{on:{"click":_vm.open_new_site}},[_c('b',[_vm._v(" "+_vm._s(_vm.new_hostname)+" ")])])]):_vm._e()]):_vm._e()])}
-var page_savevue_type_template_id_689259e8_staticRenderFns = [function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('small',[_c('i',{staticClass:"d-block"},[_vm._v(" ( le temps de progagation des données DNS ) ")])])}]
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/sections/page-save.vue?vue&type=template&id=7dc9e2c8&
+var page_savevue_type_template_id_7dc9e2c8_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"last-stepe"},[_c('label',[_vm._v(" Creer votre site maintenant !!! ")]),_c('p',{staticClass:"step-donneesite--label"},[_c('span',{domProps:{"innerHTML":_vm._s(_vm.strings.page_save_1)}})]),_c('b-alert',{attrs:{"variant":"info","show":"","dismissible":""}},[_vm._v(" La creation d'un site prend environ 5 minutes, mais est entierement automatique. "),_c('br'),_vm._v(" Svp veuillez patienter jusqu'à la. ")]),(_vm.errorMessages.length)?_c('div',{staticClass:"content-save-text mx-auto mt-5"},_vm._l((_vm.errorMessages),function(msg,i){return _c('b-alert',{key:i,attrs:{"show":"","dismissible":"","variant":"danger"}},[_c('div',{domProps:{"innerHTML":_vm._s(msg)}})])}),1):_vm._e(),(_vm.warningMessages.length)?_c('div',{staticClass:"content-save-text mx-auto mt-5"},_vm._l((_vm.warningMessages),function(msg,i){return _c('b-alert',{key:i,attrs:{"show":"","dismissible":"","variant":"warning"}},[_c('div',{domProps:{"innerHTML":_vm._s(msg)}})])}),1):_vm._e(),(_vm.creation_running)?_c('div',{staticClass:"text-left mx-auto content-save-text"},[_c('ul',{staticClass:"puce-step-vertical step-build"},_vm._l((_vm.build_steps),function(item,i){return _c('li',{key:i,staticClass:"d-flex align-items-baseline",class:[item.status == 'ok' ? 'active' : '', item.status == 'error' ? 'text-danger' : '']},[_c('div',[_c('div',[_vm._v(_vm._s(item.titre))]),_vm._l((item.entities),function(incresing,i){return _c('small',{key:i,staticClass:"d-block"},[_vm._v(" "+_vm._s(incresing.creates)+"/"+_vm._s(incresing.numbers)+" Contenu(s) à creer pour la page : "+_vm._s(incresing.page)+". ")])})],2),(item.status == 'run')?_c('b-icon',{staticClass:"ml-auto",attrs:{"icon":"three-dots","font-scale":"1.3","animation":"cylon","variant":"primary"}}):_vm._e(),(item.status == 'ok')?_c('b-icon',{staticClass:"ml-auto",attrs:{"icon":"check2","font-scale":"1.5","variant":"primary"}}):_vm._e()],1)}),0),(_vm.finish_status)?_c('div',{staticClass:"my-5 h3 text-primary d-none"},[_vm._v(" Votre site serra disponible d'ici 1 minute "),_vm._m(0)]):_vm._e(),(_vm.finish_status)?_c('div',{staticClass:"action d-flex flex-column"},[_c('b-button',{on:{"click":_vm.open_new_site}},[_c('span',{domProps:{"innerHTML":_vm._s(_vm.strings.page_save_vue)}}),_c('b-icon',{staticClass:"float-right",attrs:{"icon":"award","font-scale":"1.3"}})],1),_c('b-button',{on:{"click":_vm.open_new_site_admin}},[_vm._v(" "+_vm._s(_vm.strings.page_save_admin)+" "),_c('b-icon',{staticClass:"float-right",attrs:{"icon":"folder-symlink","font-scale":"1.3"}})],1)],1):_vm._e(),(_vm.finish_status)?_c('div',{staticClass:"my-5 h3"},[_vm._v(" "+_vm._s(_vm.strings.page_save_url)+" "),_c('a',{on:{"click":_vm.open_new_site}},[_c('b',[_vm._v(" "+_vm._s(_vm.new_hostname)+" ")])])]):_vm._e()]):_vm._e()],1)}
+var page_savevue_type_template_id_7dc9e2c8_staticRenderFns = [function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('small',[_c('i',{staticClass:"d-block"},[_vm._v(" ( le temps de progagation des données DNS ) ")])])}]
 
 
-;// CONCATENATED MODULE: ./src/components/sections/page-save.vue?vue&type=template&id=689259e8&
+;// CONCATENATED MODULE: ./src/components/sections/page-save.vue?vue&type=template&id=7dc9e2c8&
 
 ;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-80[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/sections/page-save.vue?vue&type=script&lang=js&
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -94559,8 +94524,8 @@ var page_savevue_type_template_id_689259e8_staticRenderFns = [function () {var _
 ;
 var page_save_component = (0,componentNormalizer/* default */.Z)(
   sections_page_savevue_type_script_lang_js_,
-  page_savevue_type_template_id_689259e8_render,
-  page_savevue_type_template_id_689259e8_staticRenderFns,
+  page_savevue_type_template_id_7dc9e2c8_render,
+  page_savevue_type_template_id_7dc9e2c8_staticRenderFns,
   false,
   null,
   null,
