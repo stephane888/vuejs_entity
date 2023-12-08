@@ -92,7 +92,9 @@ class VuejsEntityController extends ControllerBase {
       'previous' => $this->t('Previous'),
       'create_web_site' => $this->t('I create my site'),
       'page_save_1' => $this->t("If your content suits you, click on the button
-       <b> 'I create my site' </b>. You could change it at any time."),
+         <b> 'I'm creating my site' </b>. You can modify at any time."),
+      'page_save_alert_info' => $this->t('Creating a site takes about 5 minutes, but is completely automatic. <br />
+       <strong>Please wait until.</strong>'),
       'page_save_vue' => $this->t('Visit your new site'),
       "page_save_admin" => $this->t('Manage your content'),
       "page_save_url" => $this->t('Your website:'),
