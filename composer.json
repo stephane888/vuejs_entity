@@ -1,7 +1,7 @@
 {
   "name": "stephane888/vuejs_entity",
   "description": "none",
-  "type": "drupal-module-custom",
+  "type": "drupal-custom-module",
   "license": "MIt",
   "authors": [
     {

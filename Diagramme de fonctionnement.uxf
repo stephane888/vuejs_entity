@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?><diagram program="umlet" version="13.3">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>170</x>
+      <y>30</y>
+      <w>710</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes> giveRoles
+--
+bg=orange
+halign=left
+valign=top
+Drupal\lesroidelareno\Controller\LesroidelarenoConfigController::giveRoles
+Ajoute le role : gerant_de_site_web
+/admin/lesroidelareno/add-roles</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>160</x>
+      <y>210</y>
+      <w>710</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes> saveDatas
+--
+halign=left
+valign=top
+bg=light_gray
+Drupal\vuejs_entity\Controller\FormEntityController::saveDatas
+/vuejs-entity/entity/save/donnee_internet_entity
+Crrer l'entité "donnee_internet_entity" =&gt; cree l'entité domain_ovh_entity.
+
+bg=light_gray</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>160</x>
+      <y>400</y>
+      <w>710</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes> CreateDomaine
+--
+halign=left
+valign=top
+bg=light_gray
+Drupal\ovh_api_rest\Controller\OvhApiRestController::CreateDomaine
+/ovh-api-rest/create-domaine/{domain_id}
+Crrer toute la configuration pour le domaine (creation du Vhost et edition du fichier /etc/hots).
+Ajoute la configuration sur OVH si necessaire.
+
+bg=light_gray</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>80</x>
+      <y>0</y>
+      <w>30</w>
+      <h>810</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;790.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>80</x>
+      <y>70</y>
+      <w>110</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>90.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>80</x>
+      <y>250</y>
+      <w>100</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>80.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>80</x>
+      <y>440</y>
+      <w>100</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>80.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+</diagram>

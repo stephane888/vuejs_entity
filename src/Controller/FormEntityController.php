@@ -393,7 +393,8 @@ class FormEntityController extends ControllerBase {
   }
   
   /**
-   * pour plus d'info.
+   * Creer ou recupere le domain.
+   * Cree l'entite domain s'il n'existe pas.
    * https://stackoverflow.com/questions/40514051/using-preg-replace-to-convert-camelcase-to-snake-case
    *
    * @param integer $domain_ovh_entity_id
@@ -673,6 +674,8 @@ class FormEntityController extends ControllerBase {
    * @param String|integer $id
    *
    * @deprecated utiliser
+   *            
+   *            
    *            
    *            
    *            
