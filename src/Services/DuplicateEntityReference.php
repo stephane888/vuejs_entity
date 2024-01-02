@@ -15,6 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\blockscontent\Entity\BlocksContents;
 use Drupal\Core\Entity\EntityBase;
 use Drupal\Component\Utility\NestedArray;
+use Drupal\commerce_promotion\Entity\Promotion;
 
 class DuplicateEntityReference extends ControllerBase {
   protected static $field_domain_access = \Drupal\domain_access\DomainAccessManagerInterface::DOMAIN_ACCESS_FIELD;
@@ -461,6 +462,40 @@ class DuplicateEntityReference extends ControllerBase {
                * importantes.
                */
               //
+              $datasJson[$k][] = $subDatas;
+            }
+          }
+        }
+        elseif (!empty($setings['target_type']) && ($setings['target_type'] == 'commerce_promotion')) {
+          foreach ($vals as $value) {
+            $Promotion = Promotion::load($value['target_id']);
+            if ($Promotion) {
+              if ($duplicate) {
+                $Promotion = $this->getEntityTranslate($Promotion);
+                $ClonePromotion = $Promotion->createDuplicate();
+                // On ajoute le champs field_domain_access; ci-possible.
+                if ($ClonePromotion->hasField(self::$field_domain_access) && $entity->hasField(self::$field_domain_access)) {
+                  $ClonePromotion->set(self::$field_domain_access, $entity->get(self::$field_domain_access)->getValue());
+                }
+                // si on duplique pour l'instant on ignore les coupons, car il
+                // faudra une logique.
+                $ClonePromotion->setCoupons([]);
+                // on met à jour l'id de l'utilisateur.
+                $ClonePromotion->setOwnerId($uid);
+              }
+              else
+                $ClonePromotion = $Promotion;
+              $subDatas = $setings;
+              $subDatas['target_id'] = $value['target_id'];
+              $ar = $ClonePromotion->toArray();
+              $subDatas['entity'] = $this->toArrayLayoutBuilderField($ar);
+              $subDatas['entities'] = [];
+              // On ajoute le formulaire si necessaire :
+              if ($add_form) {
+                $subDatas += $this->GenerateForm->getForm($setings['target_type'], $ClonePromotion->bundle(), 'default', $ClonePromotion);
+              }
+              // On verifie pour les sous entites.
+              $this->duplicateExistantReference($ClonePromotion, $subDatas['entities'], $duplicate, $add_form);
               $datasJson[$k][] = $subDatas;
             }
           }
