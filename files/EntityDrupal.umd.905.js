@@ -24,7 +24,7 @@ var es_function_name = __webpack_require__(60343);
 // EXTERNAL MODULE: ../drupal-vuejs/src/App/jsonApi/itemsEntity.js
 var itemsEntity = __webpack_require__(21208);
 // EXTERNAL MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/loadField.js + 138 modules
-var loadField = __webpack_require__(69544);
+var loadField = __webpack_require__(45162);
 ;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-80[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/Ressouces/OptionsEntities.vue?vue&type=script&lang=js&
 
 
@@ -344,7 +344,12 @@ var itemsEntity = /*#__PURE__*/function () {
     value: function filter(field_name, operator, value) {
       var filter = new _buildFilter_js__WEBPACK_IMPORTED_MODULE_8__/* ["default"] */ .Z();
       filter.addFilter(field_name, operator, value);
-      if (filter.query) this.filterQuery += filter.query;
+
+      if (filter.query) {
+        if (!this.filterQuery) this.filterQuery += filter.query;else {
+          this.filterQuery += "&" + filter.query;
+        }
+      }
     }
     /**
      * Les entities à joindre dans la requete.
