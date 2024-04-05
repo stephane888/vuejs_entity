@@ -27,18 +27,18 @@ class DuplicateEntityReference extends ControllerBase {
    * @var \Drupal\apivuejs\Services\GenerateForm
    */
   protected $GenerateForm;
-
+  
   function __construct(GenerateForm $GenerateForm) {
     $this->GenerateForm = $GenerateForm;
   }
-
+  
   /**
    * Contient les données en JSON
    *
    * @var array
    */
   protected $datasJson = [];
-
+  
   /**
    * Entite valide pour la suppresion.
    * Afin d'eviter de supprimer certaines données utile.
@@ -52,7 +52,7 @@ class DuplicateEntityReference extends ControllerBase {
     'commerce_product'
     // 'webform'
   ];
-
+  
   /**
    * Les entitées ou types qui seront ignorées.
    *
@@ -71,7 +71,7 @@ class DuplicateEntityReference extends ControllerBase {
     'blocks_contents_type'
   ];
   protected $lang_code;
-
+  
   /**
    * Permet de supprimier les references dans l'entité.
    *
@@ -98,7 +98,7 @@ class DuplicateEntityReference extends ControllerBase {
       }
     }
   }
-
+  
   /**
    * Permet de generer une matrice des entites avec des actions au choix tels
    * que : la duplication, un formulaire d'edition des entites.
@@ -137,7 +137,7 @@ class DuplicateEntityReference extends ControllerBase {
     foreach ($values as $k => $vals) {
       if (!empty($vals[0]['target_id'])) {
         $setings = $entity->get($k)->getSettings();
-
+        
         if (empty($setings['target_type']) || in_array($setings['target_type'], $this->ignorEntity))
           continue;
         // Duplication des paragraph
@@ -151,10 +151,11 @@ class DuplicateEntityReference extends ControllerBase {
                 if ($CloneParagraph->hasField(self::$field_domain_access) && $entity->hasField(self::$field_domain_access)) {
                   $CloneParagraph->set(self::$field_domain_access, $entity->get(self::$field_domain_access)->getValue());
                 }
-              } else
+              }
+              else
                 $CloneParagraph = $Paragraph;
               //
-
+              
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
               $ar = $CloneParagraph->toArray();
@@ -184,9 +185,10 @@ class DuplicateEntityReference extends ControllerBase {
                 }
                 // on met à jour l'id de lutilisateur.
                 $cloneNode->setOwnerId($uid);
-              } else
+              }
+              else
                 $cloneNode = $node;
-
+              
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
               $ar = $cloneNode->toArray();
@@ -216,7 +218,8 @@ class DuplicateEntityReference extends ControllerBase {
                 }
                 // on met à jour l'id de lutilisateur.
                 $BlocksContents->setOwnerId($uid);
-              } else
+              }
+              else
                 $cloneBlocksContents = $BlocksContents;
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
@@ -232,7 +235,11 @@ class DuplicateEntityReference extends ControllerBase {
               $datasJson[$k][] = $subDatas;
             }
           }
-        } elseif (!empty($setings['target_type']) && $setings['target_type'] == 'hbk_collection') {
+        }
+        /**
+         * Ne doit pas etre dupliquer pour le moment ou pas.
+         */
+        elseif (!empty($setings['target_type']) && $setings['target_type'] == 'hbk_collection__00') {
           foreach ($vals as $value) {
             $hbkCollection = HbkCollection::load($value['target_id']);
             if ($hbkCollection) {
@@ -245,7 +252,8 @@ class DuplicateEntityReference extends ControllerBase {
                 }
                 // on met à jour l'id de lutilisateur.
                 $hbkCollection->setOwnerId($uid);
-              } else
+              }
+              else
                 $cloneHbkCollection = $hbkCollection;
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
@@ -304,7 +312,7 @@ class DuplicateEntityReference extends ControllerBase {
             // ]);
             // $Webform->setElements($elementsMerge);
             // dump($Webform->toArray());
-
+            
             //
             if ($Webform && $duplicate) {
               /**
@@ -390,7 +398,8 @@ class DuplicateEntityReference extends ControllerBase {
                     'value' => $val . ' : ' . count($newBlockIds)
                   ]);
                 }
-              } else
+              }
+              else
                 $CloneBlockContent = $BlockContent;
               //
               $subDatas = $setings;
@@ -436,7 +445,8 @@ class DuplicateEntityReference extends ControllerBase {
                 }
                 // on met à jour l'id de lutilisateur.
                 $CloneProduct->setOwnerId($uid);
-              } else
+              }
+              else
                 $CloneProduct = $Product;
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
@@ -472,7 +482,7 @@ class DuplicateEntityReference extends ControllerBase {
                * formulaire d'edition.
                */
               $CloneProductVariation = $ProductVariation;
-
+              
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
               $ar = $CloneProductVariation->toArray();
@@ -490,7 +500,8 @@ class DuplicateEntityReference extends ControllerBase {
               $datasJson[$k][] = $subDatas;
             }
           }
-        } elseif (!empty($setings['target_type']) && ($setings['target_type'] == 'commerce_promotion')) {
+        }
+        elseif (!empty($setings['target_type']) && ($setings['target_type'] == 'commerce_promotion')) {
           foreach ($vals as $value) {
             $Promotion = Promotion::load($value['target_id']);
             if ($Promotion) {
@@ -506,7 +517,8 @@ class DuplicateEntityReference extends ControllerBase {
                 $ClonePromotion->setCoupons([]);
                 // on met à jour l'id de l'utilisateur.
                 $ClonePromotion->setOwnerId($uid);
-              } else
+              }
+              else
                 $ClonePromotion = $Promotion;
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
@@ -522,7 +534,8 @@ class DuplicateEntityReference extends ControllerBase {
               $datasJson[$k][] = $subDatas;
             }
           }
-        } else {
+        }
+        else {
           \Drupal::logger('vuejs_entity')->alert(" Entité non traitée, field :" . $k . ', type : ' . $setings['target_type']);
         }
       }
@@ -539,7 +552,7 @@ class DuplicateEntityReference extends ControllerBase {
     }
     // dump($datasJson);
   }
-
+  
   /**
    * Permet de cloner un produit avec ses variations.
    * (NB: le clone du produit est sauvegarder car les variations ont besoin de
@@ -567,12 +580,12 @@ class DuplicateEntityReference extends ControllerBase {
       $CloneProduct->setVariations([]);
       $CloneProduct->save();
     }
-
+    
     //
-
+    
     $subDatas['entity'] = $CloneProduct->toArray();
     $subDatas['entities'] = [];
-
+    
     /**
      * Cette etape n'a de sens que si on duplique un produit.
      * ( Si non, pas necessaire ).
@@ -612,7 +625,7 @@ class DuplicateEntityReference extends ControllerBase {
       $subDatas['entity'] = $this->toArrayLayoutBuilderField($ar);
     }
   }
-
+  
   /**
    * Cette fonction a pour objectif de recuperer le json du layout_builder.
    * La fonction toArray de l'entité ne transmet pas pour le moment les bonnes
@@ -634,21 +647,22 @@ class DuplicateEntityReference extends ControllerBase {
     }
     return $entity;
   }
-
+  
   function getEntityTranslate(ContentEntityBase $entity) {
     $this->getLangCode();
     if ($entity->hasTranslation($this->lang_code)) {
       return $entity->getTranslation($this->lang_code);
-    } else
+    }
+    else
       return $entity;
   }
-
+  
   protected function getLangCode() {
     if (!$this->lang_code)
       $this->lang_code = \Drupal::languageManager()->getCurrentLanguage()->getId();
     return $this->lang_code;
   }
-
+  
   /**
    *
    * @param ContentEntityBase $entity
@@ -657,4 +671,5 @@ class DuplicateEntityReference extends ControllerBase {
   function saveDuplicateEntities(ContentEntityBase &$entity, array &$datasJson = []) {
     //
   }
+  
 }
