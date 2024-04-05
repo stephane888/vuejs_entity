@@ -203,7 +203,7 @@ class DuplicateEntityReference extends ControllerBase {
           }
         }
         // Duplication des sous nodes.
-        elseif (!empty($setings['target_type']) && ($setings['target_type'] == 'blocks_contents' || $setings['target_type'] == 'hbk_collection')) {
+        elseif (!empty($setings['target_type']) && $setings['target_type'] == 'blocks_contents') {
           foreach ($vals as $value) {
             $BlocksContents = BlocksContents::load($value['target_id']);
             if ($BlocksContents) {
@@ -246,7 +246,7 @@ class DuplicateEntityReference extends ControllerBase {
                 // on met à jour l'id de lutilisateur.
                 $hbkCollection->setOwnerId($uid);
               } else
-              $cloneHbkCollection = $hbkCollection;
+                $cloneHbkCollection = $hbkCollection;
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
               $ar = $cloneHbkCollection->toArray();
