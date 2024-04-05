@@ -199,6 +199,7 @@ class FormEntityController extends ControllerBase {
         // On met à jours les champs.
         $pageWeb->set('name', $entityModel->getNameToMenu());
         $pageWeb->set('layout_paragraphs', $entityModel->get('layout_paragraphs')->getValue());
+        $pageWeb->set('hbk_collection', $entityModel->get('hbk_collection')->getValue());
         
         $entities = [];
         $this->DuplicateEntityReference->duplicateExistantReference($pageWeb, $entities);
@@ -674,6 +675,7 @@ class FormEntityController extends ControllerBase {
    * @param String|integer $id
    *
    * @deprecated utiliser
+   *            
    *            
    *            
    *            
