@@ -45,13 +45,13 @@ class FormEntityController extends ControllerBase {
     'content_translation_outdated',
     'content_translation_changed'
   ];
-  
+
   /**
    *
    * @var DuplicateEntityReference
    */
   protected $DuplicateEntityReference;
-  
+
   /**
    *
    * @param DuplicateEntityReference $DuplicateEntityReference
@@ -59,7 +59,7 @@ class FormEntityController extends ControllerBase {
   function __construct(DuplicateEntityReference $DuplicateEntityReference) {
     $this->DuplicateEntityReference = $DuplicateEntityReference;
   }
-  
+
   /**
    *
    * {@inheritdoc}
@@ -67,7 +67,7 @@ class FormEntityController extends ControllerBase {
   public static function create(ContainerInterface $container) {
     return new static($container->get('vuejs_entity.duplicate.entity'));
   }
-  
+
   /**
    *
    * @return string[]|\Drupal\Core\StringTranslation\TranslatableMarkup[]
@@ -87,7 +87,7 @@ class FormEntityController extends ControllerBase {
     $build['content']['#attached']['library'][] = 'vuejs_entity/vuejs_entity';
     return $build;
   }
-  
+
   /**
    * Cree les nouveaux entitées et duplique les entites existantes.
    *
@@ -98,6 +98,11 @@ class FormEntityController extends ControllerBase {
   public function saveDatas(Request $Request, $entity_type_id) {
     $entity_type = $this->entityTypeManager()->getStorage($entity_type_id);
     $values = Json::decode($Request->getContent());
+    if ($entity_type_id == "config_theme_entity" && isset($values["run_npm"])) {
+      foreach ($values["run_npm"] as $key => &$value) {
+        $value = TRUE;
+      }
+    }
     //
     if ($entity_type && !empty($values)) {
       try {
@@ -109,8 +114,7 @@ class FormEntityController extends ControllerBase {
         }
         $entity->save();
         return HttpResponse::response($entity->toArray());
-      }
-      catch (\Exception $e) {
+      } catch (\Exception $e) {
         $user = \Drupal::currentUser();
         $errors = ExceptionExtractMessage::errorAllToString($e);
         $errors .= '<br> error create : ' . $entity_type_id;
@@ -118,13 +122,12 @@ class FormEntityController extends ControllerBase {
         $this->getLogger('vuejs_entity')->critical($e->getMessage() . '<br>' . $errors);
         return HttpResponse::response(ExceptionExtractMessage::errorAll($e), 400, $e->getMessage());
       }
-    }
-    else {
+    } else {
       $this->getLogger('vuejs_entity')->critical(" impossible de creer l'entité : " . $entity_type_id);
       return HttpResponse::response([], 400, "erreur inconnu");
     }
   }
-  
+
   /**
    *
    * @param Request $Request
@@ -141,11 +144,10 @@ class FormEntityController extends ControllerBase {
          */
         $entity = $entity_type->create($values);
         // $this->DuplicateEntityReference->duplicateExistantReference($entity);
-        
+
         $entity->save();
         return HttpResponse::response($entity->toArray());
-      }
-      catch (\Exception $e) {
+      } catch (\Exception $e) {
         $user = \Drupal::currentUser();
         $errors = ExceptionExtractMessage::errorAllToString($e);
         $errors .= '<br> error create : ' . $entity_type_id;
@@ -153,13 +155,12 @@ class FormEntityController extends ControllerBase {
         $this->getLogger('vuejs_entity')->critical($e->getMessage() . '<br>' . $errors);
         return HttpResponse::response(ExceptionExtractMessage::errorAll($e), 400, $e->getMessage());
       }
-    }
-    else {
+    } else {
       $this->getLogger('vuejs_entity')->critical(" impossible de creer l'entité : " . $entity_type_id);
       return HttpResponse::response([], 400, "erreur inconnu");
     }
   }
-  
+
   /**
    * Permet de generer la matrice permettant de creer une entité et ses sous
    * entitées de maniere efficace.
@@ -181,7 +182,7 @@ class FormEntityController extends ControllerBase {
         if ($entityModel->hasTranslation($lang_code)) {
           $entityModel = $entityModel->getTranslation($lang_code);
         }
-        
+
         $values = Json::decode($Request->getContent());
         $values['type'] = $entityModel->getType();
         // On generate la page web.
@@ -200,10 +201,10 @@ class FormEntityController extends ControllerBase {
         $pageWeb->set('name', $entityModel->getNameToMenu());
         $pageWeb->set('layout_paragraphs', $entityModel->get('layout_paragraphs')->getValue());
         $pageWeb->set('hbk_collection', $entityModel->get('hbk_collection')->getValue());
-        
+
         $entities = [];
         $this->DuplicateEntityReference->duplicateExistantReference($pageWeb, $entities);
-        
+
         // On charge les autres traductions.
         $translations = [];
         if ($entityModel->isTranslatable()) {
@@ -230,19 +231,17 @@ class FormEntityController extends ControllerBase {
           'translations' => $translations
         ];
         return HttpResponse::response($datasJson, 200, 'test');
-      }
-      catch (\Exception $e) {
+      } catch (\Exception $e) {
         $errors = ExceptionExtractMessage::errorAllToString($e);
         $this->getLogger('vuejs_entity')->critical($e->getMessage() . '<br>' . $errors);
         return HttpResponse::response(ExceptionExtractMessage::errorAll($e), 400, $e->getMessage());
       }
-    }
-    else {
+    } else {
       $this->getLogger('vuejs_entity')->critical(" Le contenu model n'existe plus : " . $id);
       return HttpResponse::response([], 400, " Le contenu model n'existe plus : " . $id);
     }
   }
-  
+
   /**
    * Permet d'ajouter le contenu d'un paragraph dans une entité.
    */
@@ -266,8 +265,7 @@ class FormEntityController extends ControllerBase {
       ];
       if ($bundle == $entity_type_id) {
         $entity = $entity_type->create($valuesEntity);
-      }
-      else {
+      } else {
         $valuesEntity['type'] = $bundle;
         $entity = $entity_type->create($valuesEntity);
       }
@@ -282,14 +280,13 @@ class FormEntityController extends ControllerBase {
       $entity->set('layout_paragraphs', $entity_P->id());
       $entity->save();
       return HttpResponse::response($entity->toArray());
-    }
-    catch (\Exception $e) {
+    } catch (\Exception $e) {
       $errors = ExceptionExtractMessage::errorAllToString($e);
       $this->getLogger('vuejs_entity')->critical($e->getMessage() . '<br>' . $errors);
       return HttpResponse::response(ExceptionExtractMessage::errorAll($e), 400, $e->getMessage());
     }
   }
-  
+
   /**
    *
    * @param Request $Request
@@ -308,7 +305,7 @@ class FormEntityController extends ControllerBase {
           $this->getLogger('vuejs_entity')->critical(" Le theme n'existe toujours pas ... ");
         }
       }
-      
+
       // Les id des blocks doivent etre maj afin d'avoir des id unique.
       $id = mb_substr($values['id'], 0, 10, 'UTF-8');
       $values['id'] = $id . uniqid();
@@ -321,14 +318,13 @@ class FormEntityController extends ControllerBase {
       // $block->set('region', $values['theme']);
       $block->save();
       return HttpResponse::response($block->toArray());
-    }
-    catch (\Exception $e) {
+    } catch (\Exception $e) {
       $errors = ExceptionExtractMessage::errorAllToString($e);
       $this->getLogger('vuejs_entity')->critical($e->getMessage() . '<br>' . $errors);
       return HttpResponse::response(ExceptionExtractMessage::errorAll($e), 400, $e->getMessage());
     }
   }
-  
+
   /**
    *
    * @param Request $Request
@@ -383,16 +379,14 @@ class FormEntityController extends ControllerBase {
           'items' => $menuLinkContents
           // 'block_content' => $block_content->toArray()
         ]);
-      }
-      else
+      } else
         throw new \ErrorException('Menu non definit');
-    }
-    catch (\Exception $e) {
+    } catch (\Exception $e) {
       $this->getLogger('vuejs_entity')->critical(ExceptionExtractMessage::errorAllToString($e));
       return HttpResponse::response(ExceptionExtractMessage::errorAll($e), 400, $e->getMessage());
     }
   }
-  
+
   /**
    * Creer ou recupere le domain.
    * Cree l'entite domain s'il n'existe pas.
@@ -413,8 +407,7 @@ class FormEntityController extends ControllerBase {
         ];
         //
         return HttpResponse::response($datas);
-      }
-      catch (\Exception $e) {
+      } catch (\Exception $e) {
         $errors = ExceptionExtractMessage::errorAll($e);
         $errors[] = "domain_ovh_entity_id : " . $domain_ovh_entity_id;
         $this->getLogger('vuejs_entity')->critical(" domain_ovh_entity_id : " . $domain_ovh_entity_id . ' <br> ' . ExceptionExtractMessage::errorAllToString($e));
@@ -424,7 +417,7 @@ class FormEntityController extends ControllerBase {
     $this->getLogger('vuejs_entity')->critical(" Le domaine n'est pas encore enregistrer en tant qu'entité drupal ");
     return HttpResponse::response([], 400, " Le domaine n'est pas encore enregistrer en tant qu'entité drupal ");
   }
-  
+
   /**
    * Permet de construire le champs au niveau de vuejs.
    */
@@ -452,17 +445,15 @@ class FormEntityController extends ControllerBase {
         $entity->addTranslation($lang_code);
       }
       $fields = $entity->getTranslation($lang_code)->toArray();
-    }
-    else {
+    } else {
       // dans le cas ou on a deja une entité, on charge la valeur de la langue
       // encours.
       if ($entity->hasTranslation($lang_code)) {
         $fields = $entity->getTranslation($lang_code)->toArray();
-      }
-      else
+      } else
         $fields = $entity->toArray();
     }
-    
+
     $fields = $entity->toArray();
     /**
      *
@@ -470,7 +461,7 @@ class FormEntityController extends ControllerBase {
      */
     $entityManager = \Drupal::service('entity_field.manager');
     $Allfields = $entityManager->getFieldDefinitions($entity_type_id, $bundle);
-    
+
     /**
      * ( NB )
      *
@@ -483,9 +474,9 @@ class FormEntityController extends ControllerBase {
         'targetEntityType' => $entity_type_id
       ]);
     }
-    
+
     $fieldsEntityForm = $entity_form_view->toArray();
-    
+
     $form = [];
     foreach ($fields as $k => $value) {
       if (!empty($Allfields[$k])) {
@@ -553,7 +544,7 @@ class FormEntityController extends ControllerBase {
           // $query->condition('site_internet_entity_type', $type);
           // }
           $ids = $query->execute();
-          
+
           // On ajoute les pages par defaut definit par l'administrateur.
           foreach ($defaultPages as $id) {
             $fields[$k][] = [
@@ -564,7 +555,7 @@ class FormEntityController extends ControllerBase {
             if (!in_array($id, $ids))
               $ids[] = $id;
           }
-          
+
           if ($ids) {
             $entities = $this->entityTypeManager()->getStorage('site_type_datas')->loadMultiple($ids);
             $pages = [];
@@ -587,8 +578,7 @@ class FormEntityController extends ControllerBase {
             $form[$k]['entity_form_settings']['list_options'] = $pages;
           }
         }
-      }
-      else {
+      } else {
         unset($fields[$k]);
       }
     }
@@ -603,13 +593,13 @@ class FormEntityController extends ControllerBase {
 </div>'
       ];
     }
-    
+
     return HttpResponse::response([
       'form' => $form,
       'model' => $fields
     ]);
   }
-  
+
   /**
    * Recupere les données de l'entete et le footer en function du model Pour l
    * creation de site web.
@@ -663,7 +653,7 @@ class FormEntityController extends ControllerBase {
     $this->getLogger('vuejs_entity')->critical(" getFormParagraphByModel : model non definit ");
     return HttpResponse::response([], 400, " getFormParagraphByModel : model non definit ");
   }
-  
+
   /**
    * Permet d'obtenir le formulaire à partir d'une entité.
    * - Utilisé afin de determiner
@@ -696,7 +686,7 @@ class FormEntityController extends ControllerBase {
       if (empty($param['id']) || empty($param['entity_type_id']))
         throw new ExceptionDebug(" Paramettre manquant ");
       //
-      
+
       $entity = $this->entityTypeManager()->getStorage($param['entity_type_id'])->load($param['id']);
       $duplicate = false;
       if (!empty($param['duplicate'])) {
@@ -723,18 +713,15 @@ class FormEntityController extends ControllerBase {
         ]);
       }
       throw new ExceptionDebug(" L'entité n'existe plus ");
-    }
-    catch (ExceptionDebug $e) {
+    } catch (ExceptionDebug $e) {
       return HttpResponse::response(ExceptionExtractMessage::errorAll($e), $e->getErrorCode(), $e->getMessage());
-    }
-    catch (\Exception $e) {
+    } catch (\Exception $e) {
       return HttpResponse::response(ExceptionExtractMessage::errorAll($e), 431, $e->getMessage());
-    }
-    catch (\Error $e) {
+    } catch (\Error $e) {
       return HttpResponse::response(ExceptionExtractMessage::errorAll($e), 431, $e->getMessage());
     }
   }
-  
+
   /**
    *
    * @param array $settings
@@ -749,7 +736,7 @@ class FormEntityController extends ControllerBase {
       }
     return $settings;
   }
-  
+
   /**
    *
    * @deprecated
@@ -768,9 +755,8 @@ class FormEntityController extends ControllerBase {
     $reponse->setContent($configs);
     return $reponse;
   }
-  
+
   protected function load__entity_form_display() {
     return $this->entityTypeManager()->getStorage('entity_view_display')->loadMultiple();
   }
-  
 }
