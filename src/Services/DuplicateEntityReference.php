@@ -608,6 +608,13 @@ class DuplicateEntityReference extends ControllerBase {
             if ($cloneVariation->hasField(self::$field_domain_access) && $CloneProduct->hasField(self::$field_domain_access)) {
               $cloneVariation->set(self::$field_domain_access, $CloneProduct->get(self::$field_domain_access)->getValue());
             }
+            // Le champs stock ne se duplique pas, donc on va en ajouter une
+            // quantité au hasard.
+            // On va partir sur la base que le champs stock est le meme partout.
+            if ($cloneVariation->hasField('field_ni')) {
+              $cloneVariation->set('field_ni', 50);
+            }
+            
             // on met à jour l'id de lutilisateur.
             $cloneVariation->setOwnerId($uid);
             //
