@@ -614,6 +614,13 @@ class DuplicateEntityReference extends ControllerBase {
             if ($cloneVariation->hasField('field_ni')) {
               $cloneVariation->set('field_ni', 50);
             }
+            // On met à jour la dimensions et le poid
+            if ($cloneVariation->hasField('dimensions')) {
+              $cloneVariation->set('dimensions', $variation->get('dimensions')->getValue());
+            }
+            if ($cloneVariation->hasField('weight')) {
+              $cloneVariation->set('weight', $variation->get('weight')->getValue());
+            }
             
             // on met à jour l'id de lutilisateur.
             $cloneVariation->setOwnerId($uid);
