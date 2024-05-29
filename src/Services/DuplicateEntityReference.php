@@ -626,6 +626,11 @@ class DuplicateEntityReference extends ControllerBase {
             $cloneVariation->setOwnerId($uid);
             //
             $cloneVariation->save();
+            $db = [
+              '$cloneVariation' => $cloneVariation->toArray(),
+              '$variation' => $variation->toArray(),
+              '$Product' => $Product->toArray()
+            ];
             $newVariations[] = $cloneVariation->id();
             // Ajout de la variations dans le formulaire
           }
