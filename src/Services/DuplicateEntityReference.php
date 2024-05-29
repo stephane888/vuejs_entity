@@ -616,11 +616,27 @@ class DuplicateEntityReference extends ControllerBase {
             }
             // On met à jour la dimensions et le poid
             if ($cloneVariation->hasField('dimensions')) {
-              $cloneVariation->set('dimensions', $variation->get('dimensions')->getValue());
+              if (!empty($variation->get('dimensions')->getValue()))
+                $cloneVariation->set('dimensions', $variation->get('dimensions')->getValue());
+              else {
+                $cloneVariation->set('dimensions', [
+                  'length' => 14,
+                  'width' => 50,
+                  'height' => 45,
+                  'unit' => 'cm'
+                ]);
+              }
             }
-            if ($cloneVariation->hasField('weight')) {
-              $cloneVariation->set('weight', $variation->get('weight')->getValue());
-            }
+            if ($cloneVariation->hasField('weight'))
+              if (!empty($variation->get('weight')->getValue())) {
+                $cloneVariation->set('weight', $variation->get('weight')->getValue());
+              }
+              else {
+                $cloneVariation->set('weight', [
+                  'number' => 4,
+                  'unit' => 'kg'
+                ]);
+              }
             
             // on met à jour l'id de lutilisateur.
             $cloneVariation->setOwnerId($uid);
