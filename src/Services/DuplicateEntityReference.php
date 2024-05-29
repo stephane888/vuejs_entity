@@ -614,8 +614,8 @@ class DuplicateEntityReference extends ControllerBase {
             if ($cloneVariation->hasField('field_ni')) {
               $cloneVariation->set('field_ni', 50);
             }
-            // On met à jour la dimensions et le poid
-            if ($cloneVariation->hasField('dimensions')) {
+            // On met à jour la dimensions
+            if ($cloneVariation->hasField('dimensions'))
               if (!empty($variation->get('dimensions')->getValue()))
                 $cloneVariation->set('dimensions', $variation->get('dimensions')->getValue());
               else {
@@ -626,7 +626,7 @@ class DuplicateEntityReference extends ControllerBase {
                   'unit' => 'cm'
                 ]);
               }
-            }
+            // On met à jour le poid
             if ($cloneVariation->hasField('weight'))
               if (!empty($variation->get('weight')->getValue())) {
                 $cloneVariation->set('weight', $variation->get('weight')->getValue());
