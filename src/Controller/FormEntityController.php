@@ -543,6 +543,7 @@ class FormEntityController extends ControllerBase {
           // if ($type) {
           // $query->condition('site_internet_entity_type', $type);
           // }
+          $query->accessCheck(FALSE);
           $ids = $query->execute();
 
           // On ajoute les pages par defaut definit par l'administrateur.
