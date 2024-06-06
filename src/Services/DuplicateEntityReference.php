@@ -642,14 +642,13 @@ class DuplicateEntityReference extends ControllerBase {
             $cloneVariation->setOwnerId($uid);
             //
             $cloneVariation->save();
-            // $db = [
-            // '$cloneVariation' => $cloneVariation->toArray(),
-            // '$variation' => $variation->toArray(),
-            // '$Product' => $Product->toArray()
-            // ];
-            // \Stephane888\Debug\debugLog::$max_depth = 5;
-            // \Stephane888\Debug\debugLog::kintDebugDrupal($db,
-            // 'duplicateProduct__' . $variation->id() . '___', true);
+            $db = [
+              '$cloneVariation' => $cloneVariation->toArray(),
+              '$variation' => $variation->toArray(),
+              '$Product' => $Product->toArray()
+            ];
+            \Stephane888\Debug\debugLog::$max_depth = 5;
+            \Stephane888\Debug\debugLog::kintDebugDrupal($db, 'duplicateProduct__' . $variation->id() . '___', true);
             $newVariations[] = $cloneVariation->id();
             // Ajout de la variations dans le formulaire
           }
