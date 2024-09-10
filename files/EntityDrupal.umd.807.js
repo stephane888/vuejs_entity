@@ -1,7 +1,7 @@
 "use strict";
-((typeof self !== 'undefined' ? self : this)["webpackChunkEntityDrupal"] = (typeof self !== 'undefined' ? self : this)["webpackChunkEntityDrupal"] || []).push([[168],{
+((typeof self !== 'undefined' ? self : this)["webpackChunkEntityDrupal"] = (typeof self !== 'undefined' ? self : this)["webpackChunkEntityDrupal"] || []).push([[807],{
 
-/***/ 56168:
+/***/ 12807:
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 // ESM COMPAT FLAG
@@ -12,8 +12,8 @@ __webpack_require__.d(__webpack_exports__, {
   "default": function() { return /* binding */ MultiSelectTaxo; }
 });
 
-;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/Ressouces/MultiSelectTaxo.vue?vue&type=template&id=bc365446&
-var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('ValidationProvider',{attrs:{"name":_vm.fullname,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('b-form-group',{attrs:{"label":_vm.field.label,"description":_vm.field.description}},[_c('div',{staticClass:"autocomplete"},[_c('multiselect',{attrs:{"options":_vm.options,"custom-label":_vm.nameWithLang,"placeholder":"","label":"text","track-by":"text","show-no-results":true,"show-labels":false,"loading":_vm.isLoading,"multiple":_vm.cardinality,"allow-empty":true},on:{"search-change":_vm.asyncFind},model:{value:(_vm.value_computed),callback:function ($$v) {_vm.value_computed=$$v},expression:"value_computed"}},[_c('template',{slot:"noResult"},[_c('span',{staticClass:"option__title"},[_vm._v(" Aucun contenu ne correspond à votre recherche ")])]),_c('template',{slot:"placeholder"},[_c('span',{staticClass:"option__title"},[_vm._v(" Aucun contenu ... ")])]),_c('template',{slot:"noOptions"},[_c('span',{staticClass:"option__title"},[_vm._v(" Saisir un ou plusieurs caractères ... ")])])],2),_c('div',{staticClass:"text-danger"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0)],1)])]}}])})}
+;// CONCATENATED MODULE: ./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/Ressouces/MultiSelectTaxo.vue?vue&type=template&id=0e3615ce&
+var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('ValidationProvider',{attrs:{"name":_vm.fullname,"rules":_vm.getRules()},scopedSlots:_vm._u([{key:"default",fn:function(v){return [_c('b-form-group',{attrs:{"label":_vm.field.label,"description":_vm.field.description}},[_c('div',{staticClass:"autocomplete"},[_c('multiselect',{attrs:{"options":_vm.options,"custom-label":_vm.nameWithLang,"taggable":_vm.auto_create,"placeholder":"","label":"text","track-by":"text","show-no-results":true,"show-labels":false,"loading":_vm.isLoading,"multiple":_vm.cardinality,"allow-empty":true},on:{"search-change":_vm.asyncFind,"tag":_vm.createElement},model:{value:(_vm.value_computed),callback:function ($$v) {_vm.value_computed=$$v},expression:"value_computed"}},[_c('template',{slot:"noResult"},[_c('span',{staticClass:"option__title"},[_vm._v(" Aucun contenu ne correspond à votre recherche ")])]),_c('template',{slot:"placeholder"},[_c('span',{staticClass:"option__title"},[_vm._v(" Aucun contenu ... ")])]),_c('template',{slot:"noOptions"},[_c('span',{staticClass:"option__title"},[_vm._v(" Saisir un ou plusieurs caractères ... ")])])],2),_c('div',{staticClass:"text-danger"},_vm._l((v.errors),function(error,ii){return _c('small',{key:ii,staticClass:"d-block"},[_vm._v(" "+_vm._s(error)+" ")])}),0)],1)])]}}])})}
 var staticRenderFns = []
 
 
@@ -32,13 +32,15 @@ var vue_multiselect_min = __webpack_require__(20177);
 var vue_multiselect_min_default = /*#__PURE__*/__webpack_require__.n(vue_multiselect_min);
 // EXTERNAL MODULE: ../drupal-vuejs/src/App/jsonApi/termsTaxo.js
 var termsTaxo = __webpack_require__(46165);
-// EXTERNAL MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/loadField.js + 138 modules
-var loadField = __webpack_require__(45162);
+// EXTERNAL MODULE: ../components_bootstrapvuejs/src/components/fieldsDrupal/loadField.js + 140 modules
+var loadField = __webpack_require__(30299);
 ;// CONCATENATED MODULE: ./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib/index.js??clonedRuleSet-80[0].rules[0].use[1]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!../components_bootstrapvuejs/src/components/Ressouces/MultiSelectTaxo.vue?vue&type=script&lang=js&
 
 
 
 
+//
+//
 //
 //
 //
@@ -127,6 +129,9 @@ var loadField = __webpack_require__(45162);
         return false;
       }
     },
+    auto_create: function auto_create() {
+      return this.field.definition_settings.handler_settings.auto_create;
+    },
 
     /**
      * @see https://skirtles-code.github.io/vue-examples/patterns/computed-v-model.html
@@ -161,6 +166,7 @@ var loadField = __webpack_require__(45162);
   // },
   mounted: function mounted() {
     this.loadDefaults();
+    this.asyncFind("", true);
   },
   methods: {
     /**
@@ -213,19 +219,48 @@ var loadField = __webpack_require__(45162);
 
     /**
      *
+     * @param {string} newElement
+     */
+    createElement: function createElement(newElement) {
+      var _this3 = this;
+
+      var entity = {
+        value: {
+          name: newElement,
+          vid: this.field.definition_settings.bundle_entity_type_id
+        },
+        entity_type_id: this.field.definition_settings.target_type
+      };
+      var action = this.namespaceStore ? this.namespaceStore + "/saveEntity" : "saveEntity";
+      this.$store.dispatch(action, entity).then(function (response) {
+        _this3.value_select.push({
+          text: newElement,
+          value: response.data.id
+        });
+
+        _this3.updateValue(_this3.value_select);
+      }).catch(function (e) {
+        return console.log("error: ", e);
+      });
+    },
+
+    /**
+     *
      * @param {*} search
      */
     asyncFind: function asyncFind(search) {
-      var _this3 = this;
+      var _this4 = this;
 
-      if (search.length >= 2) {
+      var init = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+      if (search.length >= 2 || init) {
         // Doit etre dynamique.
         var vocabulary = this.getFistVocab();
         var terms = new termsTaxo/* default */.Z(vocabulary);
         this.isLoading = true;
         terms.getSearch(search).then(function () {
-          _this3.options = terms.getOptions();
-          _this3.isLoading = false;
+          _this4.options = terms.getOptions();
+          _this4.isLoading = false;
         });
       }
     },
@@ -305,4 +340,4 @@ var component = (0,componentNormalizer/* default */.Z)(
 /***/ })
 
 }]);
-//# sourceMappingURL=EntityDrupal.umd.168.js.map
+//# sourceMappingURL=EntityDrupal.umd.807.js.map
