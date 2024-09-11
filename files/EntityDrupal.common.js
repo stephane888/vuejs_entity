@@ -31638,14 +31638,28 @@ var AccordionCard_component = (0,componentNormalizer/* default */.Z)(
                     entity_type_id: items[i].target_type,
                     value: updateDomainId(entity),
                     index: i,
-                    translations: []
+                    translations: {}
                   };
-                  console.log(" etapes non ok pour les traductions : ", entity, "\n", items[i]); // if (item.entity.translations && item.entity.translations.length) {
-                  //   datas[i].entity.translations.forEach((translate_entity) => {
-                  //     payloads.translations.push(updateDomainId(translate_entity));
-                  //   });
-                  // }
 
+                  if (items[i].translations) {
+                    var _loop = function _loop(k) {
+                      var translate_entity = items[i].translations[k];
+                      keys.forEach(function (key_fieldName) {
+                        if (translate_entity[key_fieldName]) {
+                          translate_entity[key_fieldName] = entity[key_fieldName];
+                        }
+                      });
+                      payloads.translations[k] = updateDomainId(translate_entity);
+                    };
+
+                    for (var k in items[i].translations) {
+                      _loop(k);
+                    }
+
+                    console.log("items[i].translations : ", items[i].translations);
+                  }
+
+                  console.log(" Etapes non ok pour les traductions : ", items[i].target_type, "\n", entity, "\n", items[i], "\n keys : ", keys, "\n payloads", payloads);
                   store.dispatch("saveEntity", payloads).then(function (resp) {
                     suivers.creates++; // console.log(" Before loopItemAddValues 1 : ", values);
 
@@ -31683,13 +31697,14 @@ var AccordionCard_component = (0,componentNormalizer/* default */.Z)(
                   entity_type_id: item.target_type,
                   value: updateDomainId(item.entity),
                   index: i,
-                  translations: []
+                  translations: {}
                 };
 
-                if (item.entity.translations && item.entity.translations.length) {
-                  datas[i].entity.translations.forEach(function (translate_entity) {
-                    payloads.translations.push(updateDomainId(translate_entity));
-                  });
+                if (item.translations) {
+                  for (var k in item.translations) {
+                    var translate_entity = item.translations[k];
+                    payloads.translations[k] = updateDomainId(translate_entity);
+                  }
                 }
 
                 store.dispatch("saveEntity", payloads).then(function (resp) {
@@ -31810,15 +31825,25 @@ var AccordionCard_component = (0,componentNormalizer/* default */.Z)(
                 var saveEntity = function saveEntity() {
                   var payloads = {
                     entity_type_id: datas[i].target_type,
-                    value: updateDomainId(datas[i].entity),
+                    value: updateDomainId(entity),
                     index: i,
-                    translations: []
+                    translations: {}
                   };
 
-                  if (datas[i].entity.translations && datas[i].entity.translations.length) {
-                    datas[i].entity.translations.forEach(function (translate_entity) {
-                      payloads.translations.push(updateDomainId(translate_entity));
-                    });
+                  if (datas[i].translations) {
+                    var _loop2 = function _loop2(k) {
+                      var translate_entity = datas[i].translations[k];
+                      keys.forEach(function (key_fieldName) {
+                        if (translate_entity[key_fieldName]) {
+                          translate_entity[key_fieldName] = entity[key_fieldName];
+                        }
+                      });
+                      payloads.translations[k] = updateDomainId(translate_entity);
+                    };
+
+                    for (var k in datas[i].translations) {
+                      _loop2(k);
+                    }
                   }
 
                   store.dispatch("saveEntity", payloads).then(function (resp) {
@@ -31864,13 +31889,14 @@ var AccordionCard_component = (0,componentNormalizer/* default */.Z)(
                   entity_type_id: datas[i].target_type,
                   value: updateDomainId(datas[i].entity),
                   index: i,
-                  translations: []
+                  translations: {}
                 };
 
-                if (datas[i].entity.translations && datas[i].entity.translations.length) {
-                  datas[i].entity.translations.forEach(function (translate_entity) {
-                    payloads.translations.push(updateDomainId(translate_entity));
-                  });
+                if (datas[i].translations) {
+                  for (var k in datas[i].translations) {
+                    var translate_entity = datas[i].translations[k];
+                    payloads.translations[k] = updateDomainId(translate_entity);
+                  }
                 } //
 
 
