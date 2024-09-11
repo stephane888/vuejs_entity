@@ -205,7 +205,6 @@ class FormEntityController extends ControllerBase {
         $entities = [];
         $translations = [];
         $this->DuplicateEntityReference->duplicateExistantReference($pageWeb, $entities);
-
         // On charge les autres traductions.
         if ($entityModel->isTranslatable()) {
           $langues = $entityModel->getTranslationLanguages();

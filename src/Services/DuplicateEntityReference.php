@@ -27,18 +27,18 @@ class DuplicateEntityReference extends ControllerBase {
    * @var \Drupal\apivuejs\Services\GenerateForm
    */
   protected $GenerateForm;
-  
+
   function __construct(GenerateForm $GenerateForm) {
     $this->GenerateForm = $GenerateForm;
   }
-  
+
   /**
    * Contient les données en JSON
    *
    * @var array
    */
   protected $datasJson = [];
-  
+
   /**
    * Entite valide pour la suppresion.
    * Afin d'eviter de supprimer certaines données utile.
@@ -52,7 +52,7 @@ class DuplicateEntityReference extends ControllerBase {
     'commerce_product'
     // 'webform'
   ];
-  
+
   /**
    * Les entitées ou types qui seront ignorées.
    *
@@ -71,7 +71,7 @@ class DuplicateEntityReference extends ControllerBase {
     'blocks_contents_type'
   ];
   protected $lang_code;
-  
+
   /**
    * Permet de supprimier les references dans l'entité.
    *
@@ -98,7 +98,15 @@ class DuplicateEntityReference extends ControllerBase {
       }
     }
   }
-  
+
+  /**
+   * @return array
+   */
+  public function generateTranslationConfig(ContentEntityBase $entitySource) {
+    $translations = [];
+    return $translations;
+  }
+
   /**
    * Permet de generer une matrice des entites avec des actions au choix tels
    * que : la duplication, un formulaire d'edition des entites.
@@ -154,8 +162,7 @@ class DuplicateEntityReference extends ControllerBase {
                 if ($CloneParagraph->hasField(self::$field_domain_access) && $entity->hasField(self::$field_domain_access)) {
                   $CloneParagraph->set(self::$field_domain_access, $entity->get(self::$field_domain_access)->getValue());
                 }
-              }
-              else
+              } else
                 $CloneParagraph = $Paragraph;
               //
               $subDatas = $setings;
@@ -174,14 +181,14 @@ class DuplicateEntityReference extends ControllerBase {
                 foreach ($languages as $langcode => $language) {
                   if ($langcode == $lang_code)
                     continue;
-                  
+
                   if ($CloneParagraph->hasTranslation($langcode)) {
                     $sourceTranslation = $CloneParagraph->getTranslation($langcode);
                     $subDatas["translations"][$langcode] = $sourceTranslation->toArray();
                   }
                 }
               }
-              
+
               // On verifie pour les sous entites.
               $this->duplicateExistantReference($CloneParagraph, $subDatas['entities'], $duplicate, $add_form);
               $datasJson[$k][] = $subDatas;
@@ -202,10 +209,9 @@ class DuplicateEntityReference extends ControllerBase {
                 }
                 // on met à jour l'id de lutilisateur.
                 $cloneNode->setOwnerId($uid);
-              }
-              else
+              } else
                 $cloneNode = $node;
-              
+
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
               $ar = $cloneNode->toArray();
@@ -216,21 +222,21 @@ class DuplicateEntityReference extends ControllerBase {
               if ($add_form) {
                 $subDatas += $this->GenerateForm->getForm($setings['target_type'], $cloneNode->bundle(), 'default', $cloneNode);
               }
-              
+
               if ($cloneNode->isTranslatable()) {
                 $languages = $cloneNode->getTranslationLanguages();
                 // on s'assure qu'on a plus d'une langue.
                 foreach ($languages as $langcode => $language) {
                   if ($langcode == $lang_code)
                     continue;
-                  
+
                   if ($cloneNode->hasTranslation($langcode)) {
                     $sourceTranslation = $cloneNode->getTranslation($langcode);
                     $subDatas["translations"][$langcode] = $sourceTranslation->toArray();
                   }
                 }
               }
-              
+
               // On verifie pour les sous entites.
               $this->duplicateExistantReference($cloneNode, $subDatas['entities'], $duplicate, $add_form);
               $datasJson[$k][] = $subDatas;
@@ -251,8 +257,7 @@ class DuplicateEntityReference extends ControllerBase {
                 }
                 // on met à jour l'id de lutilisateur.
                 $BlocksContents->setOwnerId($uid);
-              }
-              else
+              } else
                 $cloneBlocksContents = $BlocksContents;
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
@@ -263,21 +268,21 @@ class DuplicateEntityReference extends ControllerBase {
               if ($add_form) {
                 $subDatas += $this->GenerateForm->getForm($setings['target_type'], $cloneBlocksContents->bundle(), 'default', $cloneBlocksContents);
               }
-              
+
               if ($cloneBlocksContents->isTranslatable()) {
                 $languages = $cloneBlocksContents->getTranslationLanguages();
                 // on s'assure qu'on a plus d'une langue.
                 foreach ($languages as $langcode => $language) {
                   if ($langcode == $lang_code)
                     continue;
-                  
+
                   if ($cloneBlocksContents->hasTranslation($langcode)) {
                     $sourceTranslation = $cloneBlocksContents->getTranslation($langcode);
                     $subDatas["translations"][$langcode] = $sourceTranslation->toArray();
                   }
                 }
               }
-              
+
               // On verifie pour les sous entites.
               $this->duplicateExistantReference($cloneBlocksContents, $subDatas['entities'], $duplicate, $add_form);
               $datasJson[$k][] = $subDatas;
@@ -300,8 +305,7 @@ class DuplicateEntityReference extends ControllerBase {
                 }
                 // on met à jour l'id de lutilisateur.
                 $hbkCollection->setOwnerId($uid);
-              }
-              else
+              } else
                 $cloneHbkCollection = $hbkCollection;
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
@@ -312,21 +316,21 @@ class DuplicateEntityReference extends ControllerBase {
               if ($add_form) {
                 $subDatas += $this->GenerateForm->getForm($setings['target_type'], $cloneHbkCollection->bundle(), 'default', $cloneHbkCollection);
               }
-              
+
               if ($cloneHbkCollection->isTranslatable()) {
                 $languages = $cloneHbkCollection->getTranslationLanguages();
                 // on s'assure qu'on a plus d'une langue.
                 foreach ($languages as $langcode => $language) {
                   if ($langcode == $lang_code)
                     continue;
-                  
+
                   if ($cloneHbkCollection->hasTranslation($langcode)) {
                     $sourceTranslation = $cloneHbkCollection->getTranslation($langcode);
                     $subDatas["translations"][$langcode] = $sourceTranslation->toArray();
                   }
                 }
               }
-              
+
               // On verifie pour les sous entites.
               $this->duplicateExistantReference($cloneHbkCollection, $subDatas['entities'], $duplicate, $add_form);
               $datasJson[$k][] = $subDatas;
@@ -375,9 +379,16 @@ class DuplicateEntityReference extends ControllerBase {
             // ]);
             // $Webform->setElements($elementsMerge);
             // dump($Webform->toArray());
-            
+
             //
             if ($Webform && $duplicate) {
+              /**
+               * On recupere les elements non traduit et on injecte dans la
+               * conf.
+               *
+               * @var \Drupal\webform\WebformTranslationManager $wftm
+               */
+              $wftm = \Drupal::service('webform.translation_manager');
               /**
                * Les webforms ont un comportement assez differents des autres
                * entitées.
@@ -386,13 +397,6 @@ class DuplicateEntityReference extends ControllerBase {
                * automatquement traduit en function de la langue.
                */
               if ($Webform->getLangcode() != $this->getLangCode()) {
-                /**
-                 * On recupere les elements non traduit et on injecte dans la
-                 * conf.
-                 *
-                 * @var \Drupal\webform\WebformTranslationManager $wftm
-                 */
-                $wftm = \Drupal::service('webform.translation_manager');
                 $elementsTranslate = $wftm->getTranslationElements($Webform, $this->getLangCode());
                 $elementsMerge = NestedArray::mergeDeepArray([
                   $Webform->getElementsDecoded(),
@@ -403,6 +407,7 @@ class DuplicateEntityReference extends ControllerBase {
               $CloneWebform = $Webform->createDuplicate();
               // Pour les webforms, on doit ajouter le ThirdParty.
               $domaine = $entity->get(self::$field_domain_access)->target_id;
+
               $CloneWebform->setThirdPartySetting('webform_domain_access', self::$field_domain_access, $domaine);
               $CloneWebform->set('title', $domaine . ' : ' . $CloneWebform->get('title'));
               $CloneWebform->set('id', substr($Webform->id(), 0, 10) . date('YMdi') . rand(0, 9999));
@@ -412,6 +417,17 @@ class DuplicateEntityReference extends ControllerBase {
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
               $subDatas['entity'] = $CloneWebform->toArray();
+
+              /**
+               * load translation
+               */
+              $languages = $this->languageManager()->getNativeLanguages();
+              foreach ($languages as $langcode => &$language) {
+                if ($Webform->getLangCode() != $langcode) {
+                  $subDatas["translations"][$langcode] = $wftm->getTranslationElements($Webform, $langcode);
+                }
+              }
+
               //
               if ($subDatas['entity']['langcode'] != $this->getLangCode()) {
                 $subDatas['entity']['langcode'] = $this->getLangCode();
@@ -461,8 +477,7 @@ class DuplicateEntityReference extends ControllerBase {
                     'value' => $val . ' : ' . count($newBlockIds)
                   ]);
                 }
-              }
-              else
+              } else
                 $CloneBlockContent = $BlockContent;
               //
               $subDatas = $setings;
@@ -474,21 +489,21 @@ class DuplicateEntityReference extends ControllerBase {
               if ($add_form) {
                 $subDatas += $this->GenerateForm->getForm($setings['target_type'], $CloneBlockContent->bundle(), 'default', $CloneBlockContent);
               }
-              
+
               if ($CloneBlockContent->isTranslatable()) {
                 $languages = $CloneBlockContent->getTranslationLanguages();
                 // on s'assure qu'on a plus d'une langue.
                 foreach ($languages as $langcode => $language) {
                   if ($langcode == $lang_code)
                     continue;
-                  
+
                   if ($CloneBlockContent->hasTranslation($langcode)) {
                     $sourceTranslation = $CloneBlockContent->getTranslation($langcode);
                     $subDatas["translations"][$langcode] = $sourceTranslation->toArray();
                   }
                 }
               }
-              
+
               // $CloneBlockContent->save();
               $datasJson[$k][] = $subDatas;
             }
@@ -523,8 +538,7 @@ class DuplicateEntityReference extends ControllerBase {
                 }
                 // on met à jour l'id de lutilisateur.
                 $CloneProduct->setOwnerId($uid);
-              }
-              else
+              } else
                 $CloneProduct = $Product;
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
@@ -533,21 +547,21 @@ class DuplicateEntityReference extends ControllerBase {
               if ($add_form) {
                 $subDatas += $this->GenerateForm->getForm($setings['target_type'], $CloneProduct->bundle(), 'default', $CloneProduct);
               }
-              
+
               if ($CloneProduct->isTranslatable()) {
                 $languages = $CloneProduct->getTranslationLanguages();
                 // on s'assure qu'on a plus d'une langue.
                 foreach ($languages as $langcode => $language) {
                   if ($langcode == $lang_code)
                     continue;
-                  
+
                   if ($CloneProduct->hasTranslation($langcode)) {
                     $sourceTranslation = $CloneProduct->getTranslation($langcode)->createDuplicate();
                     $subDatas["translations"][$langcode] = $sourceTranslation->toArray();
                   }
                 }
               }
-              
+
               // On verifie pour les sous entites.
               $this->duplicateExistantReference($CloneProduct, $subDatas['entities'], $duplicate, $add_form);
               $datasJson[$k][] = $subDatas;
@@ -575,7 +589,7 @@ class DuplicateEntityReference extends ControllerBase {
                * formulaire d'edition.
                */
               $CloneProductVariation = $ProductVariation;
-              
+
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
               $ar = $CloneProductVariation->toArray();
@@ -585,21 +599,21 @@ class DuplicateEntityReference extends ControllerBase {
               if ($add_form) {
                 $subDatas += $this->GenerateForm->getForm($setings['target_type'], $CloneProductVariation->bundle(), 'default', $CloneProductVariation);
               }
-              
+
               if ($CloneProductVariation->isTranslatable()) {
                 $languages = $CloneProductVariation->getTranslationLanguages();
                 // on s'assure qu'on a plus d'une langue.
                 foreach ($languages as $langcode => $language) {
                   if ($langcode == $lang_code)
                     continue;
-                  
+
                   if ($CloneProductVariation->hasTranslation($langcode)) {
                     $sourceTranslation = $CloneProductVariation->getTranslation($langcode);
                     $subDatas["translations"][$langcode] = $sourceTranslation->toArray();
                   }
                 }
               }
-              
+
               /**
                * On duplique ou ajoute le formulaire pour les entites
                * importantes.
@@ -608,8 +622,7 @@ class DuplicateEntityReference extends ControllerBase {
               $datasJson[$k][] = $subDatas;
             }
           }
-        }
-        elseif (!empty($setings['target_type']) && ($setings['target_type'] == 'commerce_promotion')) {
+        } elseif (!empty($setings['target_type']) && ($setings['target_type'] == 'commerce_promotion')) {
           foreach ($vals as $value) {
             $Promotion = Promotion::load($value['target_id']);
             if ($Promotion) {
@@ -625,8 +638,7 @@ class DuplicateEntityReference extends ControllerBase {
                 $ClonePromotion->setCoupons([]);
                 // on met à jour l'id de l'utilisateur.
                 $ClonePromotion->setOwnerId($uid);
-              }
-              else
+              } else
                 $ClonePromotion = $Promotion;
               $subDatas = $setings;
               $subDatas['target_id'] = $value['target_id'];
@@ -637,28 +649,27 @@ class DuplicateEntityReference extends ControllerBase {
               if ($add_form) {
                 $subDatas += $this->GenerateForm->getForm($setings['target_type'], $ClonePromotion->bundle(), 'default', $ClonePromotion);
               }
-              
+
               if ($ClonePromotion->isTranslatable()) {
                 $languages = $ClonePromotion->getTranslationLanguages();
                 // on s'assure qu'on a plus d'une langue.
                 foreach ($languages as $langcode => $language) {
                   if ($langcode == $lang_code)
                     continue;
-                  
+
                   if ($ClonePromotion->hasTranslation($langcode)) {
                     $sourceTranslation = $ClonePromotion->getTranslation($langcode);
                     $subDatas["translations"][$langcode] = $sourceTranslation->toArray();
                   }
                 }
               }
-              
+
               // On verifie pour les sous entites.
               $this->duplicateExistantReference($ClonePromotion, $subDatas['entities'], $duplicate, $add_form);
               $datasJson[$k][] = $subDatas;
             }
           }
-        }
-        else {
+        } else {
           \Drupal::logger('vuejs_entity')->alert(" Entité non traitée, field :" . $k . ', type : ' . $setings['target_type']);
         }
       }
@@ -675,7 +686,7 @@ class DuplicateEntityReference extends ControllerBase {
     }
     // dump($datasJson);
   }
-  
+
   /**
    * Permet de cloner un produit avec ses variations.
    * (NB: le clone du produit est sauvegarder car les variations ont besoin de
@@ -703,12 +714,12 @@ class DuplicateEntityReference extends ControllerBase {
       $CloneProduct->setVariations([]);
       $CloneProduct->save();
     }
-    
+
     //
-    
+
     $subDatas['entity'] = $CloneProduct->toArray();
     $subDatas['entities'] = [];
-    
+
     /**
      * Cette etape n'a de sens que si on duplique un produit.
      * ( Si non, pas necessaire ).
@@ -753,14 +764,13 @@ class DuplicateEntityReference extends ControllerBase {
             if ($cloneVariation->hasField('weight'))
               if (!empty($variation->get('weight')->getValue())) {
                 $cloneVariation->set('weight', $variation->get('weight')->getValue());
-              }
-              else {
+              } else {
                 $cloneVariation->set('weight', [
                   'number' => 4,
                   'unit' => 'kg'
                 ]);
               }
-            
+
             // on met à jour l'id de lutilisateur.
             $cloneVariation->setOwnerId($uid);
             //
@@ -785,7 +795,7 @@ class DuplicateEntityReference extends ControllerBase {
       $subDatas['entity'] = $this->toArrayLayoutBuilderField($ar);
     }
   }
-  
+
   /**
    * Cette fonction a pour objectif de recuperer le json du layout_builder.
    * La fonction toArray de l'entité ne transmet pas pour le moment les bonnes
@@ -807,22 +817,21 @@ class DuplicateEntityReference extends ControllerBase {
     }
     return $entity;
   }
-  
+
   function getEntityTranslate(ContentEntityBase $entity) {
     $this->getLangCode();
     if ($entity->hasTranslation($this->lang_code)) {
       return $entity->getTranslation($this->lang_code);
-    }
-    else
+    } else
       return $entity;
   }
-  
+
   protected function getLangCode() {
     if (!$this->lang_code)
       $this->lang_code = \Drupal::languageManager()->getCurrentLanguage()->getId();
     return $this->lang_code;
   }
-  
+
   /**
    *
    * @param ContentEntityBase $entity
