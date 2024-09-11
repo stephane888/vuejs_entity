@@ -203,10 +203,10 @@ class FormEntityController extends ControllerBase {
         $pageWeb->set('hbk_collection', $entityModel->get('hbk_collection')->getValue());
 
         $entities = [];
-        $this->DuplicateEntityReference->duplicateExistantReference($pageWeb, $entities);
+        $translations = [];
+        $this->DuplicateEntityReference->duplicateExistantReference($pageWeb, $entities, $translations);
 
         // On charge les autres traductions.
-        $translations = [];
         if ($entityModel->isTranslatable()) {
           $langues = $entityModel->getTranslationLanguages();
           // on s'assure qu'on a plus d'une langue.
