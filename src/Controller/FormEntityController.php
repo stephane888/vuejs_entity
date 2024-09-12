@@ -619,43 +619,38 @@ class FormEntityController extends ControllerBase {
    */
   function getFormParagraphByModel(Request $Request, $id_model, $type) {
     $entityModel = $this->entityTypeManager()->getStorage("site_type_datas")->load($id_model);
-    if ($entityModel) {
-      $paragraphId = match ($type) {
-        "header" => $entityModel->get('entete_paragraph')->target_id,
-        "footer" => $entityModel->get('footer_paragraph')->target_id,
-        default => null
-      };
-
-      if (!isset($paragraphId)) {
-        $this->getLogger('vuejs_entity')->critical(" getFormParagraphByModel : model non definit ");
-        return HttpResponse::response([], 400, " getFormParagraphByModel : model non definit ");
-      }
-
-
-      /**
-       *
-       * @var \Drupal\apivuejs\Services\GenerateForm $apivuejs
-       */
-      $apivuejs = \Drupal::service('apivuejs.getform');
-      //
-      /**
-       *
-       * @var \Drupal\paragraphs\Entity\Paragraph $paragraphHeader
-       */
-      $paragraph = $this->entityTypeManager()->getStorage("paragraph")->load($paragraphId);
-      $newParagraph  = $paragraph->createDuplicate();
-      $form = $apivuejs->getForm("paragraph", $paragraph->bundle(), 'default', $newParagraph);
-      $entities = [];
-      $this->DuplicateEntityReference->duplicateExistantReference($paragraph, $entities);
-      $form['entities'] = $entities;
-      $form['target_type'] = "paragraph";
-      $form['translations'] = $this->DuplicateEntityReference->generateTranslationConfig($newParagraph);
-
-
-      return HttpResponse::response([
-        $form
-      ], 200);
+    $paragraphId = isset($entityModel) ? match ($type) {
+      "header" => $entityModel->get('entete_paragraph')->target_id,
+      "footer" => $entityModel->get('footer_paragraph')->target_id,
+      default => null
     }
+    : null;
+    if (!isset($paragraphId)) {
+      $this->getLogger('vuejs_entity')->critical(" getFormParagraphByModel : model non definit ");
+      return HttpResponse::response([], 400, " getFormParagraphByModel : model non definit ");
+    }
+
+    /**
+     *
+     * @var \Drupal\apivuejs\Services\GenerateForm $apivuejs
+     */
+    $apivuejs = \Drupal::service('apivuejs.getform');
+    //
+    /**
+     *
+     * @var \Drupal\paragraphs\Entity\Paragraph $paragraphHeader
+     */
+    $paragraph = $this->entityTypeManager()->getStorage("paragraph")->load($paragraphId);
+    $newParagraph  = $paragraph->createDuplicate();
+    $form = $apivuejs->getForm("paragraph", $paragraph->bundle(), 'default', $newParagraph);
+    $entities = [];
+    $this->DuplicateEntityReference->duplicateExistantReference($paragraph, $entities);
+    $form['entities'] = $entities;
+    $form['target_type'] = "paragraph";
+    $form['translations'] = $this->DuplicateEntityReference->generateTranslationConfig($newParagraph);
+    return HttpResponse::response([
+      $form
+    ], 200);
   }
 
   /**
