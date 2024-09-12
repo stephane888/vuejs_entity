@@ -358,7 +358,10 @@ class FormEntityController extends ControllerBase {
               "title" => [["value" => "Accueil"]]
             ]
           ], $datas["items"]);
-          foreach ($datas['items'] as $item) {
+
+          //add menu items
+          foreach ($datas['items'] as $menu_item) {
+            $item = $menu_item["entity"] ?? $menu_item;
             $item['bundle'] = [
               [
                 'target_id' => $menu->id()
@@ -379,6 +382,14 @@ class FormEntityController extends ControllerBase {
              * @var MenuLinkContent $menuLinkContent
              */
             $menuLinkContent = $this->entityTypeManager()->getStorage('menu_link_content')->create($item);
+            //Add translations
+            if (!empty($menu_item["translations"])) {
+              foreach ($menu_item["translations"] as $langcode => $translationArray) {
+                if (!$menuLinkContent->hasTranslation($langcode)) {
+                  $menuLinkContent->addTranslation($langcode, $translationArray);
+                }
+              }
+            }
             $menuLinkContent->save();
             $menuLinkContents[] = $menuLinkContent->toArray();
           }
@@ -624,7 +635,7 @@ class FormEntityController extends ControllerBase {
       "footer" => $entityModel->get('footer_paragraph')->target_id,
       default => null
     }
-    : null;
+      : null;
     if (!isset($paragraphId)) {
       $this->getLogger('vuejs_entity')->critical(" getFormParagraphByModel : model non definit ");
       return HttpResponse::response([], 400, " getFormParagraphByModel : model non definit ");
