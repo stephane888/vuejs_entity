@@ -205,7 +205,6 @@ class FormEntityController extends ControllerBase {
         $entities = [];
         $translations = [];
         $this->DuplicateEntityReference->duplicateExistantReference($pageWeb, $entities);
-
         // On charge les autres traductions.
         if ($entityModel->isTranslatable()) {
           $langues = $entityModel->getTranslationLanguages();
@@ -621,49 +620,42 @@ class FormEntityController extends ControllerBase {
   function getFormParagraphByModel(Request $Request, $id_model, $type) {
     $entityModel = $this->entityTypeManager()->getStorage("site_type_datas")->load($id_model);
     if ($entityModel) {
-      $headerId = $entityModel->get('entete_paragraph')->target_id;
-      $footerId = $entityModel->get('footer_paragraph')->target_id;
+      $paragraphId = match ($type) {
+        "header" => $entityModel->get('entete_paragraph')->target_id,
+        "footer" => $entityModel->get('footer_paragraph')->target_id,
+        default => null
+      };
+
+      if (!isset($paragraphId)) {
+        $this->getLogger('vuejs_entity')->critical(" getFormParagraphByModel : model non definit ");
+        return HttpResponse::response([], 400, " getFormParagraphByModel : model non definit ");
+      }
+
+
       /**
        *
        * @var \Drupal\apivuejs\Services\GenerateForm $apivuejs
        */
       $apivuejs = \Drupal::service('apivuejs.getform');
       //
-      if ($headerId && $type == 'header') {
-        /**
-         *
-         * @var \Drupal\paragraphs\Entity\Paragraph $paragraphHeader
-         */
-        $paragraphHeader = $this->entityTypeManager()->getStorage("paragraph")->load($headerId);
+      /**
+       *
+       * @var \Drupal\paragraphs\Entity\Paragraph $paragraphHeader
+       */
+      $paragraph = $this->entityTypeManager()->getStorage("paragraph")->load($paragraphId);
+      $newParagraph  = $paragraph->createDuplicate();
+      $form = $apivuejs->getForm("paragraph", $paragraph->bundle(), 'default', $newParagraph);
+      $entities = [];
+      $this->DuplicateEntityReference->duplicateExistantReference($paragraph, $entities);
+      $form['entities'] = $entities;
+      $form['target_type'] = "paragraph";
+      $form['translations'] = $this->DuplicateEntityReference->generateTranslationConfig($newParagraph);
 
-        $form = $apivuejs->getForm("paragraph", $paragraphHeader->bundle(), 'default', $paragraphHeader->createDuplicate());
-        $entities = [];
-        $this->DuplicateEntityReference->duplicateExistantReference($paragraphHeader, $entities);
-        $form['entities'] = $entities;
-        $form['target_type'] = "paragraph";
-        return HttpResponse::response([
-          $form
-        ], 200);
-      }
-      //
-      if ($footerId && $type == 'footer') {
-        /**
-         *
-         * @var \Drupal\paragraphs\Entity\Paragraph $paragraphHeader
-         */
-        $paragraphFooter = $this->entityTypeManager()->getStorage("paragraph")->load($footerId);
-        $form = $apivuejs->getForm("paragraph", $paragraphFooter->bundle(), 'default', $paragraphFooter->createDuplicate());
-        $entities = [];
-        $this->DuplicateEntityReference->duplicateExistantReference($paragraphFooter, $entities);
-        $form['entities'] = $entities;
-        $form['target_type'] = "paragraph";
-        return HttpResponse::response([
-          $form
-        ], 200);
-      }
+
+      return HttpResponse::response([
+        $form
+      ], 200);
     }
-    $this->getLogger('vuejs_entity')->critical(" getFormParagraphByModel : model non definit ");
-    return HttpResponse::response([], 400, " getFormParagraphByModel : model non definit ");
   }
 
   /**
