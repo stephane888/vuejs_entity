@@ -104,8 +104,27 @@ class DuplicateEntityReference extends ControllerBase {
    */
   public function generateTranslationConfig(ContentEntityBase $entitySource) {
     $translations = [];
+    $lang_code = \Drupal::languageManager()->getCurrentLanguage()->getId();
+
+    if ($entitySource->isTranslatable()) {
+      $languages = $entitySource->getTranslationLanguages();
+      // on s'assure qu'on a plus d'une langue.
+      foreach ($languages as $langcode => $language) {
+        if ($langcode == $lang_code)
+          continue;
+
+        if ($entitySource->hasTranslation($langcode)) {
+          $sourceTranslation = $entitySource->getTranslation($langcode);
+          $translations[$langcode] = $sourceTranslation->toArray();
+        }
+      }
+    }
     return $translations;
   }
+
+
+
+
 
   /**
    * Permet de generer une matrice des entites avec des actions au choix tels
