@@ -340,6 +340,10 @@ class FormEntityController extends ControllerBase {
         // Les id des blocks doivent etre maj afin d'avoir des id unique.
         // $id = mb_substr($datas['menu']['id'], 0, 10, 'UTF-8');
         // $datas['menu']['id'] = $id . uniqid();
+        $menu  = $this->entityTypeManager()->getStorage('menu')->load($datas["menu"]["id"]);
+        if ($menu) {
+          $menu->delete();
+        }
         /**
          *
          * @var Menu $menu
@@ -353,9 +357,24 @@ class FormEntityController extends ControllerBase {
            */
           $datas["items"] = array_merge([
             [
-              "enabled" => [["value" => true]],
-              "link" => [["uri" => "internal:/"]],
-              "title" => [["value" => "Accueil"]]
+              "entity" => [
+                "enabled" => [["value" => true]],
+                "link" => [["uri" => "internal:/"]],
+                "title" => [["value" => "Accueil"]],
+                "weight" => "-1"
+              ],
+              "translations" => [
+                "ar" => [
+                  "enabled" => [["value" => true]],
+                  "title" => [["value" => "الرئيسية"]],
+                  "weight" => "-1"
+                ],
+                "en" => [
+                  "enabled" => [["value" => true]],
+                  "title" => [["value" => "Home"]],
+                  "weight" => "-1"
+                ]
+              ]
             ]
           ], $datas["items"]);
 
