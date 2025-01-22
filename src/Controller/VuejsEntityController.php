@@ -65,23 +65,32 @@ class VuejsEntityController extends ControllerBase {
   public function CheckApplyActions(Request $Request) {
     try {
       $datas = Json::decode($Request->getContent());
-      /**
-       * entité json du domain.
-       *
-       * @var array $newDomain
-       */
-      $newDomain = $datas['domain'];
-      //
-      $uid = lesroidelareno::getCurrentUserId();
-      $user = \Drupal\user\Entity\User::load($uid);
-      $domains = $user->get('field_domain_admin')->getValue();
-      $domains[] = [
-        'target_id' => $newDomain['id']
-      ];
-      $user->set("field_domain_admin", $domains);
-      $user->save();
-      $this->VerificationDesBlocks($newDomain['id']);
-      return HttpResponse::response([]);
+      if (!empty($datas['domain']['id'])) {
+        // On ajoute l'id du domaine au proprietaire du site.
+        /**
+         * entité json du domain.
+         *
+         * @var array $newDomain
+         */
+        $newDomain = $datas['domain'];
+        //
+        $uid = lesroidelareno::getCurrentUserId();
+        $user = \Drupal\user\Entity\User::load($uid);
+        $domains = $user->get('field_domain_admin')->getValue();
+        $domains[] = [
+          'target_id' => $newDomain['id']
+        ];
+        $user->set("field_domain_admin", $domains);
+        $user->save();
+        $debug = [
+          'user_id' => $uid,
+          'domain_id' => $newDomain['id']
+        ];
+        //
+        $debug += $this->VerificationDesBlocks($newDomain['id']);
+        return HttpResponse::response($debug);
+      }
+      throw new \Exception("Le domaine n'est pas definie");
     }
     catch (\Exception $e) {
       return HttpResponse::response(ExceptionExtractMessage::errorAll($e), 435, $e->getMessage());
@@ -101,17 +110,17 @@ class VuejsEntityController extends ControllerBase {
     $blocks = $blockStorage->loadByProperties([
       'theme' => $domain_id
     ]);
-    $create_cart_bloc_complet = true;
+    $result['create_cart_bloc_complet'] = true;
     foreach ($blocks as $block) {
       /**
        *
        * @var \Drupal\block\Entity\Block $block
        */
       if ($block->getPluginId() == 'commerceformatage_cart_bloc_complet') {
-        $create_cart_bloc_complet = false;
+        $result['create_cart_bloc_complet'] = false;
       }
     }
-    if ($create_cart_bloc_complet) {
+    if ($result['create_cart_bloc_complet']) {
       $values = [
         'id' => $domain_id . '_cartbloccomplet',
         "status" => true,
@@ -131,6 +140,7 @@ class VuejsEntityController extends ControllerBase {
       $newBlock = \Drupal\block\Entity\Block::create($values);
       $newBlock->save();
     }
+    return $result;
   }
   
   /**
