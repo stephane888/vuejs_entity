@@ -65,6 +65,11 @@ class VuejsEntityController extends ControllerBase {
   public function CheckApplyActions(Request $Request) {
     try {
       $datas = Json::decode($Request->getContent());
+      /**
+       * entité json du domain.
+       *
+       * @var array $newDomain
+       */
       $newDomain = $datas['domain'];
       //
       $uid = lesroidelareno::getCurrentUserId();
@@ -75,10 +80,56 @@ class VuejsEntityController extends ControllerBase {
       ];
       $user->set("field_domain_admin", $domains);
       $user->save();
+      $this->VerificationDesBlocks($newDomain['id']);
       return HttpResponse::response([]);
     }
     catch (\Exception $e) {
       return HttpResponse::response(ExceptionExtractMessage::errorAll($e), 435, $e->getMessage());
+    }
+  }
+  
+  /**
+   * Apres plusieurs test, on s'est rendu compte que certains modele ne
+   * disposait pas des regions necessaire.
+   */
+  private function VerificationDesBlocks($domain_id) {
+    /**
+     *
+     * @var \Drupal\Core\Entity\EntityStorageInterface $blockStorage
+     */
+    $blockStorage = \Drupal::entityTypeManager()->getStorage("block");
+    $blocks = $blockStorage->loadByProperties([
+      'theme' => $domain_id
+    ]);
+    $create_cart_bloc_complet = true;
+    foreach ($blocks as $block) {
+      /**
+       *
+       * @var \Drupal\block\Entity\Block $block
+       */
+      if ($block->getPluginId() == 'commerceformatage_cart_bloc_complet') {
+        $create_cart_bloc_complet = false;
+      }
+    }
+    if ($create_cart_bloc_complet) {
+      $values = [
+        'id' => $domain_id . '_cartbloccomplet',
+        "status" => true,
+        'theme' => $domain_id,
+        'region' => 'footer',
+        'plugin' => 'commerceformatage_cart_bloc_complet',
+        'settings' => [
+          'id' => 'commerceformatage_cart_bloc_complet',
+          'label' => 'Votre panier',
+          'label_display' => 'visible',
+          'provider' => 'commerceformatage',
+          'block_load_style_scss_js' => 'commerceformatage/cartfloat',
+          'dropdown' => 1
+        ],
+        'visibility' => []
+      ];
+      $newBlock = \Drupal\block\Entity\Block::create($values);
+      $newBlock->save();
     }
   }
   
@@ -119,5 +170,4 @@ class VuejsEntityController extends ControllerBase {
     $reponse->setContent($configs);
     return $reponse;
   }
-  
 }
