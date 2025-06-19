@@ -155,14 +155,7 @@ class DuplicateEntityReference extends ControllerBase {
     if ($entity->hasField(self::$field_domain_all_affiliates)) {
       $entity->set(self::$field_domain_all_affiliates, false);
     }
-    $values = $entity->toArray();
-    // if (!empty($values['layout_builder__layout'])) {
-    // \Stephane888\Debug\debugLog::$max_depth = 10;
-    // \Stephane888\Debug\debugLog::kintDebugDrupal($values['layout_builder__layout'],
-    // 'layout_builder__layout', true);
-    // }
-    // \Stephane888\Debug\debugLog::kintDebugDrupal($values,
-    // 'duplicateExistantReference', true);
+    $values = $entity->toArray();    
     // Get the event_dispatcher service and dispatch the event.
     // $event_dispatcher = \Drupal::service('event_dispatcher');
     foreach ($values as $k => $vals) {
@@ -793,14 +786,7 @@ class DuplicateEntityReference extends ControllerBase {
             // on met à jour l'id de lutilisateur.
             $cloneVariation->setOwnerId($uid);
             //
-            $cloneVariation->save();
-            $db = [
-              '$cloneVariation' => $cloneVariation->toArray(),
-              '$variation' => $variation->toArray(),
-              '$Product' => $Product->toArray()
-            ];
-            \Stephane888\Debug\debugLog::$max_depth = 5;
-            \Stephane888\Debug\debugLog::kintDebugDrupal($db, 'duplicateProduct__' . $variation->id() . '___', true);
+            $cloneVariation->save();            
             $newVariations[] = $cloneVariation->id();
             // Ajout de la variations dans le formulaire
           }
