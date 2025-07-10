@@ -20,10 +20,14 @@ class VuejsEntity {
     $entityTypeManager = \Drupal::entityTypeManager()->getStorage('domain');
     $domainEntity = $entityTypeManager->load($domain_id);
     if (empty($domainEntity)) {
-      $REQUEST_SCHEME = 'http';
-      if (!empty($_SERVER['REQUEST_SCHEME']) && $_SERVER['REQUEST_SCHEME'] == 'https') {
-        $REQUEST_SCHEME = $_SERVER['REQUEST_SCHEME'];
-      }
+      /**
+       * La variable $_SERVER n'est pas ideale pour recuperer le procole, car il
+       * ne tient pas en compte la presence d'un proxy ou pas.
+       * Et aussi cest statique comme approche, cela necessitera une evolution
+       * manuelle. \Drupal::request() est mieux.
+       */
+      $request = \Drupal::request();
+      $REQUEST_SCHEME = $request->getScheme();
       /**
        *
        * @var \Drupal\domain\Entity\Domain $domain
@@ -56,5 +60,4 @@ class VuejsEntity {
       $kernel->rebuildContainer();
     }
   }
-  
 }

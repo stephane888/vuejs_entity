@@ -764,6 +764,10 @@ class FormEntityController extends ControllerBase {
    *            
    *            
    *            
+   *            
+   *            
+   *            
+   *            
    *             Drupal\apivuejs\Controller\ApivuejsController::getFormByEntityId
    *             et à supprimer avant la version 2x.
    */
